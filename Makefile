@@ -15,3 +15,7 @@ venv/.initialized: requirements.txt venv/bin/activate
 
 venv/bin/activate:
 	python3 -m venv venv
+
+.PHONY: fixup
+fixup:
+	source venv/bin/activate && pre-commit run --all-files
