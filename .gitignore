@@ -1,0 +1,12 @@
+*.pyc
+*.swp
+*.swo
+data
+venv
+.env
+.direnv
+.DS_STORE
+.idea
+node_modules
+dist/
+.ipynb_checkpoints
