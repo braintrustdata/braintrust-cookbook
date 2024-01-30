@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=./.github/registry_schema.json
+
+- title: Generating beautiful HTML components
+  path: examples/HTMLGenerator/HTMLGenerator.ipynb
+  date: 2024-01-29
+  authors:
+    - ankrgyl
+  tags:
+    - logging
+    - datasets
+    - evals
