@@ -1,0 +1,5 @@
+{
+  "notebook.formatOnCellExecution": true,
+  "notebook.formatOnSave.enabled": true,
+  "editor.renderFinalNewline": "off"
+}
