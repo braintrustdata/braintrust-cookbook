@@ -1,5 +1,13 @@
 # yaml-language-server: $schema=./.github/registry_schema.json
 
+- title: Classifying News Articles
+  path: examples/ClassifyingNewsArticles/ClassifyingNewsArticles.ipynb
+  date: 2023-09-01
+  authors:
+    - davidtsong
+  tags:
+    - evals
+    - classification
 - title: Coda's Help Desk with and without RAG
   path: examples/CodaHelpDesk/CodaHelpDesk.ipynb
   date: 2024-12-21
