@@ -1,5 +1,14 @@
 # yaml-language-server: $schema=./.github/registry_schema.json
 
+- title: Coda's Help Desk with and without RAG
+  path: examples/CodaHelpDesk/CodaHelpDesk.ipynb
+  date: 2024-12-21
+  authors:
+    - austinmxx
+    - wong
+  tags:
+    - evals
+    - rag
 - title: Generating beautiful HTML components
   path: examples/HTMLGenerator/HTMLGenerator.ipynb
   date: 2024-01-29
