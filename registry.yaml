@@ -16,7 +16,7 @@
   tags:
     - evals
     - classification
-- title: Generating better Github issue titles using page content
+- title: Improving Github issue titles using their contents
   path: examples/Github-Issues/Github-Issues.ipynb
   date: 2023-10-29
   authors:
