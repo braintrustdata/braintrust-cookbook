@@ -1,5 +1,13 @@
 # yaml-language-server: $schema=./.github/registry_schema.json
 
+- title: Text-to-SQL
+  path: examples/Text2SQL/Text2SQL.ipynb
+  date: 2023-08-12
+  authors:
+    - ankrgyl
+  tags:
+    - evals
+    - sql
 - title: Classifying News Articles
   path: examples/ClassifyingNewsArticles/ClassifyingNewsArticles.ipynb
   date: 2023-09-01
