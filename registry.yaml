@@ -1,6 +1,14 @@
 # yaml-language-server: $schema=./.github/registry_schema.json
 
-- title: Classifying News Articles
+- title: Text-to-SQL
+  path: examples/Text2SQL/Text2SQL.ipynb
+  date: 2023-08-12
+  authors:
+    - ankrgyl
+  tags:
+    - evals
+    - sql
+- title: Classifying news articles
   path: examples/ClassifyingNewsArticles/ClassifyingNewsArticles.ipynb
   date: 2023-09-01
   authors:
@@ -8,6 +16,14 @@
   tags:
     - evals
     - classification
+- title: Improving Github issue titles using their contents
+  path: examples/Github-Issues/Github-Issues.ipynb
+  date: 2023-10-29
+  authors:
+    - ankrgyl
+  tags:
+    - evals
+    - summarization
 - title: Coda's Help Desk with and without RAG
   path: examples/CodaHelpDesk/CodaHelpDesk.ipynb
   date: 2024-12-21
