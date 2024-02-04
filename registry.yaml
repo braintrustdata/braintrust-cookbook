@@ -42,3 +42,11 @@
     - logging
     - datasets
     - evals
+- title: Generating release notes and hill-climbing to improve them
+  path: examples/ReleaseNotes/ReleaseNotes.ipynb
+  date: 2024-02-02
+  authors:
+    - ankrgyl
+  tags:
+    - evals
+    - hill-climbing
