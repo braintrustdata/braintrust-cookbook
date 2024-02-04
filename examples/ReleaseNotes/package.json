@@ -1,0 +1,23 @@
+{
+  "name": "ReleaseNotes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@octokit/rest": "^20.0.2",
+    "autoevals": "^0.0.45",
+    "braintrust": "link:../../../../sdk/js",
+    "moment": "^2.30.1",
+    "openai": "^4.26.0"
+  },
+  "devDependencies": {
+    "@octokit/types": "^12.4.0",
+    "@types/node": "^20.11.9"
+  }
+}
