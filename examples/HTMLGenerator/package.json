@@ -11,10 +11,10 @@
   "license": "MIT",
   "dependencies": {
     "braintrust": "^0.0.92",
-    "openai": "^4.26.0",
-    "puppeteer": "^21.9.0"
+    "openai": "^4.26.1",
+    "puppeteer": "^21.11.0"
   },
   "devDependencies": {
-    "@types/node": "^20.11.9"
+    "@types/node": "^20.11.16"
   }
 }

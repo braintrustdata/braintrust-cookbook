@@ -21,15 +21,15 @@ importers:
         specifier: ^0.0.92
         version: 0.0.92
       openai:
-        specifier: ^4.26.0
-        version: 4.26.0
+        specifier: ^4.26.1
+        version: 4.26.1
     devDependencies:
       '@octokit/types':
         specifier: ^12.4.0
         version: 12.4.0
       '@types/node':
-        specifier: ^20.11.9
-        version: 20.11.9
+        specifier: ^20.11.16
+        version: 20.11.16
 
   examples/HTMLGenerator:
     dependencies:
@@ -37,15 +37,15 @@ importers:
         specifier: ^0.0.92
         version: 0.0.92
       openai:
-        specifier: ^4.26.0
-        version: 4.26.0
+        specifier: ^4.26.1
+        version: 4.26.1
       puppeteer:
-        specifier: ^21.9.0
-        version: 21.9.0
+        specifier: ^21.11.0
+        version: 21.11.0
     devDependencies:
       '@types/node':
-        specifier: ^20.11.9
-        version: 20.11.9
+        specifier: ^20.11.16
+        version: 20.11.16
 
   examples/ReleaseNotes:
     dependencies:
@@ -53,24 +53,24 @@ importers:
         specifier: ^20.0.2
         version: 20.0.2
       autoevals:
-        specifier: ^0.0.45
-        version: 0.0.45
+        specifier: ^0.0.46
+        version: 0.0.46
       braintrust:
-        specifier: ^0.0.92
-        version: 0.0.92
+        specifier: ^0.0.96
+        version: 0.0.96
       moment:
         specifier: ^2.30.1
         version: 2.30.1
       openai:
-        specifier: ^4.26.0
-        version: 4.26.0
+        specifier: ^4.26.1
+        version: 4.26.1
     devDependencies:
       '@octokit/types':
         specifier: ^12.4.0
         version: 12.4.0
       '@types/node':
-        specifier: ^20.11.9
-        version: 20.11.9
+        specifier: ^20.11.16
+        version: 20.11.16
 
 packages:
 
@@ -101,12 +101,12 @@ packages:
       js-tokens: 4.0.0
     dev: false
 
-  /@braintrust/core@0.0.12:
-    resolution: {integrity: sha512-sy/nhH+bHRPVcCJYC4Al39inzmn8vh3zepRi2uzNlcZNQoy6YHSzcs/xz0JPfsDPakRfDV9dxLKHyUToElx0Mg==}
-    dev: false
-
   /@braintrust/core@0.0.13:
     resolution: {integrity: sha512-ZRahg8TGd8+hVQumPLAGo9ptBHSLhIzMOsfgtZiOGI03Nir9cth+TwKANzvGr66Ksd8/N4TgJtyQxes1S3GPfQ==}
+    dev: false
+
+  /@braintrust/core@0.0.14:
+    resolution: {integrity: sha512-1tcSN2/T31spZOvay3gdMq90Nh215Wnu3UTgcdGIkwTrm5Za2p1JiIv58309/WYSfRFiZ5fyS0GFmSqBkTIX2w==}
     dev: false
 
   /@esbuild/android-arm64@0.18.20:
@@ -510,31 +510,31 @@ packages:
   /@types/node-fetch@2.6.11:
     resolution: {integrity: sha512-24xFj9R5+rfQJLRyM56qh+wnVSYhyXC2tkoBndtY0U+vubqNsYXGjufB2nn8Q6gt0LrARwL6UBtMCSVCwl4B1g==}
     dependencies:
-      '@types/node': 20.11.9
+      '@types/node': 20.11.16
       form-data: 4.0.0
     dev: false
 
-  /@types/node@18.19.10:
-    resolution: {integrity: sha512-IZD8kAM02AW1HRDTPOlz3npFava678pr8Ie9Vp8uRhBROXAv8MXT2pCnGZZAKYdromsNQLHQcfWQ6EOatVLtqA==}
+  /@types/node@18.19.14:
+    resolution: {integrity: sha512-EnQ4Us2rmOS64nHDWr0XqAD8DsO6f3XR6lf9UIIrZQpUzPVdN/oPuEzfDWNHSyXLvoGgjuEm/sPwFGSSs35Wtg==}
     dependencies:
       undici-types: 5.26.5
 
-  /@types/node@20.11.9:
-    resolution: {integrity: sha512-CQXNuMoS/VcoAMISe5pm4JnEd1Br5jildbQEToEMQvutmv+EaQr90ry9raiudgpyDuqFiV9e4rnjSfLNq12M5w==}
+  /@types/node@20.11.16:
+    resolution: {integrity: sha512-gKb0enTmRCzXSSUJDq6/sPcqrfCv2mkkG6Jt/clpn5eiCbKTY+SgZUxo+p8ZKMof5dCp9vHQUAB7wOUTod22wQ==}
     dependencies:
       undici-types: 5.26.5
 
   /@types/resolve@1.17.1:
     resolution: {integrity: sha512-yy7HuzQhj0dhGpD8RLXSZWEkLsV9ibvxvi6EiJ3bkqLAO1RGo0WbkWQiwpRlSFymTJRz0d3k5LM3kkx8ArDbLw==}
     dependencies:
-      '@types/node': 20.11.9
+      '@types/node': 18.19.14
     dev: true
 
   /@types/yauzl@2.10.3:
     resolution: {integrity: sha512-oJoftv0LSuaDZE3Le4DbKX+KS9G36NzOeSap90UIK0yMA/NhKJhqlSGtNDORNRaIbQfzjXDrQa0ytJ6mNRGz/Q==}
     requiresBuild: true
     dependencies:
-      '@types/node': 20.11.9
+      '@types/node': 20.11.16
     dev: false
     optional: true
 
@@ -595,11 +595,11 @@ packages:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
     dev: false
 
-  /autoevals@0.0.45:
-    resolution: {integrity: sha512-zPyueixpYhbMfvev/L7YzSzPyltTcRnTSOqdnWMl84PvHnlJ22zd+laSClBxpWPHVt/HfelcC59/vNX27BOiDg==}
+  /autoevals@0.0.46:
+    resolution: {integrity: sha512-1jETxOEGmmJHZvSB9Nlssz9TlaBnlcpiNioPtmLsRt5Bpz8CgIY4CIuctQqy10lssH9aN+jACqiOto27qHiSsg==}
     dependencies:
-      '@braintrust/core': 0.0.12
-      '@types/node': 20.11.9
+      '@braintrust/core': 0.0.14
+      '@types/node': 20.11.16
       compute-cosine-similarity: 1.1.0
       js-levenshtein: 1.1.6
       js-yaml: 4.1.0
@@ -610,8 +610,8 @@ packages:
       - encoding
     dev: false
 
-  /b4a@1.6.4:
-    resolution: {integrity: sha512-fpWrvyVHEKyeEvbKZTVOeZF3VSKKWtJxFIxX/jaVPf+cLbGUSitjb49pHLqPV2BUNNZ0LcoeEGfE/YCpyDYHIw==}
+  /b4a@1.6.6:
+    resolution: {integrity: sha512-5Tk1HLk6b6ctmjIkAcU/Ujv/1WqiDl0F0JdRCR80VsOcUlHcu7pWeWRlOqQLHfDEsVx9YH/aif5AG4ehoCtTmg==}
     dev: false
 
   /balanced-match@1.0.2:
@@ -652,6 +652,24 @@ packages:
     hasBin: true
     dependencies:
       '@braintrust/core': 0.0.13
+      argparse: 2.0.1
+      chalk: 4.1.2
+      cli-progress: 3.12.0
+      esbuild: 0.18.20
+      graceful-fs: 4.2.11
+      minimatch: 9.0.3
+      pluralize: 8.0.0
+      simple-git: 3.22.0
+      uuid: 9.0.1
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
+  /braintrust@0.0.96:
+    resolution: {integrity: sha512-0/SjGCHBsDkzwW08isk134C58SBhyWdk72+Z7vC+WSsnSj+KEgHDTcEqIVE4P2wsLtXcHkXL3Y93XNM1RQsTOA==}
+    hasBin: true
+    dependencies:
+      '@braintrust/core': 0.0.14
       argparse: 2.0.1
       chalk: 4.1.2
       cli-progress: 3.12.0
@@ -711,14 +729,14 @@ packages:
     resolution: {integrity: sha512-yrLQ/yVUFXkzg7EDQsPieE/53+0RlaWTs+wBrvW36cyilJ2SaDWfl4Yj7MtLTXleV9uEKefbAGUPv2/iWSooRA==}
     dev: false
 
-  /chromium-bidi@0.5.4(devtools-protocol@0.0.1232444):
-    resolution: {integrity: sha512-p9CdiHl0xNh4P7oVa44zXgJJw+pvnHXFDB+tVdo25xaPLgQDVf2kQO+TDxD2fp2Evqi7vs/vGRINMzl1qJrWiw==}
+  /chromium-bidi@0.5.8(devtools-protocol@0.0.1232444):
+    resolution: {integrity: sha512-blqh+1cEQbHBKmok3rVJkBlBxt9beKBgOsxbFgs7UJcoVbbeZ+K7+6liAsjgpc8l1Xd55cQUy14fXZdGSb4zIw==}
     peerDependencies:
       devtools-protocol: '*'
     dependencies:
       devtools-protocol: 0.0.1232444
       mitt: 3.0.1
-      urlpattern-polyfill: 9.0.0
+      urlpattern-polyfill: 10.0.0
     dev: false
 
   /cli-progress@3.12.0:
@@ -947,8 +965,8 @@ packages:
       '@esbuild/win32-x64': 0.18.20
     dev: false
 
-  /escalade@3.1.1:
-    resolution: {integrity: sha512-k0er2gUkLf8O0zKJiAhmkTnJlTvINGv7ygDNPbeIsX/TJjGJZHuh9B2UxbsaEkmlEo9MfhrSzmhIlhRlI2GXnw==}
+  /escalade@3.1.2:
+    resolution: {integrity: sha512-ErCHMCae19vR8vQGe50xIsVomy19rg6gFu3+r3jkEO46suLMWBksvVyoGgQV+jOfl84ZSOSlmv6Gxa89PmTGmA==}
     engines: {node: '>=6'}
     dev: false
 
@@ -1366,7 +1384,7 @@ packages:
     resolution: {integrity: sha512-ey2CXh1OTcTUa0AWZWuTpgA9t5GuAG3DVU1MofCRUI7fQJij8XJ3Sr0VtgxoAE69C9wbHBMCux8Z/IQZfSwHiA==}
     hasBin: true
     dependencies:
-      '@types/node': 18.19.10
+      '@types/node': 18.19.14
       '@types/node-fetch': 2.6.11
       abort-controller: 3.0.0
       agentkeepalive: 4.5.0
@@ -1379,11 +1397,11 @@ packages:
       - encoding
     dev: false
 
-  /openai@4.26.0:
-    resolution: {integrity: sha512-HPC7tgYdeP38F3uHA5WgnoXZyGbAp9jgcIo23p6It+q/07u4C+NZ8xHKlMShsPbDDmFRpPsa3vdbXYpbhJH3eg==}
+  /openai@4.26.1:
+    resolution: {integrity: sha512-DvWbjhWbappsFRatOWmu4Dp1/Q4RG9oOz6CfOSjy0/Drb8G+5iAiqWAO4PfpGIkhOOKtvvNfQri2SItl+U7LhQ==}
     hasBin: true
     dependencies:
-      '@types/node': 18.19.10
+      '@types/node': 18.19.14
       '@types/node-fetch': 2.6.11
       abort-controller: 3.0.0
       agentkeepalive: 4.5.0
@@ -1498,12 +1516,12 @@ packages:
       once: 1.4.0
     dev: false
 
-  /puppeteer-core@21.9.0:
-    resolution: {integrity: sha512-QgowcczLAoLWlV38s3y3VuEvjJGfKU5rR6Q23GUbiGOaiQi+QpaWQ+aXdzP9LHVSUPmHdAaWhcvMztYSw3f8gQ==}
+  /puppeteer-core@21.11.0:
+    resolution: {integrity: sha512-ArbnyA3U5SGHokEvkfWjW+O8hOxV1RSJxOgriX/3A4xZRqixt9ZFHD0yPgZQF05Qj0oAqi8H/7stDorjoHY90Q==}
     engines: {node: '>=16.13.2'}
     dependencies:
       '@puppeteer/browsers': 1.9.1
-      chromium-bidi: 0.5.4(devtools-protocol@0.0.1232444)
+      chromium-bidi: 0.5.8(devtools-protocol@0.0.1232444)
       cross-fetch: 4.0.0
       debug: 4.3.4
       devtools-protocol: 0.0.1232444
@@ -1515,15 +1533,15 @@ packages:
       - utf-8-validate
     dev: false
 
-  /puppeteer@21.9.0:
-    resolution: {integrity: sha512-vcLR81Rp+MBrgqhiXZfpwEBbyKTa88Hd+8Al3+emWzcJb9evLLSfUYli0QUqhofPFrXsO2A/dAF9OunyOivL6w==}
+  /puppeteer@21.11.0:
+    resolution: {integrity: sha512-9jTHuYe22TD3sNxy0nEIzC7ZrlRnDgeX3xPkbS7PnbdwYjl2o/z/YuCrRBwezdKpbTDTJ4VqIggzNyeRcKq3cg==}
     engines: {node: '>=16.13.2'}
     hasBin: true
     requiresBuild: true
     dependencies:
       '@puppeteer/browsers': 1.9.1
       cosmiconfig: 9.0.0
-      puppeteer-core: 21.9.0
+      puppeteer-core: 21.11.0
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -1574,8 +1592,8 @@ packages:
       fsevents: 2.3.3
     dev: true
 
-  /semver@7.5.4:
-    resolution: {integrity: sha512-1bCSESV6Pv+i21Hvpxp3Dx+pSD8lIPt8uVjRrxAUt/nbswYc+tK6Y2btiULjd4+fnq15PX+nqQDC7Oft7WkwcA==}
+  /semver@7.6.0:
+    resolution: {integrity: sha512-EnwXhrlwXMk9gKu5/flx5sv/an57AkRplG3hTK68W7FRDN+k+OWBj65M7719OkA82XLBxrcX0KSHj+X5COhOVg==}
     engines: {node: '>=10'}
     hasBin: true
     dependencies:
@@ -1665,8 +1683,8 @@ packages:
     deprecated: Please use @jridgewell/sourcemap-codec instead
     dev: true
 
-  /streamx@2.15.6:
-    resolution: {integrity: sha512-q+vQL4AAz+FdfT137VF69Cc/APqUbxy+MDOImRrMvchJpigHj9GksgDU2LYbO9rx7RX6osWgxJB2WxhYv4SZAw==}
+  /streamx@2.15.7:
+    resolution: {integrity: sha512-NPEKS5+yjyo597eafGbKW5ujh7Sm6lDLHZQd/lRSz6S0VarpADBJItqfB4PnwpS+472oob1GX5cCY9vzfJpHUA==}
     dependencies:
       fast-fifo: 1.3.2
       queue-tick: 1.0.1
@@ -1718,9 +1736,9 @@ packages:
   /tar-stream@3.1.7:
     resolution: {integrity: sha512-qJj60CXt7IU1Ffyc3NJMjh6EkuCFej46zUqJ4J7pqYlThyd9bO0XBTmcOIhSzZJVWfsLks0+nle/j538YAW9RQ==}
     dependencies:
-      b4a: 1.6.4
+      b4a: 1.6.6
       fast-fifo: 1.3.2
-      streamx: 2.15.6
+      streamx: 2.15.7
     dev: false
 
   /through@2.3.8:
@@ -1739,10 +1757,10 @@ packages:
       '@rollup/plugin-node-resolve': 11.2.1(rollup@2.79.1)
       '@rollup/plugin-replace': 2.4.2(rollup@2.79.1)
       '@tslab/typescript-for-tslab': 5.0.4
-      '@types/node': 18.19.10
+      '@types/node': 18.19.14
       commander: 10.0.1
       rollup: 2.79.1
-      semver: 7.5.4
+      semver: 7.6.0
       zeromq: 6.0.0-beta.19
     dev: true
 
@@ -1780,8 +1798,8 @@ packages:
     engines: {node: '>= 4.0.0'}
     dev: false
 
-  /urlpattern-polyfill@9.0.0:
-    resolution: {integrity: sha512-WHN8KDQblxd32odxeIgo83rdVDE2bvdkb86it7bMhYZwWKJz0+O0RK/eZiHYnM+zgt/U7hAHOlCQGfjjvSkw2g==}
+  /urlpattern-polyfill@10.0.0:
+    resolution: {integrity: sha512-H/A06tKD7sS1O1X2SshBVeA5FLycRpjqiBeqGKmBwBDBy28EnRjORxTNe269KSSr5un5qyWi1iL61wLxpd+ZOg==}
     dev: false
 
   /uuid@9.0.1:
@@ -1870,7 +1888,7 @@ packages:
     engines: {node: '>=12'}
     dependencies:
       cliui: 8.0.1
-      escalade: 3.1.1
+      escalade: 3.1.2
       get-caller-file: 2.0.5
       require-directory: 2.1.1
       string-width: 4.2.3

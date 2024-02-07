@@ -11,13 +11,13 @@
   "license": "MIT",
   "dependencies": {
     "@octokit/rest": "^20.0.2",
-    "autoevals": "^0.0.45",
-    "braintrust": "^0.0.92",
+    "autoevals": "^0.0.46",
+    "braintrust": "^0.0.96",
     "moment": "^2.30.1",
-    "openai": "^4.26.0"
+    "openai": "^4.26.1"
   },
   "devDependencies": {
     "@octokit/types": "^12.4.0",
-    "@types/node": "^20.11.9"
+    "@types/node": "^20.11.16"
   }
 }
