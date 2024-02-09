@@ -50,3 +50,12 @@
   tags:
     - evals
     - hill-climbing
+- title: Testing tools with assertions
+  path: examples/Assertions/Assertions.ipynb
+  date: 2024-02-12
+  authors:
+    - vitorbal
+  tags:
+    - evals
+    - assertions
+    - tools
