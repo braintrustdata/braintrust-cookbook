@@ -50,3 +50,13 @@
   tags:
     - evals
     - hill-climbing
+- title: How Zapier uses assertions to evaluate tool usage in chatbots
+  path: examples/Assertions/Assertions.ipynb
+  date: 2024-02-12
+  authors:
+    - vitorbal
+  tags:
+    - evals
+    - assertions
+    - tools
+  logo: https://cdn.zapier.com/zapier/images/favicon.ico
