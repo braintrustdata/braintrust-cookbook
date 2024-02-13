@@ -52,7 +52,7 @@
     - hill-climbing
 - title: How Zapier uses assertions to evaluate tool usage in chatbots
   path: examples/Assertions/Assertions.ipynb
-  date: 2024-02-12
+  date: 2024-02-13
   authors:
     - vitorbal
   tags:
