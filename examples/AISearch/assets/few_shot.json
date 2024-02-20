@@ -1,0 +1,93 @@
+[
+  {
+    "query": "metadata->\"accuracy\" less than 0.2",
+    "function": "SQL",
+    "sort": null,
+    "filter": "(metrics->>'accuracy')::NUMERIC < 0.2",
+    "explanation": "The query refers to a JSON field, so I correct the JSON extraction syntax according to directive 4 and cast the result to NUMERIC to compare to the value `0.2` as per directive 9."
+  },
+  {
+    "query": "vxlkje",
+    "function": "MATCH",
+    "sort": null,
+    "filter": null,
+    "explanation": "The query does not have semantic meaning that can be related to the named columns and JSON fields in the provided schema, so I default to calling the MATCH function to be safe."
+  },
+  {
+    "query": "older than 3 hours",
+    "function": "SQL",
+    "sort": null,
+    "filter": "last_updated < get_current_time() - INTERVAL '3 hours'",
+    "explanation": "The query refers to a relative time, so I use the `last_updated` column and compare it to the current time `get_current_time()` by subtracting an `INTERVAL '3 hours'`."
+  },
+  {
+    "query": "metadatas[zoo][\"animals\"]['numLimbs'] less than 4",
+    "function": "SQL",
+    "sort": null,
+    "filter": "(expected->'zoo'->'animals'->>'numLimbs')::NUMERIC < 4",
+    "explanation": "Even though there are typos and invalid syntax, the query is clearly referring to a field deep within the `expected` JSON column, which appears in the provided schema. I correct the syntax by using `->` operators to drill down through the JSON object, `->>` to extract the bottom-level scalar field, and wrap the entire chain in parentheses, then cast to NUMERIC according to directive 9."
+  },
+  {
+    "query": "fewest examples first",
+    "function": "SQL",
+    "sort": "num_examples ASC",
+    "filter": null,
+    "explanation": "The query refers to the `num_examples` column, so I use the `ASC` keyword to sort the results in ascending order."
+  },
+  {
+    "query": "metadata.requests.headers contains: \"HELLO\" (case sensitive)",
+    "function": "SQL",
+    "sort": null,
+    "filter": "(metadata->'requests'->>'headers') LIKE '%hello%'",
+    "explanation": "As per directive 3, I use ILIKE to check if the extracted object field contains `HELLO`. To extract the field, I use a series of `->` operators ending in an `->>` operator, and wrap the result in parentheses, as per directive 5."
+  },
+  {
+    "query": "'feature' in git branch",
+    "function": "SQL",
+    "sort": null,
+    "filter": "(source->>'branch') ILIKE '%feature%'",
+    "explanation": "As per directive 3, I use ILIKE to check if the extracted object field contains `feature`. To extract the field according to directive 5, I use a series of `->` operators ending in an `->>` operator, and wrap the result in parentheses. Following directive 6, I ignore the stray backtick since it appears to be a typo."
+  },
+  {
+    "query": "git commit 52a3fb2",
+    "function": "SQL",
+    "sort": null,
+    "filter": "(source->>'commit') ILIKE '52a3fb2%'",
+    "explanation": "The query appears to be a reference to the `commit` field in the `source` JSON column, so we use the `->>` operator to extract the string value, then wrap the entire chain in parentheses. We use the `ILIKE` operator to check if the extracted value starts with `52a3fb2`, since the provided schema says to use prefix matching for commit hashes."
+  },
+  {
+    "query": "source.Zipper < 0.2",
+    "function": "MATCH",
+    "sort": null,
+    "filter": null,
+    "explanation": "The query refers to a field in the `source` JSON column, but there is no `Zipper` field on the `source` column in the provided schema, so we fall back to a simple substring match."
+  },
+  {
+    "query": "clean git state and git author email = \"juicy*@gmail.*\"",
+    "function": "SQL",
+    "sort": null,
+    "filter": "(source->>'dirty') = 'false' AND (source->>'author_email') like \"juicy%@gmail.%\"",
+    "explanation": "The query refers to the `dirty` and `author_email` fields in the `source` JSON column, so we use the `->>` operator to extract the string values, then wrap each chain in parentheses according to directive 4. We replace the `*` wildcard operators with `%` as per directive 7 and use the `LIKE` operator to string match since there are wildcards."
+  },
+  {
+    "query": "metadata.content[0].command is \"get down\"",
+    "function": "SQL",
+    "sort": null,
+    "filter": "(metadata->'content'->0->>'command') = 'get down'",
+    "explanation": "The query refers to the `command` field two levels down the `metadata` JSON object. I use two `->` operators to extract the object at `content[0]`, then `->>` to extract the final string value, and wrap the entire chain in parentheses before comparing it to the target value."
+  },
+  {
+    "query": "tallest examples",
+    "function": "MATCH",
+    "sort": null,
+    "filter": null,
+    "explanation": "There is no reference to tallness or height in the named columns and JSON fields in the provided schema, so we fall back to the MATCH function."
+  },
+  {
+    "query": "\"model scored highly\"",
+    "function": "MATCH",
+    "sort": null,
+    "filter": null,
+    "explanation": "The query is wrapped entirely in quotes, so we pass it directly to the MATCH function, following directive 2."
+  }
+]

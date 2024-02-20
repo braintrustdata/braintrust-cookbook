@@ -19,93 +19,16 @@ Make use of the names, types, and descriptions of fields in the schema when deci
 
 To help calibrate your responses, here are some example queries and the correct function call for each:
 
+{{#examples}}
 <Example>
-Query: metadata->"accuracy" less than 0.2
-Function: SQL
-Filter: (metrics->>'accuracy')::NUMERIC < 0.2
-Explanation: The query refers to a JSON field, so I correct the JSON extraction syntax according to directive 4 and cast the result to NUMERIC to compare to the value `0.2` as per directive 9.
+Query: {{{ query }}}
+Function: {{{ function }}}{{#filter}}
+Filter: {{{ filter }}}{{/filter}}{{#sort}}
+Sort: {{{ sort }}} {{/sort}}
+Explanation: {{{ explanation }}}
 </Example>
 
-<Example>
-Query: vxlkje
-Function: MATCH
-Explanation: The query does not have semantic meaning that can be related to the named columns and JSON fields in the provided schema, so I default to calling the MATCH function to be safe.
-</Example>
-
-<Example>
-Query: older than 3 hours
-Function: SQL
-Filter: last_updated < get_current_time() - INTERVAL '3 hours'
-Explanation: The query refers to a relative time, so I use the `last_updated` column and compare it to the current time `get_current_time()` by subtracting an `INTERVAL '3 hours'`.
-</Example>
-
-<Example>
-Query: metadatas[zoo]["animals"]['numLimbs'] less than 4
-Function: SQL
-Filter: (expected->'zoo'->'animals'->>'numLimbs')::NUMERIC < 4
-Explanation: Even though there are typos and invalid syntax, the query is clearly referring to a field deep within the `expected` JSON column, which appears in the provided schema. I correct the syntax by using `->` operators to drill down through the JSON object, `->>` to extract the bottom-level scalar field, and wrap the entire chain in parentheses, then cast to NUMERIC according to directive 9.
-</Example>
-
-<Example>
-Query: fewest examples first
-Function: SQL
-Sort: num_examples ASC
-Explanation: The query refers to the `num_examples` column, so I use the `ASC` keyword to sort the results in ascending order.
-</Example>
-
-<Example>
-Query: metadata.requests.headers contains: "HELLO" (case sensitive)
-Function: SQL
-Filter: (metadata->'requests'->>'headers') LIKE '%hello%'
-Explanation: As per directive 3, I use ILIKE to check if the extracted object field contains `HELLO`. To extract the field, I use a series of `->` operators ending in an `->>` operator, and wrap the result in parentheses, as per directive 5.
-</Example>
-
-<Example>
-Query: 'feature' in git branch
-Function: SQL
-Filter: (source->>'branch') ILIKE '%feature%'
-Explanation: As per directive 3, I use ILIKE to check if the extracted object field contains `feature`. To extract the field according to directive 5, I use a series of `->` operators ending in an `->>` operator, and wrap the result in parentheses. Following directive 6, I ignore the stray backtick since it appears to be a typo.
-</Example>
-
-<Example>
-Query: git commit 52a3fb2
-Function: SQL
-Filter: (source->>'commit') ILIKE '52a3fb2%'
-Explanation: The query appears to be a reference to the `commit` field in the `source` JSON column, so we use the `->>` operator to extract the string value, then wrap the entire chain in parentheses. We use the `ILIKE` operator to check if the extracted value starts with `52a3fb2`, since the provided schema says to use prefix matching for commit hashes.
-</Example>
-
-<Example>
-Query: source.Zipper < 0.2
-Function: MATCH
-Explanation: The query refers to a field in the `source` JSON column, but there is no `Zipper` field on the `source` column in the provided schema, so we fall back to a simple substring match.
-</Example>
-
-<Example>
-Query: clean git state and git author email = "juicy*@gmail.*"
-Function: SQL
-Filter: (source->>'dirty') = 'false' AND (source->>'author_email') like "juicy%@gmail.%"
-Explanation: The query refers to the `dirty` and `author_email` fields in the `source` JSON column, so we use the `->>` operator to extract the string values, then wrap each chain in parentheses according to directive 4. We replace the `*` wildcard operators with `%` as per directive 7 and use the `LIKE` operator to string match since there are wildcards.
-</Example>
-
-<Example>
-Query: metadata.content[0].command is "get down"
-Function: SQL
-Filter: (metadata->'content'->0->>'command') = 'get down'
-Explanation: The query refers to the `command` field two levels down the `metadata` JSON object. I use two `->` operators to extract the object at `content[0]`, then `->>` to extract the final string value, and wrap the entire chain in parentheses before comparing it to the target value.
-</Example>
-
-<Example>
-Query: tallest examples
-Function: MATCH
-Explanation: There is no reference to tallness or height in the named columns and JSON fields in the provided schema, so we fall back to the MATCH function.
-</Example>
-
-<Example>
-Query: "model scored highly"
-Function: MATCH
-Explanation: The query is wrapped entirely in quotes, so we pass it directly to the MATCH function, following directive 2.
-</Example>
-
+{{/examples}}
 When the user provides a query, you should examine it and call the appropriate function. Always make exactly one function call, no exceptions! The user's search query will be provided in the following format:
 Query: {query}
 
