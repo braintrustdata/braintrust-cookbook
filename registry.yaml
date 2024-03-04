@@ -62,7 +62,7 @@
   logo: https://cdn.zapier.com/zapier/images/favicon.ico
 - title: AI Search Bar
   path: examples/AISearch/ai_search_evals.ipynb
-  date: 2024-02-08
+  date: 2024-03-04
   authors:
     - austinmxx
   tags:
