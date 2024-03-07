@@ -1,0 +1,349 @@
+{
+  "examples": [
+    {
+      "input": "asdf",
+      "expected": {
+        "match": true,
+        "explanation": "The query has no semantic meaning, so I interpret it as a simple substring match and fall back to the MATCH function."
+      }
+    },
+    {
+      "input": "name is foo",
+      "expected": {
+        "match": false,
+        "filter": "name = 'foo'",
+        "explanation": "I interpret the query as a string equality filter on the \"name\" column. The query does not have any sort semantics, so there is no sort."
+      }
+    },
+    {
+      "input": "experiments more than 7 hours old",
+      "expected": {
+        "match": false,
+        "filter": "last_updated < get_current_time() - INTERVAL '7 hours'",
+        "explanation": "I interpret the query as a filter on the \"last_updated\" column, which must be cast to TIMESTAMPTZ to be compared to the current time. The query does not have any sort semantics, so there is no sort."
+      }
+    },
+    {
+      "input": "created by Manu",
+      "expected": {
+        "match": false,
+        "filter": "((creator->>'given_name') = 'Manu') OR ((creator->>'family_name') = 'Manu')",
+        "explanation": "I interpret the filter on the \"creator\" column. Since the schema indicates that \"creator\" contains both \"given_name\" and \"family_name\" fields, it is ambiguous which name the query refers to, so we run an OR filter over both."
+      }
+    },
+    {
+      "input": "creator email is foo@bar.com",
+      "expected": {
+        "match": false,
+        "filter": "(creator->>'email') = 'foo@bar.com'",
+        "explanation": "This is a simple equality filter on the \"creator\" column's \"email\" field. The query has no sort semantics, so there is no sort."
+      }
+    },
+    {
+      "input": "has {{{ score_fields.0 }}}",
+      "expected": {
+        "match": false,
+        "filter": "{{{ score_fields.0 }}} IS NOT NULL",
+        "explanation": "An experiment has a field if and only if the field value is not null, so we use an \"IS NOT NULL\" filter."
+      }
+    },
+    {
+      "input": "between 30 and 50 examples, oldest first",
+      "expected": {
+        "match": false,
+        "filter": "num_examples >= 30 AND num_examples <= 50",
+        "sort": "last_updated ASC",
+        "explanation": "To filter down to a numeric range, I combine an LTE filter with a GTE filter using the AND operator. To make the oldest updates appear first, I also apply an ascending sort on the \"last_updated\" column."
+      }
+    },
+    {
+      "input": "experiment name contains foo or bar, and metadata.color: red",
+      "expected": {
+        "match": false,
+        "filter": "(name ILIKE '%foo%' OR name ILIKE '%bar%') AND ((metadata->>'color') = 'red')",
+        "explanation": "Since the \"name\" filter must contain either 'foo' or 'bar', I construct an ILIKE filter against the two allowed values and use an OR operator. \"metadata.color\" refers to the 'color' key on the \"metadata\" column, so I construct an equality filter on the JSON field. We use AND to combine the two filters."
+      }
+    },
+    {
+      "input": "not metadata.rag",
+      "expected": {
+        "match": false,
+        "filter": "(metadata->>'rag') = false",
+        "explanation": "The word \"not\" indicates a negative boolean filter on the \"rag\" key on the \"metadata\" JSON column. The query has no sort semantics so there is no sort."
+      }
+    },
+    {
+      "input": "null metadata.rag",
+      "expected": {
+        "match": false,
+        "filter": "(metadata->>'rag') IS NULL",
+        "explanation": "The word \"null\" indicates that I should check whether the \"rag\" key on the \"metadata\" JSON column is missing, so I use an IS NULL filter. The query does not indicate a sort order."
+      }
+    },
+    {
+      "input": "at least 20 examples, most examples first",
+      "expected": {
+        "match": false,
+        "filter": "num_examples >= 20",
+        "sort": "num_examples DESC",
+        "explanation": "To filter down to a numeric range, I combine an LTE filter with a GTE filter using the AND operator. To make experiments with the fewest examples appear first, I apply an ascending sort on the \"num_examples\" column."
+      }
+    },
+    {
+      "input": "experiments with 40 examples",
+      "expected": {
+        "match": false,
+        "filter": "num_examples = 40",
+        "explanation": "This is a simple equality filter on the \"num_examples\" column. The query does not indicate any sort order."
+      }
+    },
+    {
+      "input": "grader='human'",
+      "expected": {
+        "match": true,
+        "explanation": "The query seems intended to be a SQL filter, but there is no \"grader\" column in the experiment schema so we cannot construct a SQL filter that references a nonexistent column. Therefore, we fall back to the MATCH function."
+      }
+    },
+    {
+      "input": "metadata[\"color\"] like 'blue' and order by most recent",
+      "expected": {
+        "match": false,
+        "filter": "(metadata->>'color') LIKE '%blue%'",
+        "sort": "last_updated DESC",
+        "explanation": "The query is interpreted as a LIKE filter on the \"metadata->>'color'\" key in the \"metadata\" JSON column, alongside a descending sort on the \"last_updated\" column to make the most recent experiments appear first."
+      }
+    },
+    {
+      "input": "order by duration",
+      "expected": {
+        "match": true,
+        "explanation": "The query seems intended to be a SQL sort, but there is no \"duration\" column or field in the provided schema so it is unclear how to translate this into a SQL sort clause. Therefore, I fall back to the MATCH function."
+      }
+    },
+    {
+      "input": "metadata.grader.args.temperature > 42",
+      "expected": {
+        "match": false,
+        "filter": "(metadata->'grader'->'args'->>'temperature') > 42"
+      }
+    },
+    {
+      "input": "metadata.origin.service.modelType = 'openai', metadata.origin.service.modelName contains 'gpt'",
+      "expected": {
+        "match": false,
+        "filter": "(metadata->'origin'->'service'->>'modelType') = 'openai' AND (metadata->'origin'->'service'->>'modelName') ILIKE '%gpt%'))"
+      }
+    },
+    {
+      "input": "metadata.origin.service.provider is openai or perplexity AND metadata.origin.service.model ilike 'mistral', order by latest",
+      "expected": {
+        "match": false,
+        "filter": "((metadata->'origin'->'service'->>'provider') = 'openai' OR (metadata->'origin'->'service'->>'provider') = 'perplexity') AND (metadata->'origin'->'service'->>'model') ILIKE 'mistral'",
+        "sort": "last_updated DESC"
+      }
+    },
+    {
+      "input": "metadata.model.params.temperature is 0 or metadata.model.params.seed not null or metadata.model.params.use_cache, lowest {{{ score_fields.1 }}} first",
+      "expected": {
+        "match": false,
+        "filter": "((metadata->'model'->'params'->>'temperature') = 0 OR (metadata->'model'->'params'->>'seed') IS NOT NULL OR (metadata->'model'->'params'->>'use_cache') = true)",
+        "sort": "{{{ score_fields.1 }}} ASC"
+      }
+    },
+    {
+      "input": "{{{ score_fields.0 }}} < 0.3 and metadata.model.params.maxTokens >= 1024, highest metadata.model.params.topK",
+      "expected": {
+        "match": false,
+        "filter": "{{{ score_fields.0 }}} < 0.3 AND (metadata->'model'->'params'->>'maxTokens') >= 1024",
+        "sort": "(metadata->'model'->'params'->>'topK') DESC"
+      }
+    },
+    {
+      "input": "metadata.grader.args.t2 > metadata.grader.args.t1, smallest # of examples first, limit 5",
+      "expected": {
+        "match": false,
+        "filter": "(metadata->'grader'->'args'->>'t2') > (metadata->'grader'->'args'->>'t1')",
+        "sort": "num_examples ASC"
+      }
+    },
+    {
+      "input": "metadata.env.colors contains orange",
+      "expected": {
+        "match": false,
+        "filter": "(metadata->'env'->>'colors') ILIKE '%orange%'"
+      }
+    },
+    {
+      "input": "metadata.env.veggies includes kale or spinach",
+      "expected": {
+        "match": false,
+        "filter": "(metadata->'env'->>'veggies') ILIKE '%kale%' OR (metadata->'env'->>'veggies') ILIKE '%spinach%'"
+      }
+    },
+    {
+      "input": "oldest git commits first, git email address contains 'brett'",
+      "expected": {
+        "match": false,
+        "filter": "(source->>'author_email') ILIKE '%brett%'",
+        "sort": "(source->>'commit_time') ASC"
+      }
+    },
+    {
+      "input": "label is 'foo'",
+      "expected": {
+        "match": true,
+        "explanation": "The query seems intended to be a SQL filter, but there is no \"label\" column in the experiment schema and I cannot construct a SQL filter that references a nonexistent column, so I fall back to the MATCH function."
+      }
+    },
+    {
+      "input": "sort by age of git author",
+      "expected": {
+        "match": true,
+        "explanation": "The query seems intended to be a SQL sort, but there is no 'age' field specified in the schema of the \"source\" column so it is unclear how to fulfill this query using SQL. To be safe, I fall back to the MATCH function."
+      }
+    },
+    {
+      "input": "metadta.context.state.clientIds containns '8df07e96-f1b6-4ed1-b3a3-70acd1d3a426', order by highest {{{ score_fields.0 }}}",
+      "expected": {
+        "match": false,
+        "filter": "(metadata->'context'->'state'->>'clientIds') ILIKE '%8df07e96-f1b6-4ed1-b3a3-70acd1d3a426%'",
+        "sort": "{{{ score_fields.0 }}} DESC"
+      }
+    },
+    {
+      "input": "clean git state",
+      "expected": {
+        "match": false,
+        "filter": "(source->>'dirty') = false",
+        "explanation": "The query is interpreted as a filter on the \"dirty\" key within the \"source\" JSON column, which refers to the git state of the experiment. According to the provided schema, any experiment with \"dirty\" set to false is considered clean."
+      }
+    },
+    {
+      "input": "order by grade",
+      "expected": {
+        "match": true,
+        "explanation": "The query seems intended to be a SQL sort, but there is no \"grade\" column in the experiment schema and I cannot construct a SQL sort that references a nonexistent column as per directive 1."
+      }
+    },
+    {
+      "input": "'highest score'",
+      "expected": {
+        "match": true,
+        "explanation": "According to directive 2, a query entirely wrapped in quotes should use the MATCH function."
+      }
+    },
+    {
+      "input": "\"used RAG\"",
+      "expected": {
+        "match": true,
+        "explanation": "According to directive 2, a query entirely wrapped in quotes is intended as a substring match, so I call the MATCH function."
+      }
+    },
+    {
+      "input": "`most recent`",
+      "expected": {
+        "match": true,
+        "explanation": "A query entirely wrapped in quotes should be interpreted as a substring match, according to directive 2, so call the MATCH function."
+      }
+    },
+    {
+      "input": "LIMIT 20",
+      "expected": {
+        "match": true,
+        "explanation": "The query appears to be a limit clause, but I can only call the SQL function with filter and sort clauses so the limit must be ignored. Since there is no filter/sort provided, it's unclear how to fulfill this query, so I fall back to the MATCH function."
+      }
+    },
+    {
+      "input": "most examples, limit 20 offset 5",
+      "expected": {
+        "match": false,
+        "sort": "num_examples DESC",
+        "explanation": "The query includes a sort on the \"num_examples\" column, but the LIMIT and OFFSET clauses is ignored because the SQL function call only takes filter and sort clauses."
+      }
+    },
+    {
+      "input": "source.commit_message contains 'Potato' case sensitive",
+      "expected": {
+        "match": false,
+        "filter": "(source->>'commit_message') LIKE '%Potato%'"
+      }
+    },
+    {
+      "input": "metadata[\"info\"][\"hydrator\"] is metal, earliest git commit",
+      "expected": {
+        "match": false,
+        "filter": "(metadata->'info'->>'hydrator') = 'metal'",
+        "sort": "(source->>'commit_time') ASC",
+        "explanation": "To access the `metadata.info.hydrator` field, we use a series of `->` operators and wrap the expression in quotes, as per directive 7. Since the query is a simple equality filter, I apply the `=` operator. The commit time is accessed according to directive 7 with wrapping parentheses."
+      }
+    },
+    {
+      "input": "name contains ryan or jimmy",
+      "expected": {
+        "match": false,
+        "filter": "name ILIKE '%ryan%' OR name ILIKE '%jimmy%'",
+        "explanation": "According to directive 3, a \"contains\" query should use the ILIKE operator with a wildcard on both sides of the query. Since the query contains two options for the name, I use an OR operator with an ILIKE filter for each name."
+      }
+    },
+    {
+      "input": "metadata.source.tool is 'sqlgen' or 'instructions'",
+      "expected": {
+        "match": false,
+        "filter": "(metadata->'source'->>'tool') = 'sqlgen' OR (metadata->'source'->>'tool') = 'instructions'",
+        "explanation": "According to directive 7, a query on a JSON field should use a series of `->` operators to drill down through the JSON, and then use `->>` for the rightmost extraction because the query involves a scalar comparison ('tools' to 'sqlgen'). Since the query contains two options for the tools, I use an OR operator with an equality filter for each tool."
+      }
+    },
+    {
+      "input": "metadata.modelParams.description is '*func*thirty'",
+      "expected": {
+        "match": false,
+        "filter": "(metadata->'modelParams'->>'description') LIKE '%func%thirty'",
+        "explanation": "I use a series of `->` operators, followed by a `->>` operator, to access the `description` field as per directive 7. Since the target string contains wildcard characters `*`, we use the LIKE operator and replace the `*` wildcards with SQL wildcard symbols, `%`, where appropriate, as per directive 9."
+      }
+    },
+    {
+      "input": "metadata.env.numRunners between 3 and 10",
+      "expected": {
+        "match": false,
+        "filter": "(metadata->'env'->>'numRunners') >= 3 AND (metadata->'env'->>'numRunners') <= 10"
+      }
+    },
+    {
+      "input": "metadata.env.maxRunners = metadata.env.minRunners",
+      "expected": {
+        "match": false,
+        "filter": "(metadata->'env'->>'maxRunners') = (metadata->'env'->>'minRunners')"
+      }
+    },
+    {
+      "input": "at least 10 examples, branch starts with 'feature/', order by (commit time ascending, num examples descending)",
+      "expected": {
+        "match": false,
+        "filter": "num_examples >= 10 AND (source->>'branch') LIKE 'feature/%'",
+        "sort": "(source->>'commit_time') ASC, num_examples DESC"
+      }
+    },
+    {
+      "input": "metadata.runtime.handler contains 'zBob' case sensitive",
+      "expected": {
+        "match": false,
+        "filter": "(metadata->>'runtime'->>'handler') LIKE '%zBob%'"
+      }
+    },
+    {
+      "input": "highest metadata.runtime.handler.tokenLimit",
+      "expected": {
+        "match": false,
+        "sort": "(metadata->'runtime'->'handler'->>'tokenLimit') DESC"
+      }
+    },
+    {
+      "input": "commit 12j4z67 or git author \"austin m\"",
+      "expected": {
+        "match": false,
+        "filter": "(source->>'commit') ILIKE '12j4z67%' OR (source->>'author_name') = 'austin m'",
+        "explanation": "The query is interpreted as an OR filter on the \"commit\" and \"author_name\" keys within the \"source\" JSON column, which contains the git info. As described in the schema, matches to the commit hash always use prefix matching. The author name is a simple equality filter."
+      }
+    }
+  ]
+}
