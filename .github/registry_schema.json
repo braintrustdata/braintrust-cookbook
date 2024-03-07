@@ -35,6 +35,9 @@
       "logo": {
         "type": "string",
         "format": "uri"
+      },
+      "banner": {
+        "type": "string"
       }
     },
     "required": ["title", "path", "tags", "authors"],
