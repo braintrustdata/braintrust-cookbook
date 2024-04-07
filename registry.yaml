@@ -70,7 +70,7 @@
     - evals
     - sql
 - title: "RAGAS part 1: Retrieval"
-  path: examples/Ragas/Ragas.ipynb
+  path: examples/Ragas-Retrieval/Ragas.ipynb
   date: 2024-04-07
   authors:
     - ankrgyl
