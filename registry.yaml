@@ -61,7 +61,7 @@
     - tools
   logo: https://cdn.zapier.com/zapier/images/favicon.ico
   banner: /docs/cookbook-banners/Zapier.png
-- title: AI Search Bar
+- title: AI search bar
   path: examples/AISearch/ai_search_evals.ipynb
   date: 2024-03-04
   authors:
@@ -69,7 +69,7 @@
   tags:
     - evals
     - sql
-- title: Evaluating and improving the RAGAS retrieval metrics
+- title: "RAGAS part 1: Retrieval"
   path: examples/Ragas/Ragas.ipynb
   date: 2024-04-07
   authors:
