@@ -1,0 +1,162 @@
+[
+  {
+    "question": "What is the purpose of starring documents in Coda?",
+    "answer": "Starring docs in Coda helps to mark documents of personal importance and organizes them in a section called My Shortcuts.",
+    "ground_truth": "Starring docs in Coda helps to mark documents of personal importance and organizes them in a section called My Shortcuts.",
+    "contexts": [
+      "Not all Coda docs are used in the same way. You'll inevitably have a few that you use every week, and some that you'll only use once. This is where starred docs can help you stay organized.\n\n\n\nStarring docs is a great way to mark docs of personal importance. After you star a doc, it will live in a section on your doc list called **[My Shortcuts](https://coda.io/shortcuts)**. All starred docs, even from multiple different workspaces, will live in this section.\n\n\n\nStarring docs only saves them to your personal My Shortcuts. It doesn\u2019t affect the view for others in your workspace. If you\u2019re wanting to shortcut docs not just for yourself but also for others in your team or workspace, you\u2019ll [use pinning](https://help.coda.io/en/articles/2865511-starred-pinned-docs) instead."
+    ]
+  },
+  {
+    "question": "How can starring docs in Coda help you?",
+    "answer": "Starring docs in Coda helps to mark documents of personal importance and organizes them in a section called My Shortcuts.",
+    "ground_truth": "Starring docs in Coda helps to mark documents of personal importance and organizes them in a section called My Shortcuts.",
+    "contexts": [
+      "Not all Coda docs are used in the same way. You'll inevitably have a few that you use every week, and some that you'll only use once. This is where starred docs can help you stay organized.\n\n\n\nStarring docs is a great way to mark docs of personal importance. After you star a doc, it will live in a section on your doc list called **[My Shortcuts](https://coda.io/shortcuts)**. All starred docs, even from multiple different workspaces, will live in this section.\n\n\n\nStarring docs only saves them to your personal My Shortcuts. It doesn\u2019t affect the view for others in your workspace. If you\u2019re wanting to shortcut docs not just for yourself but also for others in your team or workspace, you\u2019ll [use pinning](https://help.coda.io/en/articles/2865511-starred-pinned-docs) instead."
+    ]
+  },
+  {
+    "question": "What happens when you star a doc in Coda?",
+    "answer": "After you star a doc in Coda, it will appear in a section on your doc list called My Shortcuts.",
+    "ground_truth": "After you star a doc in Coda, it will appear in a section on your doc list called My Shortcuts.",
+    "contexts": [
+      "Not all Coda docs are used in the same way. You'll inevitably have a few that you use every week, and some that you'll only use once. This is where starred docs can help you stay organized.\n\n\n\nStarring docs is a great way to mark docs of personal importance. After you star a doc, it will live in a section on your doc list called **[My Shortcuts](https://coda.io/shortcuts)**. All starred docs, even from multiple different workspaces, will live in this section.\n\n\n\nStarring docs only saves them to your personal My Shortcuts. It doesn\u2019t affect the view for others in your workspace. If you\u2019re wanting to shortcut docs not just for yourself but also for others in your team or workspace, you\u2019ll [use pinning](https://help.coda.io/en/articles/2865511-starred-pinned-docs) instead."
+    ]
+  },
+  {
+    "question": "Where do starred docs go after you star them in Coda?",
+    "answer": "After you star a doc in Coda, it will appear in a section on your doc list called My Shortcuts.",
+    "ground_truth": "After you star a doc in Coda, it will appear in a section on your doc list called My Shortcuts.",
+    "contexts": [
+      "Not all Coda docs are used in the same way. You'll inevitably have a few that you use every week, and some that you'll only use once. This is where starred docs can help you stay organized.\n\n\n\nStarring docs is a great way to mark docs of personal importance. After you star a doc, it will live in a section on your doc list called **[My Shortcuts](https://coda.io/shortcuts)**. All starred docs, even from multiple different workspaces, will live in this section.\n\n\n\nStarring docs only saves them to your personal My Shortcuts. It doesn\u2019t affect the view for others in your workspace. If you\u2019re wanting to shortcut docs not just for yourself but also for others in your team or workspace, you\u2019ll [use pinning](https://help.coda.io/en/articles/2865511-starred-pinned-docs) instead."
+    ]
+  },
+  {
+    "question": "Can starred docs from different workspaces be accessed in one place?",
+    "answer": "Yes, all starred docs, even from multiple different workspaces, will live in the My Shortcuts section.",
+    "ground_truth": "Yes, all starred docs, even from multiple different workspaces, will live in the My Shortcuts section.",
+    "contexts": [
+      "Not all Coda docs are used in the same way. You'll inevitably have a few that you use every week, and some that you'll only use once. This is where starred docs can help you stay organized.\n\n\n\nStarring docs is a great way to mark docs of personal importance. After you star a doc, it will live in a section on your doc list called **[My Shortcuts](https://coda.io/shortcuts)**. All starred docs, even from multiple different workspaces, will live in this section.\n\n\n\nStarring docs only saves them to your personal My Shortcuts. It doesn\u2019t affect the view for others in your workspace. If you\u2019re wanting to shortcut docs not just for yourself but also for others in your team or workspace, you\u2019ll [use pinning](https://help.coda.io/en/articles/2865511-starred-pinned-docs) instead."
+    ]
+  },
+  {
+    "question": "Is it possible to find starred docs from various workspaces in the same section?",
+    "answer": "Yes, all starred docs, even from multiple different workspaces, will live in the My Shortcuts section.",
+    "ground_truth": "Yes, all starred docs, even from multiple different workspaces, will live in the My Shortcuts section.",
+    "contexts": [
+      "Not all Coda docs are used in the same way. You'll inevitably have a few that you use every week, and some that you'll only use once. This is where starred docs can help you stay organized.\n\n\n\nStarring docs is a great way to mark docs of personal importance. After you star a doc, it will live in a section on your doc list called **[My Shortcuts](https://coda.io/shortcuts)**. All starred docs, even from multiple different workspaces, will live in this section.\n\n\n\nStarring docs only saves them to your personal My Shortcuts. It doesn\u2019t affect the view for others in your workspace. If you\u2019re wanting to shortcut docs not just for yourself but also for others in your team or workspace, you\u2019ll [use pinning](https://help.coda.io/en/articles/2865511-starred-pinned-docs) instead."
+    ]
+  },
+  {
+    "question": "Does starring a doc in Coda affect other users in the workspace?",
+    "answer": "No, starring docs only saves them to your personal My Shortcuts and doesn't affect the view for others in your workspace.",
+    "ground_truth": "No, starring docs only saves them to your personal My Shortcuts and doesn't affect the view for others in your workspace.",
+    "contexts": [
+      "Not all Coda docs are used in the same way. You'll inevitably have a few that you use every week, and some that you'll only use once. This is where starred docs can help you stay organized.\n\n\n\nStarring docs is a great way to mark docs of personal importance. After you star a doc, it will live in a section on your doc list called **[My Shortcuts](https://coda.io/shortcuts)**. All starred docs, even from multiple different workspaces, will live in this section.\n\n\n\nStarring docs only saves them to your personal My Shortcuts. It doesn\u2019t affect the view for others in your workspace. If you\u2019re wanting to shortcut docs not just for yourself but also for others in your team or workspace, you\u2019ll [use pinning](https://help.coda.io/en/articles/2865511-starred-pinned-docs) instead."
+    ]
+  },
+  {
+    "question": "Will other users in your workspace be impacted if you star a document in Coda?",
+    "answer": "No, starring docs only saves them to your personal My Shortcuts and doesn't affect the view for others in your workspace.",
+    "ground_truth": "No, starring docs only saves them to your personal My Shortcuts and doesn't affect the view for others in your workspace.",
+    "contexts": [
+      "Not all Coda docs are used in the same way. You'll inevitably have a few that you use every week, and some that you'll only use once. This is where starred docs can help you stay organized.\n\n\n\nStarring docs is a great way to mark docs of personal importance. After you star a doc, it will live in a section on your doc list called **[My Shortcuts](https://coda.io/shortcuts)**. All starred docs, even from multiple different workspaces, will live in this section.\n\n\n\nStarring docs only saves them to your personal My Shortcuts. It doesn\u2019t affect the view for others in your workspace. If you\u2019re wanting to shortcut docs not just for yourself but also for others in your team or workspace, you\u2019ll [use pinning](https://help.coda.io/en/articles/2865511-starred-pinned-docs) instead."
+    ]
+  },
+  {
+    "question": "What should you use if you want to shortcut a doc for the whole team or workspace in Coda?",
+    "answer": "If you want to shortcut docs for the whole team or workspace, you should use pinning.",
+    "ground_truth": "If you want to shortcut docs for the whole team or workspace, you should use pinning.",
+    "contexts": [
+      "Not all Coda docs are used in the same way. You'll inevitably have a few that you use every week, and some that you'll only use once. This is where starred docs can help you stay organized.\n\n\n\nStarring docs is a great way to mark docs of personal importance. After you star a doc, it will live in a section on your doc list called **[My Shortcuts](https://coda.io/shortcuts)**. All starred docs, even from multiple different workspaces, will live in this section.\n\n\n\nStarring docs only saves them to your personal My Shortcuts. It doesn\u2019t affect the view for others in your workspace. If you\u2019re wanting to shortcut docs not just for yourself but also for others in your team or workspace, you\u2019ll [use pinning](https://help.coda.io/en/articles/2865511-starred-pinned-docs) instead."
+    ]
+  },
+  {
+    "question": "How do you create shortcuts for docs that are visible to everyone in your workspace in Coda?",
+    "answer": "If you want to shortcut docs for the whole team or workspace, you should use pinning.",
+    "ground_truth": "If you want to shortcut docs for the whole team or workspace, you should use pinning.",
+    "contexts": [
+      "Not all Coda docs are used in the same way. You'll inevitably have a few that you use every week, and some that you'll only use once. This is where starred docs can help you stay organized.\n\n\n\nStarring docs is a great way to mark docs of personal importance. After you star a doc, it will live in a section on your doc list called **[My Shortcuts](https://coda.io/shortcuts)**. All starred docs, even from multiple different workspaces, will live in this section.\n\n\n\nStarring docs only saves them to your personal My Shortcuts. It doesn\u2019t affect the view for others in your workspace. If you\u2019re wanting to shortcut docs not just for yourself but also for others in your team or workspace, you\u2019ll [use pinning](https://help.coda.io/en/articles/2865511-starred-pinned-docs) instead."
+    ]
+  },
+  {
+    "question": "How often might some Coda docs be used compared to others?",
+    "answer": "Some Coda docs are used every week while others might only be used once.",
+    "ground_truth": "Some Coda docs are used every week while others might only be used once.",
+    "contexts": [
+      "Not all Coda docs are used in the same way. You'll inevitably have a few that you use every week, and some that you'll only use once. This is where starred docs can help you stay organized.\n\n\n\nStarring docs is a great way to mark docs of personal importance. After you star a doc, it will live in a section on your doc list called **[My Shortcuts](https://coda.io/shortcuts)**. All starred docs, even from multiple different workspaces, will live in this section.\n\n\n\nStarring docs only saves them to your personal My Shortcuts. It doesn\u2019t affect the view for others in your workspace. If you\u2019re wanting to shortcut docs not just for yourself but also for others in your team or workspace, you\u2019ll [use pinning](https://help.coda.io/en/articles/2865511-starred-pinned-docs) instead."
+    ]
+  },
+  {
+    "question": "What is the frequency of use for Coda docs?",
+    "answer": "Some Coda docs are used every week while others might only be used once.",
+    "ground_truth": "Some Coda docs are used every week while others might only be used once.",
+    "contexts": [
+      "Not all Coda docs are used in the same way. You'll inevitably have a few that you use every week, and some that you'll only use once. This is where starred docs can help you stay organized.\n\n\n\nStarring docs is a great way to mark docs of personal importance. After you star a doc, it will live in a section on your doc list called **[My Shortcuts](https://coda.io/shortcuts)**. All starred docs, even from multiple different workspaces, will live in this section.\n\n\n\nStarring docs only saves them to your personal My Shortcuts. It doesn\u2019t affect the view for others in your workspace. If you\u2019re wanting to shortcut docs not just for yourself but also for others in your team or workspace, you\u2019ll [use pinning](https://help.coda.io/en/articles/2865511-starred-pinned-docs) instead."
+    ]
+  },
+  {
+    "question": "What benefit does starring docs provide in terms of organization?",
+    "answer": "Starring docs helps you stay organized by marking important documents and grouping them in a single section for easy access.",
+    "ground_truth": "Starring docs helps you stay organized by marking important documents and grouping them in a single section for easy access.",
+    "contexts": [
+      "Not all Coda docs are used in the same way. You'll inevitably have a few that you use every week, and some that you'll only use once. This is where starred docs can help you stay organized.\n\n\n\nStarring docs is a great way to mark docs of personal importance. After you star a doc, it will live in a section on your doc list called **[My Shortcuts](https://coda.io/shortcuts)**. All starred docs, even from multiple different workspaces, will live in this section.\n\n\n\nStarring docs only saves them to your personal My Shortcuts. It doesn\u2019t affect the view for others in your workspace. If you\u2019re wanting to shortcut docs not just for yourself but also for others in your team or workspace, you\u2019ll [use pinning](https://help.coda.io/en/articles/2865511-starred-pinned-docs) instead."
+    ]
+  },
+  {
+    "question": "How does starring documents help with organization in Coda?",
+    "answer": "Starring docs helps you stay organized by marking important documents and grouping them in a single section for easy access.",
+    "ground_truth": "Starring docs helps you stay organized by marking important documents and grouping them in a single section for easy access.",
+    "contexts": [
+      "Not all Coda docs are used in the same way. You'll inevitably have a few that you use every week, and some that you'll only use once. This is where starred docs can help you stay organized.\n\n\n\nStarring docs is a great way to mark docs of personal importance. After you star a doc, it will live in a section on your doc list called **[My Shortcuts](https://coda.io/shortcuts)**. All starred docs, even from multiple different workspaces, will live in this section.\n\n\n\nStarring docs only saves them to your personal My Shortcuts. It doesn\u2019t affect the view for others in your workspace. If you\u2019re wanting to shortcut docs not just for yourself but also for others in your team or workspace, you\u2019ll [use pinning](https://help.coda.io/en/articles/2865511-starred-pinned-docs) instead."
+    ]
+  },
+  {
+    "question": "Where can you find the docs you've starred in Coda?",
+    "answer": "The docs you've starred in Coda can be found in the My Shortcuts section on your doc list.",
+    "ground_truth": "The docs you've starred in Coda can be found in the My Shortcuts section on your doc list.",
+    "contexts": [
+      "Not all Coda docs are used in the same way. You'll inevitably have a few that you use every week, and some that you'll only use once. This is where starred docs can help you stay organized.\n\n\n\nStarring docs is a great way to mark docs of personal importance. After you star a doc, it will live in a section on your doc list called **[My Shortcuts](https://coda.io/shortcuts)**. All starred docs, even from multiple different workspaces, will live in this section.\n\n\n\nStarring docs only saves them to your personal My Shortcuts. It doesn\u2019t affect the view for others in your workspace. If you\u2019re wanting to shortcut docs not just for yourself but also for others in your team or workspace, you\u2019ll [use pinning](https://help.coda.io/en/articles/2865511-starred-pinned-docs) instead."
+    ]
+  },
+  {
+    "question": "In which section do the starred docs appear in Coda?",
+    "answer": "The docs you've starred in Coda can be found in the My Shortcuts section on your doc list.",
+    "ground_truth": "The docs you've starred in Coda can be found in the My Shortcuts section on your doc list.",
+    "contexts": [
+      "Not all Coda docs are used in the same way. You'll inevitably have a few that you use every week, and some that you'll only use once. This is where starred docs can help you stay organized.\n\n\n\nStarring docs is a great way to mark docs of personal importance. After you star a doc, it will live in a section on your doc list called **[My Shortcuts](https://coda.io/shortcuts)**. All starred docs, even from multiple different workspaces, will live in this section.\n\n\n\nStarring docs only saves them to your personal My Shortcuts. It doesn\u2019t affect the view for others in your workspace. If you\u2019re wanting to shortcut docs not just for yourself but also for others in your team or workspace, you\u2019ll [use pinning](https://help.coda.io/en/articles/2865511-starred-pinned-docs) instead."
+    ]
+  },
+  {
+    "question": "How can I mark a document as a favorite in the document list?",
+    "answer": "To star a doc in the doc list, hover over its name and click the star icon.",
+    "ground_truth": "To star a doc in the doc list, hover over its name and click the star icon.",
+    "contexts": [
+      "**Star your docs**\n==================\n\n\nTo star a doc, hover over its name in the doc list and click the star icon. Alternatively, you can star a doc from within the doc itself. Hover over the doc title in the upper left corner, and click on the star.\n\n\n\nOnce you star a doc, you can access it quickly from the [My Shortcuts](https://coda.io/shortcuts) tab of your doc list.\n\n\n\n![](https://downloads.intercomcdn.com/i/o/793964361/55a80927217f85d68d44a3c3/Star+doc+to+my+shortcuts.gif)And, as your doc needs change, simply click the star again to un-star the doc and remove it from **My Shortcuts**."
+    ]
+  },
+  {
+    "question": "What is the method to star a doc from the doc list?",
+    "answer": "To star a doc in the doc list, hover over its name and click the star icon.",
+    "ground_truth": "To star a doc in the doc list, hover over its name and click the star icon.",
+    "contexts": [
+      "**Star your docs**\n==================\n\n\nTo star a doc, hover over its name in the doc list and click the star icon. Alternatively, you can star a doc from within the doc itself. Hover over the doc title in the upper left corner, and click on the star.\n\n\n\nOnce you star a doc, you can access it quickly from the [My Shortcuts](https://coda.io/shortcuts) tab of your doc list.\n\n\n\n![](https://downloads.intercomcdn.com/i/o/793964361/55a80927217f85d68d44a3c3/Star+doc+to+my+shortcuts.gif)And, as your doc needs change, simply click the star again to un-star the doc and remove it from **My Shortcuts**."
+    ]
+  },
+  {
+    "question": "Can I star a document from within the document itself?",
+    "answer": "Yes, you can star a doc from within by hovering over the doc title in the upper left corner and clicking on the star.",
+    "ground_truth": "Yes, you can star a doc from within by hovering over the doc title in the upper left corner and clicking on the star.",
+    "contexts": [
+      "**Star your docs**\n==================\n\n\nTo star a doc, hover over its name in the doc list and click the star icon. Alternatively, you can star a doc from within the doc itself. Hover over the doc title in the upper left corner, and click on the star.\n\n\n\nOnce you star a doc, you can access it quickly from the [My Shortcuts](https://coda.io/shortcuts) tab of your doc list.\n\n\n\n![](https://downloads.intercomcdn.com/i/o/793964361/55a80927217f85d68d44a3c3/Star+doc+to+my+shortcuts.gif)And, as your doc needs change, simply click the star again to un-star the doc and remove it from **My Shortcuts**."
+    ]
+  },
+  {
+    "question": "Is it possible to add a doc to my favorites while viewing the doc?",
+    "answer": "Yes, you can star a doc from within by hovering over the doc title in the upper left corner and clicking on the star.",
+    "ground_truth": "Yes, you can star a doc from within by hovering over the doc title in the upper left corner and clicking on the star.",
+    "contexts": [
+      "**Star your docs**\n==================\n\n\nTo star a doc, hover over its name in the doc list and click the star icon. Alternatively, you can star a doc from within the doc itself. Hover over the doc title in the upper left corner, and click on the star.\n\n\n\nOnce you star a doc, you can access it quickly from the [My Shortcuts](https://coda.io/shortcuts) tab of your doc list.\n\n\n\n![](https://downloads.intercomcdn.com/i/o/793964361/55a80927217f85d68d44a3c3/Star+doc+to+my+shortcuts.gif)And, as your doc needs change, simply click the star again to un-star the doc and remove it from **My Shortcuts**."
+    ]
+  }
+]
