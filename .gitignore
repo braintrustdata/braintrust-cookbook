@@ -10,3 +10,5 @@ venv
 node_modules
 dist/
 .ipynb_checkpoints
+.vscode
+.venv
