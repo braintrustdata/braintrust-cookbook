@@ -69,3 +69,12 @@
   tags:
     - evals
     - sql
+- title: Evaluating and improving the RAGAS retrieval metrics
+  path: examples/Ragas/Ragas.ipynb
+  date: 2024-04-07
+  authors:
+    - ankrgyl
+  tags:
+    - evals
+    - rag
+    - RAGAS
