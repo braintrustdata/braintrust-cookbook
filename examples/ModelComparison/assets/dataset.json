@@ -1,0 +1,78 @@
+{
+    "features": [
+        {
+            "feature_idx": 0,
+            "name": "question",
+            "type": {
+                "dtype": "string",
+                "_type": "Value"
+            }
+        },
+        {
+            "feature_idx": 1,
+            "name": "answer",
+            "type": {
+                "dtype": "bool",
+                "_type": "Value"
+            }
+        },
+        {
+            "feature_idx": 2,
+            "name": "passage",
+            "type": {
+                "dtype": "string",
+                "_type": "Value"
+            }
+        }
+    ],
+    "rows": [
+        {
+            "row_idx": 600,
+            "row": {
+                "question": "is there a season 2 of hunted on cinemax",
+                "answer": false,
+                "passage": "In early 2015, Frank Spotnitz stated that the series--and spinoff--had been officially cancelled by Cinemax, though he and George were open to continuing the project if it were to be picked up by another network."
+            },
+            "truncated_cells": []
+        },
+        {
+            "row_idx": 601,
+            "row": {
+                "question": "would a change in price shift the demand curve",
+                "answer": false,
+                "passage": "There is movement along a demand curve when a change in price causes the quantity demanded to change. It is important to distinguish between movement along a demand curve, and a shift in a demand curve. Movements along a demand curve happen only when the price of the good changes. When a non-price determinant of demand changes the curve shifts. These ``other variables'' are part of the demand function. They are ``merely lumped into intercept term of a simple linear demand function.'' Thus a change in a non-price determinant of demand is reflected in a change in the x-intercept causing the curve to shift along the x axis."
+            },
+            "truncated_cells": []
+        },
+        {
+            "row_idx": 602,
+            "row": {
+                "question": "does north carolina get snow in the winter",
+                "answer": true,
+                "passage": "Snow in North Carolina is seen on a regular basis in the mountains. North Carolina averages 5 inches (130 mm) of snow a year. However, this also varies greatly across the state. Along the coast, most areas register less than 2 inches (51 mm) per year while the state capital, Raleigh averages 7.5 inches (190 mm). Farther west in the Piedmont-Triad, the average grows to approximately 9 inches (230 mm). The Charlotte area averages approximately 6.5 inches (170 mm). The mountains in the west act as a barrier, preventing most snowstorms from entering the Piedmont. When snow does make it past the mountains, it is usually light and is seldom on the ground for more than two or three days. However, several storms have dropped 18 inches (460 mm) or more of snow within normally warm areas. The 1993 Storm of the Century that lasted from March 11 to March 15 affected locales from Canada to Central America, and brought a significant amount of snow to North Carolina. Newfound Gap received more than 36 inches (0.91 m) of snow with drifts more than 5 feet (1.5 m), while Mount Mitchell measured over 4 feet (1.2 m) of snow with drifts to 14 feet (4.3 m). Most of the northwestern part of the state received somewhere between 2 feet (0.61 m) an 3 feet (0.91 m) of snow."
+            },
+            "truncated_cells": []
+        },
+        {
+            "row_idx": 603,
+            "row": {
+                "question": "can you go to court for the same thing twice",
+                "answer": false,
+                "passage": "Double jeopardy is a procedural defence that prevents an accused person from being tried again on the same (or similar) charges and on the same facts, following a valid acquittal or conviction. As described by the U.S. Supreme Court in its unanimous decision one of its earliest cases dealing with double jeopardy, ``the prohibition is not against being twice punished, but against being twice put in jeopardy; and the accused, whether convicted or acquitted, is equally put in jeopardy at the first trial.''"
+            },
+            "truncated_cells": []
+        },
+        {
+            "row_idx": 604,
+            "row": {
+                "question": "does the fender hot rod deluxe have an effects loop",
+                "answer": true,
+                "passage": "As an all-tube (pre-amp and power sections) combo guitar amplifier, the Hot Rod Deluxe features a pair of 6L6GC beam tetrodes for the power section and two 12AX7 dual triodes for the preamp section. One additional 12AX7 tube is utilized for the phase inverter of the power section. However, the rectifier, reverb driver and recovery, and effects loop circuits are solid state. The power section uses a ``fixed bias'' biasing scheme with an adjustable bias potentiometer installed from the factory. The factory bias is 60 mA total for both 6L6s."
+            },
+            "truncated_cells": []
+        }
+    ],
+    "num_rows_total": 9427,
+    "num_rows_per_page": 100,
+    "partial": false
+}

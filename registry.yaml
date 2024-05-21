@@ -69,3 +69,10 @@
   tags:
     - evals
     - sql
+- title: Comparing evals across multiple AI models
+  path: examples/ModelComparison/ModelComparison.ipynb
+  date: 2024-05-20
+  authors:
+    - j13huang
+  tags:
+    - evals
