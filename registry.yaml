@@ -69,3 +69,12 @@
   tags:
     - evals
     - sql
+
+- title: Detecting Prompt Injections
+  path: examples/PromptInjectionDetector/PromptInjectionGPT4o.ipynb
+  date: 2024-05-20
+  authors:
+    - nelsonauner
+  tags:
+    - evals
+    - classification
