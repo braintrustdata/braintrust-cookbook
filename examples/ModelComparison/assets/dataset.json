@@ -27,47 +27,47 @@
     ],
     "rows": [
         {
-            "row_idx": 600,
+            "row_idx": 500,
             "row": {
-                "question": "is there a season 2 of hunted on cinemax",
-                "answer": false,
-                "passage": "In early 2015, Frank Spotnitz stated that the series--and spinoff--had been officially cancelled by Cinemax, though he and George were open to continuing the project if it were to be picked up by another network."
-            },
-            "truncated_cells": []
-        },
-        {
-            "row_idx": 601,
-            "row": {
-                "question": "would a change in price shift the demand curve",
-                "answer": false,
-                "passage": "There is movement along a demand curve when a change in price causes the quantity demanded to change. It is important to distinguish between movement along a demand curve, and a shift in a demand curve. Movements along a demand curve happen only when the price of the good changes. When a non-price determinant of demand changes the curve shifts. These ``other variables'' are part of the demand function. They are ``merely lumped into intercept term of a simple linear demand function.'' Thus a change in a non-price determinant of demand is reflected in a change in the x-intercept causing the curve to shift along the x axis."
-            },
-            "truncated_cells": []
-        },
-        {
-            "row_idx": 602,
-            "row": {
-                "question": "does north carolina get snow in the winter",
+                "question": "do you have to have two license plates in ontario",
                 "answer": true,
-                "passage": "Snow in North Carolina is seen on a regular basis in the mountains. North Carolina averages 5 inches (130 mm) of snow a year. However, this also varies greatly across the state. Along the coast, most areas register less than 2 inches (51 mm) per year while the state capital, Raleigh averages 7.5 inches (190 mm). Farther west in the Piedmont-Triad, the average grows to approximately 9 inches (230 mm). The Charlotte area averages approximately 6.5 inches (170 mm). The mountains in the west act as a barrier, preventing most snowstorms from entering the Piedmont. When snow does make it past the mountains, it is usually light and is seldom on the ground for more than two or three days. However, several storms have dropped 18 inches (460 mm) or more of snow within normally warm areas. The 1993 Storm of the Century that lasted from March 11 to March 15 affected locales from Canada to Central America, and brought a significant amount of snow to North Carolina. Newfound Gap received more than 36 inches (0.91 m) of snow with drifts more than 5 feet (1.5 m), while Mount Mitchell measured over 4 feet (1.2 m) of snow with drifts to 14 feet (4.3 m). Most of the northwestern part of the state received somewhere between 2 feet (0.61 m) an 3 feet (0.91 m) of snow."
+                "passage": "In the Canadian provinces and territories of Alberta, Newfoundland and Labrador, the Northwest Territories, Nova Scotia, Nunavut, Prince Edward Island, Quebec, Saskatchewan, and Yukon, licence plates are currently only required on the rear of the vehicle. The remaining provinces, British Columbia, Manitoba, New Brunswick, and Ontario, require the licence plates to be mounted on both the front and rear of the vehicle. Dealership plate frames or custom plate frames are allowed as long as the frame does not obstruct view of validation stickers or district."
             },
             "truncated_cells": []
         },
         {
-            "row_idx": 603,
+            "row_idx": 501,
             "row": {
-                "question": "can you go to court for the same thing twice",
-                "answer": false,
-                "passage": "Double jeopardy is a procedural defence that prevents an accused person from being tried again on the same (or similar) charges and on the same facts, following a valid acquittal or conviction. As described by the U.S. Supreme Court in its unanimous decision one of its earliest cases dealing with double jeopardy, ``the prohibition is not against being twice punished, but against being twice put in jeopardy; and the accused, whether convicted or acquitted, is equally put in jeopardy at the first trial.''"
-            },
-            "truncated_cells": []
-        },
-        {
-            "row_idx": 604,
-            "row": {
-                "question": "does the fender hot rod deluxe have an effects loop",
+                "question": "are black beans the same as turtle beans",
                 "answer": true,
-                "passage": "As an all-tube (pre-amp and power sections) combo guitar amplifier, the Hot Rod Deluxe features a pair of 6L6GC beam tetrodes for the power section and two 12AX7 dual triodes for the preamp section. One additional 12AX7 tube is utilized for the phase inverter of the power section. However, the rectifier, reverb driver and recovery, and effects loop circuits are solid state. The power section uses a ``fixed bias'' biasing scheme with an adjustable bias potentiometer installed from the factory. The factory bias is 60 mA total for both 6L6s."
+                "passage": "The black turtle bean is a small, shiny variety of the common bean (Phaseolus vulgaris), especially popular in Latin American cuisine, though it can also be found in Cajun and Creole cuisines of south Louisiana. Like most common beans, they are native to the Americas, but have been introduced around the world. They are also used in East Indian cooking, Punjabi cuisine and are referred to as black beans and in Maharshtrian cuisine known as ``Kala Ghevada''. They are used interchangeably with vigna mungo in countries such as the US. They are often simply called black beans (frijoles negros, zaragoza, judía negra, poroto negro, caraota o habichuela negra in Spanish, and feijão preto in Portuguese), although this can cause confusion with other black beans."
+            },
+            "truncated_cells": []
+        },
+        {
+            "row_idx": 502,
+            "row": {
+                "question": "is a wooly mammoth the same as a mastodon",
+                "answer": false,
+                "passage": "Modern reconstructions based on partial and skeletal remains reveal that mastodons were very similar in appearance to elephants and, to a lesser degree, mammoths, though not closely related to either one. Compared to mammoths, mastodons had shorter legs, a longer body and were more heavily muscled, a build similar to that of the current Asian elephants. The average body size of the species M. americanum was around 2.3 m (7 ft 7 in) in height at the shoulders, corresponding to a large female or a small male; large males were up to 2.8 m (9 ft 2 in) in height. Among the largest male specimens, the 35-year-old AMNH 9950 was 2.89 metres (9.5 ft) tall and weighed 7.8 tonnes (7.7 long tons; 8.6 short tons), while another was 3.25 metres (10.7 ft) tall and weighed 11 tonnes (11 long tons; 12 short tons)."
+            },
+            "truncated_cells": []
+        },
+        {
+            "row_idx": 503,
+            "row": {
+                "question": "is carling black label a south african beer",
+                "answer": false,
+                "passage": "Black Label is a Canadian brand of lager distributed by Carling and well-known throughout the former British Empire. In several countries, it is also known as Carling Black Label, and in Sweden, it is known as Carling Premier. In the United Kingdom it is now known as just Carling."
+            },
+            "truncated_cells": []
+        },
+        {
+            "row_idx": 504,
+            "row": {
+                "question": "were the world trade centers the tallest buildings in america",
+                "answer": true,
+                "passage": "The original World Trade Center was a large complex of seven buildings in Lower Manhattan, New York City, United States. It featured the landmark twin towers, which opened on April 4, 1973, and were destroyed as a result of the September 11 attacks in 2001. At the time of their completion, the ``Twin Towers''--the original 1 World Trade Center, at 1,368 feet (417 m); and 2 World Trade Center, at 1,362 feet (415.1 m)--were the tallest buildings in the world. The other buildings in the complex included the Marriott World Trade Center (3 WTC), 4 WTC, 5 WTC, 6 WTC, and 7 WTC. All these buildings were built between 1975 and 1985, with a construction cost of $400 million ($2,300,000,000 in 2014 dollars). The complex was located in New York City's Financial District and contained 13,400,000 square feet (1,240,000 m) of office space."
             },
             "truncated_cells": []
         }
