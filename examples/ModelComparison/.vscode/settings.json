@@ -1,0 +1,4 @@
+{
+  "notebook.formatOnSave.enabled": true,
+  "notebook.formatOnCellExecution": true
+}
