@@ -69,7 +69,6 @@
   tags:
     - evals
     - sql
-
 - title: Detecting Prompt Injections
   path: examples/PromptInjectionDetector/PromptInjectionGPT4o.ipynb
   date: 2024-05-20
@@ -78,3 +77,11 @@
   tags:
     - evals
     - classification
+- title: Comparing evals across multiple AI models
+  path: examples/ModelComparison/ModelComparison.ipynb
+  date: 2024-05-22
+  authors:
+    - j13huang
+  tags:
+    - evals
+    - charts

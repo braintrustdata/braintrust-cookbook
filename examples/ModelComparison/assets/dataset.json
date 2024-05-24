@@ -1,0 +1,78 @@
+{
+    "features": [
+        {
+            "feature_idx": 0,
+            "name": "question",
+            "type": {
+                "dtype": "string",
+                "_type": "Value"
+            }
+        },
+        {
+            "feature_idx": 1,
+            "name": "answer",
+            "type": {
+                "dtype": "bool",
+                "_type": "Value"
+            }
+        },
+        {
+            "feature_idx": 2,
+            "name": "passage",
+            "type": {
+                "dtype": "string",
+                "_type": "Value"
+            }
+        }
+    ],
+    "rows": [
+        {
+            "row_idx": 500,
+            "row": {
+                "question": "do you have to have two license plates in ontario",
+                "answer": true,
+                "passage": "In the Canadian provinces and territories of Alberta, Newfoundland and Labrador, the Northwest Territories, Nova Scotia, Nunavut, Prince Edward Island, Quebec, Saskatchewan, and Yukon, licence plates are currently only required on the rear of the vehicle. The remaining provinces, British Columbia, Manitoba, New Brunswick, and Ontario, require the licence plates to be mounted on both the front and rear of the vehicle. Dealership plate frames or custom plate frames are allowed as long as the frame does not obstruct view of validation stickers or district."
+            },
+            "truncated_cells": []
+        },
+        {
+            "row_idx": 501,
+            "row": {
+                "question": "are black beans the same as turtle beans",
+                "answer": true,
+                "passage": "The black turtle bean is a small, shiny variety of the common bean (Phaseolus vulgaris), especially popular in Latin American cuisine, though it can also be found in Cajun and Creole cuisines of south Louisiana. Like most common beans, they are native to the Americas, but have been introduced around the world. They are also used in East Indian cooking, Punjabi cuisine and are referred to as black beans and in Maharshtrian cuisine known as ``Kala Ghevada''. They are used interchangeably with vigna mungo in countries such as the US. They are often simply called black beans (frijoles negros, zaragoza, judía negra, poroto negro, caraota o habichuela negra in Spanish, and feijão preto in Portuguese), although this can cause confusion with other black beans."
+            },
+            "truncated_cells": []
+        },
+        {
+            "row_idx": 502,
+            "row": {
+                "question": "is a wooly mammoth the same as a mastodon",
+                "answer": false,
+                "passage": "Modern reconstructions based on partial and skeletal remains reveal that mastodons were very similar in appearance to elephants and, to a lesser degree, mammoths, though not closely related to either one. Compared to mammoths, mastodons had shorter legs, a longer body and were more heavily muscled, a build similar to that of the current Asian elephants. The average body size of the species M. americanum was around 2.3 m (7 ft 7 in) in height at the shoulders, corresponding to a large female or a small male; large males were up to 2.8 m (9 ft 2 in) in height. Among the largest male specimens, the 35-year-old AMNH 9950 was 2.89 metres (9.5 ft) tall and weighed 7.8 tonnes (7.7 long tons; 8.6 short tons), while another was 3.25 metres (10.7 ft) tall and weighed 11 tonnes (11 long tons; 12 short tons)."
+            },
+            "truncated_cells": []
+        },
+        {
+            "row_idx": 503,
+            "row": {
+                "question": "is carling black label a south african beer",
+                "answer": false,
+                "passage": "Black Label is a Canadian brand of lager distributed by Carling and well-known throughout the former British Empire. In several countries, it is also known as Carling Black Label, and in Sweden, it is known as Carling Premier. In the United Kingdom it is now known as just Carling."
+            },
+            "truncated_cells": []
+        },
+        {
+            "row_idx": 504,
+            "row": {
+                "question": "were the world trade centers the tallest buildings in america",
+                "answer": true,
+                "passage": "The original World Trade Center was a large complex of seven buildings in Lower Manhattan, New York City, United States. It featured the landmark twin towers, which opened on April 4, 1973, and were destroyed as a result of the September 11 attacks in 2001. At the time of their completion, the ``Twin Towers''--the original 1 World Trade Center, at 1,368 feet (417 m); and 2 World Trade Center, at 1,362 feet (415.1 m)--were the tallest buildings in the world. The other buildings in the complex included the Marriott World Trade Center (3 WTC), 4 WTC, 5 WTC, 6 WTC, and 7 WTC. All these buildings were built between 1975 and 1985, with a construction cost of $400 million ($2,300,000,000 in 2014 dollars). The complex was located in New York City's Financial District and contained 13,400,000 square feet (1,240,000 m) of office space."
+            },
+            "truncated_cells": []
+        }
+    ],
+    "num_rows_total": 9427,
+    "num_rows_per_page": 100,
+    "partial": false
+}
