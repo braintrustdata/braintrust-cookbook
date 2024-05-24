@@ -78,3 +78,12 @@
   tags:
     - evals
     - classification
+
+- title: Using agas to evaluate a RAG system
+  path: examples/SimpleRagas/SimpleRagas.ipynb
+  date: 2024-05-23
+  authors:
+    - nelsonauner
+  tags:
+    - evals
+    - rag
