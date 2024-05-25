@@ -87,9 +87,10 @@
     - charts
 - title: Using Ragas to evaluate a RAG system
   path: examples/SimpleRagas/SimpleRagas.ipynb
-  date: 2024-05-23
+  date: 2024-05-27
   authors:
     - nelsonauner
+    - ankrgyl
   tags:
     - evals
     - rag
