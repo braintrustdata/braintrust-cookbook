@@ -85,3 +85,12 @@
   tags:
     - evals
     - charts
+- title: Optimizing Ragas to evaluate a RAG pipeline
+  path: examples/SimpleRagas/SimpleRagas.ipynb
+  date: 2024-05-27
+  authors:
+    - ankrgyl
+    - nelsonauner
+  tags:
+    - evals
+    - rag
