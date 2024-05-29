@@ -94,3 +94,12 @@
   tags:
     - evals
     - rag
+- title: LLM Eval For Text2SQL
+  path: examples/Text2SQL-Data/Text2SQL-Data.ipynb
+  date: 2024-05-29
+  authors:
+    - ankrgyl
+  tags:
+    - evals
+    - datasets
+    - text2sql
