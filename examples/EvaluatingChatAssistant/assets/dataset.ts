@@ -12,12 +12,31 @@ const dataset: DataPoint[] = [
     chat_history: [
       {
         role: "user",
-        content: "when did the astros win the world series?",
+        content: "when was the ballon d'or first awarded for female players?",
       },
       {
         role: "assistant",
         content:
-          "The Houston Astros have won the World Series twice. Their first victory was in 2017, and their second was in 2022.",
+          "The Ballon d'Or for female players was first awarded in 2018. The inaugural winner was Ada Hegerberg, a Norwegian striker who plays for Olympique Lyonnais.",
+      },
+    ],
+    input: "who won the men's trophy that year?",
+    expected: "In 2018, the men's Ballon d'Or was awarded to Luka Modrić.",
+  },
+  {
+    chat_history: [
+      {
+        role: "user",
+        content: "when did the astros win the world series?",
+      },
+      {
+        role: "assistant",
+        content: `The Houston Astros have won the World Series twice:
+
+          2017
+          2022
+
+          Their most recent championship was in 2022, when they defeated the Philadelphia Phillies.`,
       },
       {
         role: "user",
@@ -25,14 +44,13 @@ const dataset: DataPoint[] = [
       },
       {
         role: "assistant",
-        content: `Yes, there was a scandal involving the Houston Astros' 2017 World Series win. In late 2019, it was revealed that the Astros had used a sign-stealing scheme during the 2017 season and part of the 2018 season. The team used a camera system to illegally steal opposing teams' signs and relay the information to their hitters.
-
-            The investigation led to significant penalties from Major League Baseball (MLB), including suspensions for the team's manager, A.J. Hinch, and general manager, Jeff Luhnow, both of whom were subsequently fired by the Astros. The team was also fined $5 million and forfeited their first- and second-round draft picks for the 2020 and 2021 drafts.`,
+        content:
+          "Yes, there was a significant scandal associated with the Astros' 2017 World Series win. It was revealed in late 2019 that the team had engaged in an elaborate sign-stealing scheme during the 2017 season, including during their championship run. This scandal involved using technology to illegally steal opposing teams' signs and relay them to Astros batters in real-time. The revelation led to significant controversy, penalties for the team, and ongoing debates about the legitimacy of their 2017 title.",
       },
     ],
     input: "did they get to keep the world series?",
     expected:
-      "Yes, the Houston Astros were allowed to keep their 2017 World Series title despite the scandal. MLB Commissioner Rob Manfred decided not to strip the team of their championship, stating that there was no precedent for taking away a World Series title and that it would be difficult to determine the extent to which the sign-stealing directly affected the outcome. This decision has been a subject of controversy and debate among fans and players.",
+      "Yes, the Houston Astros were allowed to keep their 2017 World Series title despite the sign-stealing scandal. Major League Baseball (MLB) did not strip the Astros of their championship, although the team faced other penalties for their actions.",
   },
   {
     chat_history: [
@@ -42,73 +60,47 @@ const dataset: DataPoint[] = [
       },
       {
         role: "assistant",
-        content:
-          "In 2022, the first picks in the NBA and WNBA drafts were: - **NBA Draft 2022**: Paolo Banchero was selected as the first overall pick by the Orlando Magic. - **WNBA Draft 2022**: Rhyne Howard was selected as the first overall pick by the Atlanta Dream.",
+        content: `In 2022:
+
+          NBA first pick: Paolo Banchero (Orlando Magic)
+          WNBA first pick: Rhyne Howard (Atlanta Dream)`,
       },
       { role: "user", content: "what colleges did they go to?" },
       {
         role: "assistant",
-        content:
-          "- **Paolo Banchero** attended Duke University. - **Rhyne Howard** attended the University of Kentucky.",
+        content: `Paolo Banchero attended Duke University.
+
+          Rhyne Howard played college basketball at the University of Kentucky.`,
       },
     ],
     input: "how many years of college did they play",
-    expected:
-      "- **Paolo Banchero** played one year of college basketball at Duke University before entering the NBA Draft. - **Rhyne Howard** played four years of college basketball at the University of Kentucky before entering the WNBA Draft.",
-  },
-  {
-    chat_history: [
-      {
-        role: "user",
-        content: "when was the ballon d'or first awarded for female players?",
-      },
-      {
-        role: "assistant",
-        content:
-          "The Ballon d'Or Féminin, awarded to the best female football player in the world, was first introduced in 2018. The inaugural winner was Ada Hegerberg of Norway, who played for Olympique Lyonnais at the time.",
-      },
-    ],
-    input: "who won the men's trophy that year?",
-    expected:
-      "The men's Ballon d'Or trophy in 2018 was won by Luka Modrić of Croatia, who played for Real Madrid.",
+    expected: `Paolo Banchero played one year of college basketball at Duke.
+
+      Rhyne Howard played four years of college basketball at Kentucky.`,
   },
   {
     chat_history: [
       { role: "user", content: "what are the grand slams?" },
       {
         role: "assistant",
-        content: `The term "Grand Slam" in tennis refers to the four most prestigious tournaments in the sport. These tournaments are held annually and include:
+        content: `The Grand Slams are the four most prestigious annual tennis tournaments:
 
-            1. **Australian Open**:
-              - **Location**: Melbourne, Australia
-              - **Surface**: Hard court
-              - **Time of Year**: January
+          1. Australian Open (January)
+          2. French Open (May-June)
+          3. Wimbledon (June-July)
+          4. US Open (August-September)
 
-            2. **French Open (Roland Garros)**:
-              - **Location**: Paris, France
-              - **Surface**: Clay
-              - **Time of Year**: Late May to early June
-
-            3. **Wimbledon**:
-              - **Location**: London, England
-              - **Surface**: Grass
-              - **Time of Year**: Late June to early July
-
-            4. **US Open**:
-              - **Location**: New York City, USA
-              - **Surface**: Hard court
-              - **Time of Year**: Late August to early September
-
-            Winning all four tournaments in a single calendar year is known as a "Calendar Year Grand Slam," a rare and significant achievement in tennis.`,
+          These tournaments offer the most ranking points, prize money, and public attention in professional tennis. Winning all four in a single year is called a "Calendar Grand Slam," which is a rare and significant achievement in the sport.`,
       },
       {
         role: "user",
-        content:
-          "who was the last player to achieve a grand slam in a single year>",
+        content: "who was the last player to achieve a calendar grand slam?",
       },
       {
         role: "assistant",
-        content: `The last player to win a Calendar Year Grand Slam in singles tennis was Steffi Graf in 1988. She won all four major tournaments (Australian Open, French Open, Wimbledon, and US Open) in a single calendar year. In addition, she also won the gold medal in women's singles at the 1988 Seoul Olympics, completing what is known as the "Golden Slam."`,
+        content: `The last player to achieve a Calendar Grand Slam in singles tennis was Steffi Graf in 1988. She won all four major tournaments (Australian Open, French Open, Wimbledon, and US Open) in the same calendar year. Graf's achievement is even more remarkable because she also won the Olympic gold medal that year, completing what is known as a "Golden Slam."
+
+        No male player has achieved a Calendar Grand Slam in the Open Era (since 1968). The last man to do so was Rod Laver in 1969.`,
       },
     ],
     input: "where is she from?",
@@ -123,7 +115,7 @@ const dataset: DataPoint[] = [
       {
         role: "assistant",
         content:
-          "The Carolina Hurricanes won the Stanley Cup in 2006. They defeated the Edmonton Oilers in a seven-game series to capture their first championship.",
+          "The Carolina Hurricanes won their first and only Stanley Cup in 2006. They defeated the Edmonton Oilers in the finals, winning the series 4-3.",
       },
       {
         role: "user",
@@ -132,12 +124,12 @@ const dataset: DataPoint[] = [
       {
         role: "assistant",
         content:
-          "The MVP of the 2006 Stanley Cup Finals was Cam Ward, the goaltender for the Carolina Hurricanes. He was awarded the Conn Smythe Trophy for his outstanding performance throughout the playoffs.",
+          "The Conn Smythe Trophy, which is awarded to the most valuable player of the Stanley Cup playoffs, was given to Cam Ward, the goaltender for the Carolina Hurricanes, in 2006.",
       },
     ],
     input: "is he still playing?",
     expected:
-      "No, Cam Ward is no longer playing professional hockey. He announced his retirement from the NHL on August 28, 2019. Ward signed a one-day contract with the Carolina Hurricanes to retire as a member of the team where he spent the majority of his career.",
+      "No, Cam Ward is no longer playing professional hockey. He retired from the NHL in 2019 after playing his final season with the Chicago Blackhawks.",
   },
 ];
 
