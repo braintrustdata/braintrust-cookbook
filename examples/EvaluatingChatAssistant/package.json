@@ -9,8 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "autoevals": "^0.0.76",
-    "braintrust": "^0.0.143",
+    "autoevals": "^0.0.79",
+    "braintrust": "^0.0.145",
     "openai": "^4.52.7"
   }
 }
