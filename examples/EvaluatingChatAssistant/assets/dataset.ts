@@ -1,8 +1,10 @@
+export type ChatTurn = {
+  role: "user" | "assistant";
+  content: string;
+};
+
 type DataPoint = {
-  chat_history: {
-    role: "user" | "assistant";
-    content: string;
-  }[];
+  chat_history: ChatTurn[];
   input: string;
   expected: string;
 };
