@@ -103,3 +103,11 @@
     - evals
     - datasets
     - text2sql
+- title: Evaluating a chat assistant
+  path: examples/EvaluatingChatAssistant/EvaluatingChatAssistant.ipynb
+  date: 2024-07-16
+  authors:
+    - tara-nagar
+  tags:
+    - evals
+    - chat
