@@ -83,6 +83,30 @@ importers:
         specifier: ^20.11.16
         version: 20.11.16
 
+  examples/LLaMa3.1-Tools:
+    dependencies:
+      autoevals:
+        specifier: ^0.0.79
+        version: 0.0.79
+      braintrust:
+        specifier: ^0.0.145
+        version: 0.0.145(openai@4.52.7)(react@18.3.1)(svelte@4.2.18)(vue@3.4.32)(zod@3.23.8)
+      dotenv:
+        specifier: ^16.4.5
+        version: 16.4.5
+      js-yaml:
+        specifier: ^4.1.0
+        version: 4.1.0
+      mustache:
+        specifier: ^4.2.0
+        version: 4.2.0
+      openai:
+        specifier: ^4.52.7
+        version: 4.52.7
+      zod:
+        specifier: ^3.22.4
+        version: 3.23.8
+
   examples/ModelComparison:
     dependencies:
       autoevals:
@@ -276,15 +300,6 @@ packages:
       '@jridgewell/trace-mapping': 0.3.25
     dev: false
 
-  /@asteasolutions/zod-to-openapi@6.4.0(zod@3.22.4):
-    resolution: {integrity: sha512-8cxfF7AHHx2PqnN4Cd8/O8CBu/nVYJP9DpnfVLW3BFb66VJDnqI/CczZnkqMc3SNh6J9GiX7JbJ5T4BSP4HZ2Q==}
-    peerDependencies:
-      zod: ^3.20.2
-    dependencies:
-      openapi3-ts: 4.3.3
-      zod: 3.22.4
-    dev: false
-
   /@asteasolutions/zod-to-openapi@6.4.0(zod@3.23.8):
     resolution: {integrity: sha512-8cxfF7AHHx2PqnN4Cd8/O8CBu/nVYJP9DpnfVLW3BFb66VJDnqI/CczZnkqMc3SNh6J9GiX7JbJ5T4BSP4HZ2Q==}
     peerDependencies:
@@ -354,9 +369,9 @@ packages:
   /@braintrust/core@0.0.34:
     resolution: {integrity: sha512-FwlBlQXDASNtCJa4VL+9roYax7W+yeK4YrpMK/D0G5gMy4vQF6MtPnkJnHVI6S1IdLa+TFBOqfzQJiKZyukhVQ==}
     dependencies:
-      '@asteasolutions/zod-to-openapi': 6.4.0(zod@3.22.4)
+      '@asteasolutions/zod-to-openapi': 6.4.0(zod@3.23.8)
       uuid: 9.0.1
-      zod: 3.22.4
+      zod: 3.23.8
     dev: false
 
   /@braintrust/core@0.0.46:
@@ -837,7 +852,7 @@ packages:
   /@types/resolve@1.17.1:
     resolution: {integrity: sha512-yy7HuzQhj0dhGpD8RLXSZWEkLsV9ibvxvi6EiJ3bkqLAO1RGo0WbkWQiwpRlSFymTJRz0d3k5LM3kkx8ArDbLw==}
     dependencies:
-      '@types/node': 18.19.14
+      '@types/node': 20.11.16
     dev: true
 
   /@types/yauzl@2.10.3:
@@ -1077,8 +1092,8 @@ packages:
       linear-sum-assignment: 1.0.7
       mustache: 4.2.0
       openai: 4.23.0
-      zod: 3.22.4
-      zod-to-json-schema: 3.23.1(zod@3.22.4)
+      zod: 3.23.8
+      zod-to-json-schema: 3.23.1(zod@3.23.8)
     transitivePeerDependencies:
       - encoding
     dev: false
@@ -2211,14 +2226,14 @@ packages:
     resolution: {integrity: sha512-dgxA6UZHary6NXUHEDj5TWt8ogv0+ibH+b4pT5RrWMjiRZVylNwLcw/2ubDrX5n0oUmHX/ZgudMJeemxzOvz7A==}
     hasBin: true
     dependencies:
-      '@types/node': 18.19.14
+      '@types/node': 18.19.40
       '@types/node-fetch': 2.6.11
       abort-controller: 3.0.0
       agentkeepalive: 4.5.0
       form-data-encoder: 1.7.2
       formdata-node: 4.4.1
       node-fetch: 2.7.0
-      web-streams-polyfill: 3.3.2
+      web-streams-polyfill: 3.3.3
     transitivePeerDependencies:
       - encoding
     dev: false
@@ -2891,14 +2906,6 @@ packages:
       zod: ^3.22.4
     dependencies:
       zod: 3.23.8
-    dev: false
-
-  /zod-to-json-schema@3.23.1(zod@3.22.4):
-    resolution: {integrity: sha512-oT9INvydob1XV0v1d2IadrR74rLtDInLvDFfAa1CG0Pmg/vxATk7I2gSelfj271mbzeM4Da0uuDQE/Nkj3DWNw==}
-    peerDependencies:
-      zod: ^3.23.3
-    dependencies:
-      zod: 3.22.4
     dev: false
 
   /zod-to-json-schema@3.23.1(zod@3.23.8):
