@@ -111,8 +111,8 @@
   tags:
     - evals
     - chat
-- title: Tool calling with LLaMa-3.1
-  path: examples/LLaMa3.1-Tools/LLaMa-3.1-Tools.ipynb
+- title: Tool calls in LLaMa 3.1
+  path: examples/LLaMa-3_1-Tools/LLaMa-3_1-Tools.ipynb
   date: 2024-07-26
   authors:
     - ankrgyl
