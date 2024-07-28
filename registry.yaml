@@ -120,3 +120,12 @@
     - evals
     - llama-3.1
     - tools
+- title: Benchmarking providers for LLaMA 3.1
+  path: examples/ProviderBenchmark/ProviderBenchmark.ipynb
+  date: 2024-07-28
+  authors:
+    - ankrgyl
+  tags:
+    - evals
+    - llama-3.1
+    - providers
