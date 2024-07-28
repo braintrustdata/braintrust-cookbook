@@ -122,7 +122,7 @@
     - tools
 - title: Benchmarking inference providers
   path: examples/ProviderBenchmark/ProviderBenchmark.ipynb
-  date: 2024-07-28
+  date: 2024-07-29
   authors:
     - ankrgyl
   tags:
