@@ -129,3 +129,12 @@
     - evals
     - llama-3.1
     - providers
+- title: An agent that runs OpenAPI commands
+  path: examples/APIAgent-Py/APIAgent.ipynb
+  date: 2024-08-05
+  authors:
+    - ankrgyl
+  tags:
+    - agent
+    - rag
+    - evals
