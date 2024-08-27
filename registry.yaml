@@ -143,6 +143,7 @@
   date: 2024-08-27
   authors:
     - ornellaaltunyan
+  banner: /docs/cookbook-banners/AI-app.png
   tags:
     - evals
     - logging
