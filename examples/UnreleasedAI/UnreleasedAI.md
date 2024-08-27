@@ -132,7 +132,7 @@ Now that we have all three inputs, we can establish an Eval() function in [eval/
 
 ```typescript
 Eval(PROJECT_NAME, {  
-    data: () => \[sampleData\],  
+    data: () => [sampleData],  
     task: async (input) =>  
     await invoke({  
         projectName: PROJECT_NAME,  
