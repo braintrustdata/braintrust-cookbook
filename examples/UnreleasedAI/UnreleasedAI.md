@@ -89,7 +89,10 @@ Running a prompt as an AI function is also a powerful way to automatically set u
 
 ## Observability
 
-Traditional observability tools monitor performance and pipeline issues, but generative AI projects require deeper insights to ensure your application works as intended. As you continue using the application to generate changelogs for various GitHub repositories, you’ll notice every function call is [logged](https://www.braintrust.dev/docs/guides/logging), so you can examine the input and output of each call. You may notice that some outputs are better than others– so how can we optimize our application to have a great response every time? And how can we classify which outputs are good or bad?
+Traditional observability tools monitor performance and pipeline issues, but generative AI projects require deeper insights to ensure your application works as intended. As you continue using the application to generate changelogs for various GitHub repositories, you’ll notice every function call is [logged](https://www.braintrust.dev/docs/guides/logging), so you can examine the input and output of each call. 
+
+![Logs](assets/logs.png)
+You may notice that some outputs are better than others– so how can we optimize our application to have a great response every time? And how can we classify which outputs are good or bad?
 
 ## Scoring
 
@@ -121,7 +124,11 @@ Now, let’s use the comprehensiveness scorer to create a feedback loop that all
 
 ### Datasets
 
-Go to your Braintrust **Logs** and select the logs with undesirable outputs – maybe your input was invalid or not found, or maybe the output just wasn’t good enough. Use these logs to create a dataset called eval dataset, which we’ll evaluate for comprehensiveness to understand where the prompt might need adjustments. Alternatively, you can define a dataset in [eval/sampleData.ts](https://github.com/braintrustdata/unreleased-ai/blob/main/eval/sampleData.ts)
+Go to your Braintrust **Logs** and select the logs with undesirable outputs – maybe your input was invalid or not found, or maybe the output just wasn’t good enough. Use these logs to create a dataset called eval dataset, which we’ll evaluate for comprehensiveness to understand where the prompt might need adjustments. 
+
+![Adding error logs to dataset](assets/add-logs-to-dataset.png)
+
+Alternatively, you can define a dataset in [eval/sampleData.ts](https://github.com/braintrustdata/unreleased-ai/blob/main/eval/sampleData.ts).
 
 Now that we have all three inputs, we can establish an Eval() function in [eval/changelog.eval.ts](https://github.com/braintrustdata/unreleased-ai/blob/6e74be5caed1a1c368ee7124a5adc7e0c27f2969/eval/changelog.eval.ts#L26C1-L36C4):
 
