@@ -138,3 +138,12 @@
     - agent
     - rag
     - evals
+- title: "Unreleased AI: A full stack Next.js app for generating changelogs"
+  path: examples/UnreleasedAI/UnreleasedAI.md
+  date: 2024-08-12
+  authors:
+    - ornellaaltunyan
+  tags:
+    - evals
+    - logging
+    - next.js
