@@ -140,7 +140,7 @@ Eval(PROJECT_NAME, {
         input,  
         schema: z.string(),  
     }),  
-    scores: \[comprehensivessScorer\],  
+    scores: [comprehensivessScorer],  
 });
 ```
 
