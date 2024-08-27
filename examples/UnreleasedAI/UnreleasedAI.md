@@ -46,9 +46,7 @@ Let’s dig into the sample project and walk through the workflow. Before we sta
 
 Navigate to Braintrust in your browser, and select the project named **Unreleased** that you just created. Go to the **Prompts** section and select the **Generate changelog** prompt. This will show you the model choice and the prompt used in the application:
 
-> Summarize the following commits from `{{url}}` since `{{since}}` in changelog form. Include a summary of changes at the top since the provided date, followed by individual pull requests (be concise).
->
->`{{commits}}`
+![Prompt](assets/prompt.png)
 
 A [prompt](https://www.braintrust.dev/docs/guides/prompts) is the set of instructions sent to the model, which can be user input or variables set within your code. For example:
 
