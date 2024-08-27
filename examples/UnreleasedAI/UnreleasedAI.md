@@ -40,6 +40,8 @@ Let’s dig into the sample project and walk through the workflow. Before we sta
 2. Run `pnpm install` to install the necessary dependencies and setup the project in Braintrust.
 3. To run the app, run `pnpm dev` and navigate to `localhost:3000`. Type the URL of a public GitHub repository, and take note of the output.
 
+![Unreleased AI](assets/unreleased-ai.png)
+
 ## Working with Prompts in Braintrust
 
 Navigate to Braintrust in your browser, and select the project named **Unreleased** that you just created. Go to the **Prompts** section and select the **Generate changelog** prompt. This will show you the model choice and the prompt used in the application:
