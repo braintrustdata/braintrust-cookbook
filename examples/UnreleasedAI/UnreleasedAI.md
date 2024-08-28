@@ -118,7 +118,7 @@ Writing a prompt to use for these types of evaluations is difficult. In fact, it
 
 ## Evals
 
-Now, let’s use the comprehensiveness scorer to create a feedback loop that allows us to iterate on our prompt and make sure we’re shipping a reliable, high quality product. In Braintrust, you can run evaluations, or [Evals](https://www.braintrust.dev/docs/guides/evals/run), if you have a Task, Scores, and Dataset. We have a task, which is the invoke function we’re calling in our app. We have scores, the comprehensiveness function we just defined to assess the quality of our function outputs. The final piece we need to run evaluations is a [dataset](https://www.braintrust.dev/docs/guides/datasets).
+Now, let’s use the comprehensiveness scorer to create a feedback loop that allows us to iterate on our prompt and make sure we’re shipping a reliable, high quality product. In Braintrust, you can run evaluations, or [Evals](https://www.braintrust.dev/docs/guides/evals/run), if you have a Task, Scores, and Dataset. We have a task, which is the `invoke` function we’re calling in our app. We have scores, the comprehensiveness function we just defined to assess the quality of our function outputs. The final piece we need to run evaluations is a [dataset](https://www.braintrust.dev/docs/guides/datasets).
 
 ### Datasets
 
@@ -128,7 +128,7 @@ Go to your Braintrust **Logs** and select one of your logs. In the expanded view
 
 Alternatively, you can define a dataset in [eval/sampleData.ts](https://github.com/braintrustdata/unreleased-ai/blob/main/eval/sampleData.ts).
 
-Now that we have all three inputs, we can establish an Eval() function in [eval/changelog.eval.ts](https://github.com/braintrustdata/unreleased-ai/blob/6e74be5caed1a1c368ee7124a5adc7e0c27f2969/eval/changelog.eval.ts#L26C1-L36C4):
+Now that we have all three inputs, we can establish an `Eval()` function in [eval/changelog.eval.ts](https://github.com/braintrustdata/unreleased-ai/blob/6e74be5caed1a1c368ee7124a5adc7e0c27f2969/eval/changelog.eval.ts#L26C1-L36C4):
 
 ```typescript
 Eval(PROJECT_NAME, {  
