@@ -138,3 +138,13 @@
     - agent
     - rag
     - evals
+- title: "Unreleased AI: A full stack Next.js app for generating changelogs"
+  path: examples/UnreleasedAI/UnreleasedAI.mdx
+  date: 2024-08-28
+  authors:
+    - ornellaaltunyan
+  banner: /docs/cookbook-banners/AI-app.png
+  tags:
+    - evals
+    - logging
+    - next.js
