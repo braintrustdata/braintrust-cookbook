@@ -148,3 +148,12 @@
     - evals
     - logging
     - next.js
+- title: "Evaluating multimodal receipt extraction"
+  path: examples/ReceiptExtraction/ReceiptExtraction.ipynb
+  date: 2024-09-26
+  authors:
+    - ankrgyl
+  tags:
+    - evals
+    - multimodal
+    - receipts
