@@ -150,7 +150,7 @@
     - next.js
 - title: "Evaluating multimodal receipt extraction"
   path: examples/ReceiptExtraction/ReceiptExtraction.ipynb
-  date: 2024-09-26
+  date: 2024-09-30
   authors:
     - ankrgyl
   tags:
