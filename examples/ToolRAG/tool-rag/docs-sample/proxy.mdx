@@ -1,0 +1,380 @@
+---
+title: "AI proxy"
+---
+
+import Script from "next/script";
+
+import SupportedModels from "#/ui/docs/supported-models";
+import { CodeTabs, TSTab, PYTab, CurlTab } from "#/ui/docs/code-tabs";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import { Callout } from "fumadocs-ui/components/callout";
+import Link from "fumadocs-core/link";
+
+# AI proxy
+
+This guide walks through how to use the Braintrust AI proxy to access models from [OpenAI](https://platform.openai.com/docs/models),
+[Anthropic](https://docs.anthropic.com/claude/reference/getting-started-with-the-api), [Google](https://ai.google.dev/gemini-api/docs),
+[AWS](https://aws.amazon.com/bedrock), [Mistral](https://mistral.ai/), and 3rd party inference providers like [Together](https://www.together.ai/) which offer
+access to open source models like [LLaMa 3](https://ai.meta.com/llama/) behind a single API. The AI proxy is a powerful tool that:
+
+- **Simplifies your code** by providing a single API across AI providers.
+- **Reduces your costs** by automatically caching results and reusing them when possible.
+- **Increases observability** by automatically logging your requests.
+
+To read more about why we launched the AI proxy, check out our [blog post](/blog/ai-proxy) announcing the feature.
+
+<Callout type="info">
+  The AI proxy is free for all users. You can access it without a Braintrust
+  account, by simply using your API key from any of the supported providers.
+  However, with a Braintrust account, you can use a single API key to access all
+  services.
+</Callout>
+
+## Quickstart
+
+You can use your favorite OpenAI drivers, and simply set the base url to `https://api.braintrust.dev/v1/proxy`.
+Try running the following script in your favorite language, twice.
+
+<CodeTabs items={['Typescript', 'Python', 'cURL']}>
+<TSTab>
+```typescript
+import { OpenAI } from "openai";
+const client = new OpenAI({
+  baseURL: "https://api.braintrust.dev/v1/proxy",
+  apiKey: process.env.OPENAI_API_KEY, // Can use Braintrust, Anthropic, etc. API keys here
+});
+
+async function main() {
+const start = performance.now();
+const response = await client.chat.completions.create({
+model: "gpt-3.5-turbo", // Can use claude-2, llama-2-13b-chat, etc. here
+messages: [{ role: "user", content: "What is a proxy?" }],
+seed: 1, // A seed activates the proxy's cache
+});
+console.log(response.choices[0].message.content);
+console.log(`Took ${(performance.now() - start) / 1000}s`);
+}
+
+main();
+
+````
+</TSTab>
+<PYTab>
+```python
+import os
+import time
+
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://api.braintrust.dev/v1/proxy",
+    api_key=os.environ["OPENAI_API_KEY"],  # Can use Braintrust, Anthropic, etc. API keys here
+)
+
+start = time.time()
+response = client.chat.completions.create(
+    model="gpt-3.5-turbo",  # Can use claude-2, llama-2-13b-chat, etc. here
+    messages=[{"role": "user", "content": "What is a proxy?"}],
+    seed=1,  # A seed activates the proxy's cache
+)
+print(response.choices[0].message.content)
+print(f"Took {time.time()-start}s")
+````
+
+</PYTab>
+<CurlTab>
+```bash
+time curl -i https://api.braintrust.dev/v1/proxy/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-3.5-turbo",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What is a proxy?"
+      }
+    ],
+    "seed": 1
+  }' \
+  -H "Authorization: Bearer $OPENAI_API_KEY"
+```
+</CurlTab>
+</CodeTabs>
+
+If you have access to Anthropic, feel free to use their API key with a model like `claude-3-5-sonnet-20240620` instead.
+Under the hood, we're proxying the requests through a Cloudflare worker, caching the results with end-to-end encryption,
+and returning the results.
+
+## Key features
+
+The proxy is a drop-in replacement for the OpenAI API, with a few killer features:
+
+- Automatic caching of results, with configurable semantics
+- Interopability with other providers, including a wide range of open source models
+- API key management
+
+### Caching
+
+The proxy automatically caches results, and reuses them when possible. Because the proxy runs on the edge,
+you can expect cached requests to be returned in under 100ms. This is especially useful when you're developing
+and frequently re-running or evaluating the same prompts many times.
+
+The cache follows the following rules:
+
+- There are three caching modes: `auto` (default), `always`, `never`.
+- In `auto` mode, requests are cached if they have `temperature=0` or the
+  [`seed` parameter](https://cookbook.openai.com/examples/reproducible_outputs_with_the_seed_parameter) set.
+- In `always` mode, requests are cached as long as they are one of the supported paths (`/chat/completions`, `/completions`, or `/embeddings`)
+- In `never` mode, the cache is never read or written to.
+
+You can set the cache by passing the `x-bt-use-cache` header to your request. For example, to always use the cache,
+
+<CodeTabs items={['Typescript', 'Python', 'cURL']}>
+<TSTab>
+```javascript
+import { OpenAI } from "openai";
+
+const client = new OpenAI({
+baseURL: "https://api.braintrust.dev/v1/proxy",
+defaultHeaders: {
+"x-bt-use-cache": "always",
+},
+apiKey: process.env.OPENAI_API_KEY, // Can use Braintrust, Anthropic, etc. API keys here
+});
+
+async function main() {
+const response = await client.chat.completions.create({
+model: "gpt-3.5-turbo", // Can use claude-2, llama-2-13b-chat, etc. here
+messages: [{ role: "user", content: "What is a proxy?" }],
+});
+console.log(response.choices[0].message.content);
+}
+
+main();
+
+````
+</TSTab>
+
+<PYTab>
+```python
+import os
+
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://api.braintrust.dev/v1/proxy",
+    default_headers={"x-bt-use-cache": "always"},
+    api_key=os.environ["OPENAI_API_KEY"],  # Can use Braintrust, Anthropic, etc. API keys here
+)
+
+response = client.chat.completions.create(
+    model="gpt-3.5-turbo",  # Can use claude-2, llama-2-13b-chat, etc. here
+    messages=[{"role": "user", "content": "What is a proxy?"}],
+)
+print(response.choices[0].message.content)
+````
+
+</PYTab>
+
+<CurlTab>
+```bash
+time curl -i https://api.braintrust.dev/v1/proxy/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "x-bt-use-cache: always" \
+  -d '{
+    "model": "gpt-3.5-turbo",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What is a proxy?"
+      }
+    ]
+  }' \
+  -H "Authorization: Bearer $OPENAI_API_KEY"
+```
+</CurlTab>
+</CodeTabs>
+
+#### Encryption
+
+We use [AES-GCM](https://en.wikipedia.org/wiki/Galois/Counter_Mode) to encrypt the cache, using a key derived from your
+API key. Currently, results are cached for 1 week.
+
+This design ensures that the cache is only accessible to you, and that we cannot see your data. We also do not store
+or log API keys.
+
+<Callout type="info">
+  Because the cache's encryption key is your API key, cached results are scoped
+  to an individual user. However, Braintrust customers can opt-into sharing
+  cached results across users within their organization.
+</Callout>
+
+### Supported models
+
+The full list of supported models is
+
+<SupportedModels />
+
+We are constantly adding new models, and if you have a model you'd like to see supported, please
+[let us know](mailto:info@braintrustdata.com)!
+
+### Supported protocols
+
+We're currently focused on supporting the OpenAI protocol (i.e. their [v1 api](https://platform.openai.com/docs/api-reference/introduction)),
+and automatically translating OpenAI requests into various providers' APIs. That means you can interact with other providers like Anthropic by
+using OpenAI client libraries and API calls. However, the proxy does not currently support other providers' APIs. That means, for example, you cannot
+use the Anthropic SDKs with the proxy. If you are interested in using other providers' APIs, please [let us know](mailto:info@braintrustdata.com).
+
+### API key management
+
+The proxy allows you to either use the provider's API key, or your Braintrust API key. If you use the provider's API
+key, you can use the proxy without a Braintrust account, and caching will still work (scoped to your API key).
+
+However, you can manage all your API keys in one place by configuring secrets in your Braintrust account. To do so, [sign up for an account](/) and add each provider's API key on the [secrets](/app/settings?subroute=secrets) page.
+
+![Secret configuration](/blog/img/secret-config.png)
+
+#### Custom models
+
+If you have custom models as part of your OpenAI or other accounts, you can use them with the proxy by adding
+them to a custom provider. For example, if you have a custom model called `gpt-3.5-acme`, you can add it like so:
+
+![Custom model](/docs/custom-model.png)
+
+Each custom model must have a flavor (`chat` or `completion`) and format (`openai`, `anthropic`, `google`, `window` or `js`). Additionally, they can
+optionally have a boolean flag if the model is multimodal and an input cost and output cost, which will only be used to calculate and display estimated
+prices for experiment runs.
+
+#### Specifying an org
+
+If you are part of multiple organizations, you can specify which organization to use by passing the `x-bt-org-name`
+header in the SDK:
+
+<CodeTabs items={['Typescript', 'Python', 'cURL']}>
+<TSTab>
+
+```javascript
+import { OpenAI } from "openai";
+
+const client = new OpenAI({
+  baseURL: "https://api.braintrust.dev/v1/proxy",
+  defaultHeaders: {
+    "x-bt-org-name": "Acme Inc",
+  },
+  apiKey: process.env.OPENAI_API_KEY, // Can use Braintrust, Anthropic, etc. API keys here
+});
+
+async function main() {
+  const response = await client.chat.completions.create({
+    model: "gpt-3.5-turbo", // Can use claude-2, llama-2-13b-chat, etc. here
+    messages: [{ role: "user", content: "What is a proxy?" }],
+  });
+  console.log(response.choices[0].message.content);
+}
+
+main();
+```
+
+</TSTab>
+
+<PYTab>
+
+```python
+import os
+
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://api.braintrust.dev/v1/proxy",
+    default_headers={"x-bt-org-name": "Acme Inc"},
+    api_key=os.environ["OPENAI_API_KEY"],  # Can use Braintrust, Anthropic, etc. API keys here
+)
+
+response = client.chat.completions.create(
+    model="gpt-3.5-turbo",  # Can use claude-2, llama-2-13b-chat, etc. here
+    messages=[{"role": "user", "content": "What is a proxy?"}],
+)
+print(response.choices[0].message.content)
+```
+
+</PYTab>
+
+<CurlTab>
+
+```bash
+time curl -i https://api.braintrust.dev/v1/proxy/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "x-bt-org-name: Acme Inc" \
+  -d '{
+    "model": "gpt-3.5-turbo",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What is a proxy?"
+      }
+    ]
+  }' \
+  -H "Authorization: Bearer $OPENAI_API_KEY"
+```
+
+</CurlTab>
+</CodeTabs>
+
+### Load balancing
+
+If you have multiple API keys for a given model type, e.g. OpenAI and Azure for `gpt-3.5-turbo`, the proxy will
+automatically load balance across them. This is a useful way to work around per-account rate limits and provide
+resiliency in case one provider is down.
+
+You can setup endpoints directly on the [secrets page](/app/settings?subroute=secrets) in your Braintrust account
+by adding endpoints:
+
+![Configure secrets](/blog/img/secrets-endpoint-config.gif)
+
+## Advanced configuration
+
+The following headers allow you to configure the proxy's behavior:
+
+- `x-bt-use-cache`: `auto | always | never`. See [Caching](#caching)
+- `x-bt-use-creds-cache`: `auto | always | never`. Similar to `x-bt-use-cache`, but controls whether to cache the
+  credentials used to access the provider's API. This is useful if you are rapidly tweaking credentials and don't
+  want to wait ~60 seconds for the credentials cache to expire.
+- `x-bt-org-name`: Specify if you are part of multiple organizations and want to use API keys/log to a specific org.
+- `x-bt-endpoint-name`: Specify to use a particular endpoint (by its name).
+
+## Integration with Braintrust platform
+
+Several features in Braintrust are powered by the proxy. For example, when you create a [playground](/docs/guides/playground),
+the proxy handles running the LLM calls. Similarly, if you [create a prompt](/docs/guides/prompts), when you preview the
+prompt's results, the proxy is used to run the LLM. However, the proxy is _not_ required when you:
+
+- Run evals in your code
+- Load prompts to run in your code
+- Log traces to Braintrust
+
+If you'd like to use it in your code to help with caching, secrets management, and other features, follow the [instructions
+above](#quickstart) to set it as the base URL in your OpenAI client.
+
+### Self-hosting
+
+If you're self-hosting Braintrust, your API service (serverless functions or containers) contain a built-in proxy that runs
+within your own environment. See the [self-hosting](/docs/guides/self-hosting) docs for more information on how to set up
+self-hosting.
+
+## Open source
+
+The AI proxy is open source, and you can find the code on [Github](https://github.com/braintrustdata/braintrust-proxy).
+
+<div className="nx-mt-2">
+  <a
+    className="github-button"
+    href="https://github.com/braintrustdata/braintrust-proxy"
+    data-icon="octicon-star"
+    data-size="large"
+    aria-label="Star braintrustdata/braintrust-proxy on GitHub"
+  >
+    Give us a star!
+  </a>
+</div>
+
+<Script async defer src="https://buttons.github.io/buttons.js"></Script>

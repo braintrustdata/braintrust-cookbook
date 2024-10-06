@@ -1,0 +1,94 @@
+---
+title: "Human review"
+---
+
+import { Maximize2 } from "lucide-react";
+import { Callout } from "fumadocs-ui/components/callout";
+
+# Human review
+
+Although Braintrust helps you automatically evaluate AI software, human
+review is a critical part of the process. Braintrust seamlessly integrates human
+feedback from end users, subject matter experts, and product teams in one place. You can
+use human review to evaluate/compare experiments, assess the efficacy of your automated scoring
+methods, and curate log events to use in your evals.
+
+![Human review label](./human-review/label.gif)
+
+## Configuring human review
+
+To setup human review, you just need to define the scores you want to collect in the
+project's "Configuration" tab.
+
+![Human Review Configuration](./human-review/config-page.png)
+
+Click "Add score" to configure a new score. A score can either be a continuous value between `0`
+and `1`, with a slider input control, or a categorical value where you can define the possible
+options and their scores.
+
+<br />
+![Create modal](./human-review/create-modal.png)
+
+Once you create a score, it will automatically appear in the "Scores" section in each experiment
+and log event throughout the project.
+
+### Writing categorical scores to expected field
+
+You may choose to write categorical scores to the `expected` field of a span instead of a score.
+To enable this, simply check the "Write to expected field instead of score" option. There is also
+an option to select multiple values when writing to the expected field.
+
+<Callout type="info">
+  A numeric score will not be assigned to the categorical options when writing
+  to the expected field. If there is an existing object in the expected field,
+  the categorical value will be appended to the object.
+</Callout>
+
+![Write to expected](./human-review/write-to-expected.webp)
+
+## Reviewing logs and experiments
+
+To manually review results in your logs or an experiment, simply click on a row, and you'll see
+the human review scores you configured in the expanded trace view.
+
+![Set score](./human-review/in-experiment.gif)
+
+As you set scores, they will be automatically saved and reflected in the summary metrics. The exact same
+mechanism works whether you're reviewing logs or experiments
+
+### Leaving comments
+
+In addition to setting scores, you can also add comments to spans and update their `expected` values. These updates
+are tracked alongside score updates to form an audit trail of edits to a span.
+
+![Save comment](./human-review/comment.gif)
+
+## Rapid review mode
+
+If you or a subject matter expert is reviewing a large number of logs, you can use the "review" mode to enter
+a UI that's optimized specifically for review. To enter review mode, hit the "r" key or the expand (<Maximize2 className="size-3 inline" />)
+icon next to the "Human review" header.
+
+![Review mode](./human-review/review-mode.gif)
+
+In review mode, you can set scores, leave comments, and edit expected values. Review mode is optimized for keyboard
+navigation, so you can quickly move between scores and rows with keyboard shortcuts. You can also share a link to the
+review mode view with other team members, and they'll drop directly into review mode.
+
+### Review from anywhere
+
+Reviewing is a common task, and therefore you can enter review mode from any experiment or log view. There's no need
+to mark items for review or add them to a queue. One common workflow is to use [tags](/docs/guides/logging#tags-and-queues)
+to mark items for `Triage`, and then review them all at once. You can also re-enter review mode from any view, to audit
+past reviews or update scores.
+
+## Capturing end-user feedback
+
+The same set of updates — scores, comments, and expected values — can be captured from end-users as well. See the
+[User feedback](/docs/guides/logging#user-feedback) for more details.
+
+## Filtering using feedback
+
+You can filter on log events with specific scores by typing a filter like `scores.Preference > 0.75` in the search bar,
+and then add the matching rows to a dataset for further investigation. This is a powerful way to utilize human feedback
+to improve your evals.

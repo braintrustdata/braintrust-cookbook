@@ -12,7 +12,35 @@ To get started, you'll need a few accounts:
 
 and `node`, `npm`, and `typescript` installed locally. If you'd like to follow along in code,
 the [tool-rag](https://github.com/braintrustdata/braintrust-cookbook/tree/main/examples/ToolRAG/tool-rag)
-project contains a working example with all of the code snippets we'll use.
+project contains a working example with all of the documents and code snippets we'll use.
+
+## Clone the repo
+
+To start, clone the repo and install the dependencies:
+
+```bash
+git clone https://github.com/braintrustdata/braintrust-cookbook.git
+cd braintrust-cookbook/examples/ToolRAG/tool-rag
+npm install
+```
+
+Next, create a `.env.local` file with your API keys:
+
+```bash
+BRAINTRUST_API_KEY=<your-api-key>
+OPENAI_API_KEY=<your-openai-api-key>
+PINECONE_API_KEY=<your-pinecone-api-key>
+```
+
+Finally, make sure to set your `OPENAI_API_KEY` environment variable in the [AI secrets](https://www.braintrust.dev/app/settings?subroute=api-keys) section
+of your account, and set the `PINECONE_API_KEY` environment variable in the [Environment variables](https://www.braintrust.dev/app/settings?subroute=env-vars) section.
+
+<Callout type="info">
+  We'll use the local environment variables to embed and upload the vectors, and
+  the Braintrust variables to run the RAG tool and LLM calls remotely.
+</Callout>
+
+## Upload the vectors
 
 Clone the repo [LINK]
 

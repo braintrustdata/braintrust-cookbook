@@ -9,7 +9,13 @@
   "license": "MIT",
   "description": "Sample code for using hosted tool calls + RAG",
   "dependencies": {
+    "@pinecone-database/pinecone": "^3.0.3",
     "autoevals": "^0.0.94",
-    "braintrust": "^0.0.160"
+    "braintrust": "^0.0.160",
+    "openai": "^4.67.1",
+    "remark-mdx": "^3.0.1",
+    "remark-parse": "^11.0.0",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.0.0"
   }
 }
