@@ -1,0 +1,66 @@
+# Using hosted tools to perform RAG
+
+intro about functions
+
+## Getting started
+
+To get started, you'll need a few accounts:
+
+- [Braintrust](https://www.braintrust.dev/signup)
+- [Pinecone](https://app.pinecone.io/?sessionType=signup)
+- [OpenAI](https://platform.openai.com/signup)
+
+and `node`, `npm`, and `typescript` installed locally. If you'd like to follow along in code,
+the [tool-rag](https://github.com/braintrustdata/braintrust-cookbook/tree/main/examples/ToolRAG/tool-rag)
+project contains a working example with all of the code snippets we'll use.
+
+Clone the repo [LINK]
+
+Add braintrust api key in .env.local
+
+Run the project - what command to use
+
+## Introducing the project
+
+Using Braintrust functions, a RAG agent can be defined as just two components:
+
+- A system prompt containing instructions for how to retrieve content and synthesize answers
+- A vector search tool, implemented in TypeScript, which embeds a query, searches for relevant documents, and returns them
+
+We’re going to define an agent that answers questions about the Braintrust documentation.
+
+Along the way, we’ll also experience how simple it is to switch between working in the UI and working in your code — the new AI engineering workflow.
+
+## Embedding and storing the data
+
+In the sample project, we have a folder called `data` that contains a handful of `.mdx` files that make up the Braintrust documentation. before we can convert it into embeddings, we need to parse and extract the content into raw text.
+
+- use a library like remark or unified for this
+- preprocessing? tokenization
+
+Then, we can convert the preprocessed text into embeddings using OpenAI.
+Push the embeddings into Pinecone, where they’ll be indexed for quick retrieval.
+
+## Creating a Braintrust project and making a tool function
+
+- create a project called Doc Search
+- make the tool
+- push the tool to braintrust
+
+## Writing a prompt
+
+Make a prompt inside of braintrust and open it in a playground
+
+- Import a dataset
+
+## Writing a custom scorer
+
+Write a custom LLM as a judge scorer
+
+## Running your first evaluation
+
+- Bad eval without tool, not accurate
+
+## Adding in the tool and re-running your evaluation
+
+- success!
