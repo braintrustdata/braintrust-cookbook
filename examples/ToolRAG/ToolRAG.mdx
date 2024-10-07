@@ -1,15 +1,15 @@
-# Using hosted tools to perform RAG
+# Using hosted tool functions to perform RAG
 
-## Introducing the project
+Retrieval augmented generation (RAG) is a technique for providing answers to questions using information from a vector database. RAG improves the accuracy of LLM responses by providing relevant context.
 
 Using Braintrust functions, a RAG agent can be defined as just two components:
 
 - A system prompt containing instructions for how to retrieve content and synthesize answers
 - A vector search tool, implemented in TypeScript, which embeds a query, searches for relevant documents, and returns them
 
-We're going to define an agent that answers questions about the Braintrust documentation.
+In this cookbook, we'll define an agent that answers questions about the Braintrust documentation.
 
-Along the way, we'll also experience how simple it is to work across Braintrust's UI and working in your code — the new AI engineering workflow.
+Along the way, we'll also experience how simple it is to work across Braintrust's UI and your code— the new AI engineering workflow.
 
 ## Getting started
 
@@ -40,7 +40,7 @@ BRAINTRUST_API_KEY=<your-api-key>
 PINECONE_API_KEY=<your-pinecone-api-key>
 ```
 
-Finally, make sure to set your `OPENAI_API_KEY` environment variable in the [AI secrets](https://www.braintrust.dev/app/settings?subroute=api-keys) section
+Finally, make sure to set your `OPENAI_API_KEY` environment variable in the [AI providers](https://www.braintrust.dev/app/braintrustdata.com/settings/secrets) section
 of your account, and set the `PINECONE_API_KEY` environment variable in the [Environment variables](https://www.braintrust.dev/app/settings?subroute=env-vars) section.
 
 <Callout type="info">
@@ -50,20 +50,21 @@ of your account, and set the `PINECONE_API_KEY` environment variable in the [Env
 
 ## Upload the vectors
 
-To upload the vectors, simply run the `upload-vectors.ts` script:
+To upload the vectors, run the `upload-vectors.ts` script:
 
 ```bash
 npx tsx upload-vectors.ts
 ```
+This script reads all the files from the `docs-sample` directory, breaks them into sections based on headings, and creates vector embeddings for each section using OpenAI's API. It then stores those embeddings along with the section's title and content in Pinecone.
 
-That's it for setup! Now let's try to retrieve them using Braintrust.
+That's it for setup! Now let's try to retrieve the vectors using Braintrust.
 
 ## Creating a RAG tool
 
-Braintrust makes it simple to create tools, and then run them in the UI, API, and of course, via prompts. This is
+Braintrust makes it easy to create tools and then run them in the UI, API, and, of course, via prompts. This is
 an easy way to iterate on assistant-style agents.
 
-The retrieval tool is defined in `retrieval.ts`. The tool itself is incredibly simple:
+The retrieval tool is defined in `retrieval.ts`:
 
 ```javascript
 async ({ query, top_k }) => {
@@ -86,14 +87,15 @@ async ({ query, top_k }) => {
   }));
 };
 ```
+In just a few lines of code, it takes a search query, converts it into a numerical vector using OpenAI's embedding model, and then sends that vector to Pinecone to find the most similar items stored in the database. It retrieves the top results based on similarity and returns key information (title and content) from the matching items.
 
-To push the tool to Braintrust, simply run:
+To push the tool to Braintrust, run:
 
 ```bash
 npx braintrust push retrieval.ts
 ```
 
-You should see:
+The output should be:
 
 ```
 1 file uploaded successfully
@@ -101,17 +103,17 @@ You should see:
 
 ### Try out the tool
 
-To try out the tool, visit the project in Braintrust, and navigate to the "Tools" section of your "Library".
+To try out the tool, visit the project in Braintrust, and navigate to the **Tools** section of your **Library**.
 
 ![Test tool](./assets/Test-tool.gif)
 
-This is an easy way to try out searches, and refine the logic. For example, you could try playing with various
-`top_k` values, or adding a prefix to the query to guide the results. If you change the code, simply run
+Here, you can test different searches and refine the logic. For example, you could try playing with various
+`top_k` values, or adding a prefix to the query to guide the results. If you change the code, run
 `npx braintrust push retrieval.ts` again to update the tool.
 
 ## Writing a prompt
 
-Next, let's wire the tool into a prompt. In `prompt.ts`, you'll see an initial definition of the prompt:
+Next, let's wire the tool into a prompt. In `prompt.ts`, there's an initial definition of the prompt:
 
 ```javascript
   messages: [
@@ -138,39 +140,37 @@ Once the prompt uploads, you can run it in the UI and even try it out on some ex
 
 ![Test prompt](./assets/Test-prompt.gif)
 
-If you visit the logs tab, you'll see detailed logs for each call:
+If you visit the **Logs** tab, you can check out detailed logs for each call:
 
 ![Prompt logs](./assets/Prompt-logs.png)
 
 <Callout type="info">
-  We recommend using code-based prompts to initialize projects, but as we'll see
-  in a moment, it is very convenient to tweak your prompts in the UI once you
-  initialize them.
+  We recommend using code-based prompts to initialize projects, but we'll show how convenient it is to tweak your prompts in the UI in a moment.
 </Callout>
 
 ## Import a dataset
 
-To get a better sense of how well this prompt + tool works, let's upload a dataset with
+To get a better sense of how well this prompt and tool work, let's upload a dataset with
 a few questions and assertions. The assertions allow us to test specific characteristics
 about the answers, without spelling out the exact answer itself.
 
-The dataset is defined in `questions-dataset.ts` and you can upload it by running:
+The dataset is defined in `questions-dataset.ts`, and you can upload it by running:
 
 ```bash
 npx tsx questions-dataset.ts
 ```
 
-Once you create it, if you visit the "Datasets" tab, you should see it:
+Once you create it, if you visit the **Datasets** tab, you'll be able to explore it:
 
 ![Dataset](./assets/Dataset.png)
 
 ## Create a playground
 
-To try out the prompt, together with the dataset, we'll create a playground.
+To try out the prompt together with the dataset, we'll create a playground.
 
 ![Create playground](./assets/Create-playground.gif)
 
-Once you create the playground, hit "Run" to run the prompt + tool on the questions
+Once you create the playground, hit **Run** to run the prompt and tool on the questions
 in the dataset.
 
 ![Run playground](./assets/Run-playground.gif)
@@ -180,7 +180,7 @@ in the dataset.
 Now that we have an interactive environment to test out our prompt and tool call, let's define
 a scorer that helps us evaluate the results.
 
-Click the "Scorers" dropdown, and create a "Custom scorer". Pick the "LLM" tab, and enter
+Select the **Scorers** dropdown menu, then **Create custom scorer**. Choose the **LLM-as-a-judge** tab, and enter
 
 ```javascript
 Consider the following question:
@@ -206,33 +206,30 @@ For the choice scores, configure (a) as 1, (b) as 0.5, and (c) as 0.
 
 ![Choice scores](./assets/Choice-scores.png)
 
-Once you define the scorer, hit "Run" to run it on the questions in the dataset.
+Once you define the scorer, hit **Run** to run it on the questions in the dataset.
 
 ![Playground with scores](./assets/Playground-scored.png)
 
 ### Tweak the prompt
 
-Now, let's tweak the prompt to see if we can improve the results. Hit the "Duplicate" button to make a copy
-of the prompt, and start tweaking. If you tweak the original prompt, then you can save the changes if you
-would like. For example, you can try instructing the model to always include a Python and
+Now, let's tweak the prompt to see if we can improve the results. Hit the copy icon to duplicate your prompt and start tweaking. You can also tweak the original prompt and save your changes there if you'd like. For example, you can try instructing the model to always include a Python and
 Typescript code snippet.
 
 ![Tweak prompt](./assets/Tweak-prompt.gif)
 
-Once you're satisfied with the prompt, hit "Update" to save the changes. Each time you save the prompt, you
+Once you're satisfied with the prompt, hit **Update** to save the changes. Each time you save the prompt, you
 create a new version. To learn more about how to use a prompt in your code, check out the
 [prompts guide](/docs/guides/prompts#using-prompts-in-your-code).
 
 ## Run full experiments
 
-The playground is very interactive, but if you'd like to create a more detailed evaluation, which lets you
+The playground is very interactive, but if you'd like to create a more detailed evaluation, where you can:
 
 - See every step, including the tool calls and scoring prompts
 - Compare side-by-side diffs, improvements, and regressions
 - Share a permanent snapshot of results with others on your team
 
-Then you can run a full experiment by clicking "+Experiments". Once you run the experiments, you'll see
-a detailed analysis that lets you dig in further:
+then you can run a full experiment by selecting **+Experiments**. Once you run the experiments, you can dig in further to the full analysis:
 
 ![Experiment](./assets/Experiment.png)
 
