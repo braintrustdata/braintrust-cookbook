@@ -157,3 +157,13 @@
     - evals
     - multimodal
     - receipts
+- title: Using functions to build a RAG agent
+  path: examples/ToolRAG/ToolRAG.mdx
+  date: 2024-10-08
+  authors:
+    - ornellaaltunyan
+    - ankrgyl
+  tags:
+    - functions
+    - rag
+    - tools

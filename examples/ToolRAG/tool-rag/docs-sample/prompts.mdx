@@ -1,0 +1,653 @@
+---
+title: "Prompts"
+---
+
+import { CodeTabs, TSTab, PYTab } from "#/ui/docs/code-tabs";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import { Callout } from "fumadocs-ui/components/callout";
+import Link from "fumadocs-core/link";
+
+# Prompts
+
+Prompt engineering is a core activity in AI engineering. Braintrust allows you to create prompts, test them out in the playground,
+use them in your code, update them, and track their performance over time. Our goal is to provide a world-class authoring experience
+in Braintrust, seamlessly, securely, and reliably integrate them into your code, and debug issues as they arise.
+
+## Creating a prompt
+
+To create a prompt, visit the prompts tab in a project, and click the "+ Prompt" button. Pick a name and unique slug
+for your prompt. The slug is an immutable identifier that you can use to reference it in your code. As you change
+the prompt's name, description, or contents, its slug stays constant.
+
+![Create a prompt](./prompts/create.gif)
+
+Prompts can use [mustache](https://mustache.github.io/mustache.5.html) templating syntax to refer to variables. These variables are substituted
+automatically in the API, playground, and using the `.build()` function in your code. More on that below.
+
+### Updating a prompt
+
+Each prompt change is versioned, e.g. `5878bd218351fb8e`. You can use this identifier to pin a specific
+version of the prompt in your code.
+
+![Update a prompt](./prompts/update.gif)
+
+You can use this identifier to refer to a specific version of the prompt in your code.
+
+### Testing in the playground
+
+While developing a prompt, it can be useful to test it out on real-world data in the [Playground](/docs/guides/playground).
+You can open a prompt in the playground, tweak it, and save a new version once you're ready.
+
+![Playground](./prompts/playground.gif)
+
+## Using tools
+
+Most models support tool calling, which allows you to define tools with well-defined input and output types. They are commonly used for two purposes:
+
+- To enable models to "call" tools that perform external tasks, and then use those results to produce a final response
+- To coerce a model into production structured outputs that match a given JSON schema
+
+Braintrust supports both use cases.
+
+### Calling external tools
+
+Braintrust allows you to define custom tools that can be called [securely](/docs/reference/functions#sandbox) during prompt execution. You can use tools
+to create simple and composable agents that perform tasks like web-scraping, retrieval augmented generation (RAG), API execution, and much more.
+
+Custom tools use the [OpenAI tool calling format](https://platform.openai.com/docs/guides/function-calling) which means they are automatically supported by
+most models including OpenAI, Anthropic, and modern open source LLMs, while following well-established industry standards.
+
+Let's walk through an example. The following tools looks up information about the most recent commit in a Github repository:
+
+```typescript title=github.ts
+import * as braintrust from "braintrust";
+import { z } from "zod";
+
+const project = braintrust.projects.create({ name: "github" });
+
+project.tools.create({
+  handler: async ({ org, repo }: { org: string; repo: string }) => {
+    const url = `https://api.github.com/repos/${org}/${repo}/commits?per_page=1`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (data.length > 0) {
+      return data[0];
+    } else {
+      return null;
+    }
+  },
+  name: "Get latest commit",
+  slug: "get-latest-commit",
+  description: "Get the latest commit in a repository",
+  parameters: z.object({
+    org: z.string(),
+    repo: z.string(),
+  }),
+  ifExists: "replace",
+});
+```
+
+If you save this file locally to `github.ts`, you can run
+
+```bash
+npx braintrust push github.ts
+```
+
+to push the function to Braintrust. Once the command completes, you should see the function listed in the Library's "Tools" tab.
+
+![Tool code in library](./prompts/github-tool.png)
+
+<Callout type="warn">
+  Currently, tools must be defined in Typescript, but we are working on adding
+  Python support.
+</Callout>
+
+To use a tool, simply select it in the "Tools" dropdown. Braintrust will automatically:
+
+- Include it in the list of available tools to the model
+- Invoke the tool if the model calls it, and append the result to the message history
+- Call the model again with the tool's result as context
+- Continue for up to (default) 5 iterations or until the model produces a non-tool result
+
+![Invoke github tool](./prompts/invoke-github-tool.gif)
+
+### Coercing a model's output schema
+
+To define a set of tools available to a model, expand the "Tools" dropdown and select the Raw tab. You can enter an array of tool definitions,
+following the [OpenAI tool format](https://platform.openai.com/docs/guides/function-calling).
+
+![Raw tools](./prompts/raw-tools.gif)
+
+By default, if a tool is called, Braintrust will return the arguments of the first tool call as a JSON object. If you use the [`invoke` API](#executing-directly),
+you'll receive a JSON object as the result.
+
+![Invoke raw tool](./prompts/invoke-raw-tools.gif)
+
+<Callout type="info">
+  If you specify `parallel` as the mode, then instead of the first tool call's
+  arguments, you'll receive an array of all tool calls including both function
+  names and arguments.
+</Callout>
+
+## Using prompts in your code
+
+### Executing directly
+
+In Braintrust, a prompt is a simple function that can be invoked directly through the SDK and [REST API](/docs/reference/api/Functions#invoke-function). When invoked, prompt functions leverage the [proxy](/docs/guides/proxy) to access a wide range of providers and models with managed secrets, and are automatically traced and logged to your Braintrust project. All functions are fully managed and versioned via the UI and API.
+
+<Callout type="info">
+  Functions are a broad concept that encompass prompts, code snippets, HTTP
+  endpoints, and more. When using the functions API, you can use a prompt's slug
+  or ID as the function's slug or ID, respectively. To learn more about
+  functions, see the [functions reference](/docs/reference/functions).
+</Callout>
+
+<CodeTabs>
+
+<TSTab>
+
+```typescript
+import { invoke } from "braintrust";
+
+async function main() {
+  const result = await invoke({
+    projectName: "your project name",
+    slug: "your prompt slug",
+    input: {
+      // These variables map to the template parameters in your prompt.
+      question: "1+1",
+    },
+  });
+  console.log(result);
+}
+
+main();
+```
+
+</TSTab>
+
+<PYTab>
+
+```python
+from braintrust import invoke
+
+result = invoke(project_name="your project name", slug="your prompt slug", input={"question": "1+1"})
+print(result)
+```
+
+</PYTab>
+</CodeTabs>
+
+The return value, `result`, is a string unless you have tool calls, in which case it returns the arguments
+of the first tool call. In typescript, you can assert this by using the [`schema`](/docs/reference/libs/nodejs/interfaces/InvokeFunctionArgs#schema) argument, which ensures your
+code matches a particular zod schema:
+
+<CodeTabs>
+
+<TSTab>
+
+```typescript
+import { invoke } from "braintrust";
+import { z } from "zod";
+
+async function main() {
+  const result = await invoke({
+    projectName: "your project name",
+    slug: "your prompt slug",
+    input: {
+      question: "1+1",
+    },
+    schema: z.string(),
+  });
+  console.log(result);
+}
+
+main();
+```
+
+</TSTab>
+
+<PYTab>
+
+```python
+from braintrust import invoke
+
+result = invoke(project_name="your project name", slug="your prompt slug", input={"question": "1+1"})
+
+print(result)
+```
+
+</PYTab>
+</CodeTabs>
+
+#### Adding extra messages
+
+If you're building a chat app, it's often useful to send back additional messages of context as you gather them. You can provide
+OpenAI-style messages to the `invoke` function by adding `messages`, which are appended to the end of the built-in messages:
+
+<CodeTabs>
+
+<TSTab>
+
+```typescript
+import { invoke } from "braintrust";
+import { z } from "zod";
+
+async function reflection(question: string) {
+  const result = await invoke({
+    projectName: "your project name",
+    slug: "your prompt slug",
+    input: {
+      question,
+    },
+    schema: z.string(),
+  });
+  console.log(result);
+
+  const reflectionResult = await invoke({
+    projectName: "your project name",
+    slug: "your prompt slug",
+    input: {
+      question,
+    },
+    messages: [
+      { role: "assistant", content: result },
+      { role: "user", content: "Are you sure about that?" },
+    ],
+  });
+  console.log(reflectionResult);
+}
+
+reflection("What is larger the Moon or the Earth?");
+```
+
+</TSTab>
+
+<PYTab>
+
+```python
+from braintrust import invoke
+
+
+def reflection(question: str):
+    result = invoke(project_name="your project name", slug="your prompt slug", input={"question": question})
+    print(result)
+
+    reflection_result = invoke(
+        project_name="your project name",
+        slug="your prompt slug",
+        input={"question": question},
+        messages=[
+            {"role": "assistant", "content": result},
+            {"role": "user", "content": "Are you sure about that?"},
+        ],
+    )
+    print(reflection_result)
+
+
+reflection("What is larger the Moon or the Earth?")
+```
+
+</PYTab>
+
+</CodeTabs>
+
+#### Streaming
+
+You can also stream results in an easy-to-parse format.
+
+<CodeTabs>
+
+<TSTab>
+
+```typescript
+import { invoke } from "braintrust";
+
+async function main() {
+  const result = await invoke({
+    projectName: "your project name",
+    slug: "your prompt slug",
+    input: {
+      question: "1+1",
+    },
+    stream: true,
+  });
+
+  for await (const chunk of result) {
+    console.log(chunk);
+    // { type: "text_delta", data: "The answer "}
+    // { type: "text_delta", data: "is 2"}
+  }
+}
+
+main();
+```
+
+</TSTab>
+
+<PYTab>
+
+```python
+from braintrust import invoke
+
+result = invoke("your project name", "your prompt slug", input={"question": "1+1"}, stream=True)
+for chunk in result:
+    print(chunk)
+```
+
+</PYTab>
+</CodeTabs>
+
+#### Vercel AI SDK
+
+If you're using Next.js and the [Vercel AI SDK](https://sdk.vercel.ai/docs), you can use the Braintrust
+adapter by installing the `@braintrust/vercel-ai-sdk` package and converting the stream to Vercel's format:
+
+```typescript
+import { invoke } from "braintrust";
+import { BraintrustAdapter } from "@braintrust/vercel-ai-sdk";
+
+export async function POST(req: Request) {
+  const stream = await invoke({
+    projectName: "your project name",
+    slug: "your prompt slug",
+    input: await req.json(),
+    stream: true,
+  });
+
+  return BraintrustAdapter.toAIStreamResponse(stream);
+}
+```
+
+#### Logging
+
+Any `invoke` requests you make will be logged using the active logging state, just like a function decorated
+with `@traced` or `wrapTraced`. You can also pass in the `parent` argument, which is a string that you can
+derive from `span.export()` while doing [distributed tracing](/docs/guides/tracing#distributed-tracing).
+
+### Fetching in code
+
+If you'd like to run prompts directly, you can fetch them using the Braintrust SDK. The [`loadPrompt()`](/docs/reference/libs/nodejs#loadprompt)/[`load_prompt()`](/docs/reference/libs/python#load_prompt)
+function loads a prompt into a simple format that you can pass along to the OpenAI client. Prompts
+are cached upon initial load for fast subsequent retrieval operations.
+
+<CodeTabs>
+
+<TSTab>
+
+```typescript
+import { OpenAI } from "openai";
+import { initLogger, loadPrompt, wrapOpenAI } from "braintrust";
+
+const logger = initLogger({ projectName: "your project name" });
+
+// wrapOpenAI will make sure the client tracks usage of the prompt.
+const client = wrapOpenAI(
+  new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  }),
+);
+
+async function runPrompt() {
+  // Replace with your project name and slug
+  const prompt = await loadPrompt({
+    projectName: "your project name",
+    slug: "your prompt slug",
+    defaults: {
+      // Parameters to use if not specified
+      model: "gpt-3.5-turbo",
+      temperature: 0.5,
+    },
+  });
+
+  // Render with parameters
+  return client.chat.completions.create(
+    prompt.build({
+      question: "1+1",
+    }),
+  );
+}
+```
+
+</TSTab>
+
+<PYTab>
+
+```python
+import os
+
+from braintrust import init_logger, load_prompt, wrap_openai
+from openai import OpenAI
+
+logger = init_logger(project="your project name")
+
+
+def run_prompt():
+    # Replace with your project name and slug
+    prompt = load_prompt(
+        "your project name", "your prompt slug", defaults=dict(model="gpt-3.5-turbo", temperature=0.5)
+    )
+
+    # wrap_openai will make sure the client tracks usage of the prompt.
+    client = wrap_openai(OpenAI(api_key=os.environ["OPENAI_API_KEY"]))
+
+    # Render with parameters
+    return client.chat.completions.create(**prompt.build(question="1+1"))
+```
+
+</PYTab>
+
+</CodeTabs>
+
+<Callout type="info">
+  If you need to use another model provider, then you can use the [Braintrust
+  proxy](/docs/guides/proxy) to access a wide range of models using the OpenAI
+  format. You can also grab the `messages` and other parameters directly from
+  the returned object to use a model library of your choice.
+</Callout>
+
+### Pinning a specific version
+
+To pin a specific version of a prompt, use the `loadPrompt()`/`load_prompt()` function with the version identifier.
+
+<CodeTabs>
+
+<TSTab>
+
+```typescript #skip-compile
+const prompt = await loadPrompt({
+  projectName: "your project name",
+  slug: "your prompt slug",
+  version: "5878bd218351fb8e",
+});
+```
+
+</TSTab>
+
+<PYTab>
+
+```python
+prompt = load_prompt("your project name", "your prompt slug", version="5878bd218351fb8e")
+```
+
+</PYTab>
+
+</CodeTabs>
+
+### Pulling prompts locally
+
+You can also download prompts to your local filesystem and ensure a specific version is used via version control. You should
+use the `pull` command to:
+
+- Download prompts to public projects so others can use them
+- Pin your production environment to a specific version without running them through Braintrust on the request path
+- Review changes to prompts in pull requests
+
+```bash
+$ npx braintrust pull --help
+usage: cli.js pull [-h] [--output-dir OUTPUT_DIR] [--project-name PROJECT_NAME] [--project-id PROJECT_ID] [--id ID] [--slug SLUG] [--version VERSION] [--force]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --output-dir OUTPUT_DIR
+                        The directory to output the pulled resources to. If not specified, the current directory is used.
+  --project-name PROJECT_NAME
+                        The name of the project to pull from. If not specified, all projects are pulled.
+  --project-id PROJECT_ID
+                        The id of the project to pull from. If not specified, all projects are pulled.
+  --id ID               The id of a specific function to pull.
+  --slug SLUG           The slug of a specific function to pull.
+  --version VERSION     The version to pull. Will pull the latest version of each prompt that is at or before this version.
+  --force               Overwrite local files if they have uncommitted changes.
+```
+
+<Callout type="warn">
+  Currently, `braintrust pull` only supports Typescript.
+</Callout>
+
+When you run `braintrust pull`, you can specify a project name, prompt slug, or version to pull. If you don't specify
+any of these, all prompts across projects will be pulled into a separate file per project. For example, if you have a
+project named `Summary`
+
+```bash
+$ npx braintrust pull --project-name "Summary"
+```
+
+will generate the following file:
+
+```typescript title="summary.ts"
+// This file was automatically generated by braintrust pull. You can
+// generate it again by running:
+//  $ braintrust pull --project-name "Summary"
+// Feel free to edit this file manually, but once you do, you should make sure to
+// sync your changes with Braintrust by running:
+//  $ braintrust push "braintrust/summary.ts"
+
+import braintrust from "braintrust";
+
+const project = braintrust.projects.create({
+  name: "Summary",
+});
+
+export const summaryBot = project.prompts.create({
+  name: "Summary bot",
+  slug: "summary-bot",
+  model: "gpt-4o",
+  messages: [
+    { content: "Summarize the following passage.", role: "system" },
+    { content: "{{content}}", role: "user" },
+  ],
+});
+```
+
+<Callout type="info">
+  To pin your production environment to a specific version, you can run
+  `braintrust pull` with the `--version` flag.
+</Callout>
+
+#### Using a pulled prompt
+
+The `prompts.create` function generates the same `Prompt` object as the `loadPrompt` function.
+This means you can use a pulled prompt in the same way you would use a normal prompt, e.g. by
+running `prompt.build()` and passing the result to `client.chat.completions.create()` call.
+
+### Pushing prompts
+
+Just like with tools, you can push prompts to Braintrust using the `push` command. Simply change
+the prompt definition, and then run `npx braintrust push` from the command line. Braintrust automatically
+generates a new version for each pushed prompt.
+
+```bash
+$ npx braintrust push braintrust/summary.ts
+```
+
+<Callout type="info">
+  You can push one or more files or directories to Braintrust. If you specify a
+  directory, all `.ts` files under that directory are pushed.
+</Callout>
+
+### Deployment strategies
+
+It is often useful to use different versions of a prompt in different environments. For example, you might want to use the latest
+version locally and in staging, but pin a specific version in production. This is simple to setup by conditionally passing a version
+to `loadPrompt()`/`load_prompt()` based on the environment.
+
+<CodeTabs>
+
+<TSTab>
+
+```typescript #skip-compile
+const prompt = await loadPrompt({
+  projectName: "your project name",
+  slug: "your prompt slug",
+  version:
+    process.env.NODE_ENV === "production" ? "5878bd218351fb8e" : undefined,
+});
+```
+
+</TSTab>
+
+<PYTab>
+
+```python
+prompt = load_prompt(
+    "your project name",
+    "your prompt slug",
+    version="5878bd218351fb8e" if os.environ["NODE_ENV"] == "production" else None,
+)
+```
+
+</PYTab>
+
+</CodeTabs>
+
+### Chat vs. completion format
+
+In Python, `prompt.build()` returns a dictionary with chat or completion parameters, depending on the prompt type. In Typescript, however,
+`prompt.build()` accepts an additional parameter (`flavor`) to specify the format. This allows `prompt.build` to be used in a more type-safe
+manner. When you specify a flavor, the SDK also validates that the parameters are correct for that format.
+
+```typescript #skip-compile
+const chatParams = prompt.build(
+  {
+    question: "1+1",
+  },
+  {
+    // This is the default
+    flavor: "chat",
+  },
+);
+
+const completionParams = prompt.build(
+  {
+    question: "1+1",
+  },
+  {
+    // Pass "completion" to get completion-shaped parameters
+    flavor: "completion",
+  },
+);
+```
+
+## Opening from traces
+
+When you use a prompt in your code, Braintrust automatically links spans to the prompt used to generate them. This allows
+you to click to open a span in the playground, and see the prompt that generated it alongside the input variables. You can
+even test and save a new version of the prompt directly from the playground.
+
+![Open from traces](./prompts/debug.gif)
+
+This workflow is very powerful. It effectively allows you to debug, iterate, and publish changes to your prompts directly
+within Braintrust. And because Braintrust flexibly allows you to load the latest prompt, a specific version, or even a version
+controlled artifact, you have a lot of control over how these updates propagate into your production systems.
+
+## Using the API
+
+The full lifecycle of prompts -- creating, retrieving, modifying, etc. -- can be managed through the REST API. See the [API docs](/docs/api/spec#prompts) for
+more details.
