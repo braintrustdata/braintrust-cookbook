@@ -150,23 +150,88 @@ If you visit the logs tab, you'll see detailed logs for each call:
 
 ## Import a dataset
 
-TODO:
+To get a better sense of how well this prompt + tool works, let's upload a dataset with
+a few questions and assertions. The assertions allow us to test specific characteristics
+about the answers, without spelling out the exact answer itself.
 
-- Upload dataset
-- Create playground
-- Add scorer
-- Run eval
-- Duplicate, instruct to show both py and ts examples
-- Run full experiments
+The dataset is defined in `questions-dataset.ts` and you can upload it by running:
 
-## Writing a custom scorer
+```bash
+npx tsx questions-dataset.ts
+```
 
-Write a custom LLM as a judge scorer
+Once you create it, if you visit the "Datasets" tab, you should see it:
 
-## Running your first evaluation
+![Dataset](./assets/Dataset.png)
 
-- Bad eval without tool, not accurate
+## Create a playground
 
-## Adding in the tool and re-running your evaluation
+To try out the prompt, together with the dataset, we'll create a playground.
 
-- success!
+![Create playground](./assets/Create-playground.gif)
+
+Once you create the playground, hit "Run" to run the prompt + tool on the questions
+in the dataset.
+
+![Run playground](./assets/Run-playground.gif)
+
+### Define a scorer
+
+Now that we have an interactive environment to test out our prompt and tool call, let's define
+a scorer that helps us evaluate the results.
+
+Click the "Scorers" dropdown, and create a "Custom scorer". Pick the "LLM" tab, and enter
+
+```mustache
+Consider the following question:
+
+{{input.question}}
+
+and answer:
+
+{{output}}
+
+Does the answer satisfy each of the following assertions? Meticulously check each one, and write out your reasoning in the rationale section.
+
+{{#expected.assertions}}
+{{.}}
+{{/expected.assertions}}
+
+a) It correctly satisfies every assertion.
+b) It satisfies some of the assertions
+c) It satisfies none of the assertions
+```
+
+For the choice scores, configure (a) as 1, (b) as 0.5, and (c) as 0.
+
+![Choice scores](./assets/Choice-scores.png)
+
+Once you define the scorer, hit "Run" to run it on the questions in the dataset.
+
+![Playground with scores](./assets/Playground-scored.png)
+
+### Tweak the prompt
+
+Now, let's tweak the prompt to see if we can improve the results. Hit the "Duplicate" button to make a copy
+of the prompt, and start tweaking. If you tweak the original prompt, then you can save the changes if you
+would like. For example, you can try instructing the model to always include a Python and
+Typescript code snippet.
+
+![Tweak prompt](./assets/Tweak-prompt.gif)
+
+Once you're satisfied with the prompt, hit "Update" to save the changes. Each time you save the prompt, you
+create a new version. To learn more about how to use a prompt in your code, check out the
+[prompts guide](/docs/guides/prompts#using-prompts-in-your-code).
+
+## Run full experiments
+
+The playground is very interactive, but if you'd like to create a more detailed evaluation, which lets you
+
+- See every step, including the tool calls and scoring prompts
+- Compare side-by-side diffs, improvements, and regressions
+- Share a permanent snapshot of results with others on your team
+
+Then you can run a full experiment by clicking "+Experiments". Once you run the experiments, you'll see
+a detailed analyis that lets you dig in further:
+
+![Experiment](./assets/Experiment.png)
