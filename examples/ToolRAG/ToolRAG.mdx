@@ -1,6 +1,15 @@
 # Using hosted tools to perform RAG
 
-intro about functions
+## Introducing the project
+
+Using Braintrust functions, a RAG agent can be defined as just two components:
+
+- A system prompt containing instructions for how to retrieve content and synthesize answers
+- A vector search tool, implemented in TypeScript, which embeds a query, searches for relevant documents, and returns them
+
+We're going to define an agent that answers questions about the Braintrust documentation.
+
+Along the way, we'll also experience how simple it is to work across Braintrust's UI and working in your code — the new AI engineering workflow.
 
 ## Getting started
 
@@ -28,7 +37,6 @@ Next, create a `.env.local` file with your API keys:
 
 ```bash
 BRAINTRUST_API_KEY=<your-api-key>
-OPENAI_API_KEY=<your-openai-api-key>
 PINECONE_API_KEY=<your-pinecone-api-key>
 ```
 
@@ -42,42 +50,103 @@ of your account, and set the `PINECONE_API_KEY` environment variable in the [Env
 
 ## Upload the vectors
 
-Clone the repo [LINK]
+To upload the vectors, simply run the `upload-vectors.ts` script:
 
-Add braintrust api key in .env.local
+```bash
+npx tsx upload-vectors.ts
+```
 
-Run the project - what command to use
+That's it for setup! Now let's try to retrieve them using Braintrust.
 
-## Introducing the project
+## Creating a RAG tool
 
-Using Braintrust functions, a RAG agent can be defined as just two components:
+Braintrust makes it simple to create tools, and then run them in the UI, API, and of course, via prompts. This is
+an easy way to iterate on assistant-style agents.
 
-- A system prompt containing instructions for how to retrieve content and synthesize answers
-- A vector search tool, implemented in TypeScript, which embeds a query, searches for relevant documents, and returns them
+The retrieval tool is defined in `retrieval.ts`. The tool itself is incredibly simple:
 
-We’re going to define an agent that answers questions about the Braintrust documentation.
+```javascript
+async ({ query, top_k }) => {
+  const embedding = await openai.embeddings
+    .create({
+      input: query,
+      model: "text-embedding-3-small",
+    })
+    .then((res) => res.data[0].embedding);
 
-Along the way, we’ll also experience how simple it is to switch between working in the UI and working in your code — the new AI engineering workflow.
+  const queryResponse = await pc.query({
+    vector: embedding,
+    topK: top_k,
+    includeMetadata: true,
+  });
 
-## Embedding and storing the data
+  return queryResponse.matches.map((match) => ({
+    title: match.metadata?.title,
+    content: match.metadata?.content,
+  }));
+};
+```
 
-In the sample project, we have a folder called `data` that contains a handful of `.mdx` files that make up the Braintrust documentation. before we can convert it into embeddings, we need to parse and extract the content into raw text.
+To push the tool to Braintrust, simply run:
 
-- use a library like remark or unified for this
-- preprocessing? tokenization
+```bash
+npx braintrust push retrieval.ts
+```
 
-Then, we can convert the preprocessed text into embeddings using OpenAI.
-Push the embeddings into Pinecone, where they’ll be indexed for quick retrieval.
+You should see:
 
-## Creating a Braintrust project and making a tool function
+```
+1 file uploaded successfully
+```
 
-- create a project called Doc Search
-- make the tool
-- push the tool to braintrust
+### Try out the tool
+
+To try out the tool, visit the project in Braintrust, and navigate to the "Tools" section of your "Library".
+
+![Test tool](./assets/Test-tool.gif)
+
+This is an easy way to try out searches, and refine the logic. For example, you could try playing with various
+`top_k` values, or adding a prefix to the query to guide the results. If you change the code, simply run
+`npx braintrust push retrieval.ts` again to update the tool.
 
 ## Writing a prompt
 
-Make a prompt inside of braintrust and open it in a playground
+Next, let's wire the tool into a prompt. In `prompt.ts`, you'll see an initial definition of the prompt:
+
+```javascript
+  messages: [
+    {
+      role: "system",
+      content:
+        "You are a helpful assistant that can " +
+        "answer questions about the Braintrust documentation.",
+    },
+    {
+      role: "user",
+      content: "{{{question}}}",
+    },
+  ],
+```
+
+Run the following command to initialize the prompt:
+
+```
+npx braintrust push prompt.ts
+```
+
+Once the prompt uploads, you can run it in the UI and even try it out on some examples:
+
+![Test prompt](./assets/Test-prompt.gif)
+
+If you visit the logs tab, you'll see detailed logs for each call:
+
+![Prompt logs](./assets/Prompt-logs.png)
+
+<Callout type="info">
+  We recommend using code-based prompts to initialize projects, but as we'll see
+  in a moment, it is very convenient to tweak your prompts in the UI once you
+  initialize them.
+</Callout>
 
 - Import a dataset
 
