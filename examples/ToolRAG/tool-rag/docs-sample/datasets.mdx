@@ -1,0 +1,433 @@
+---
+title: "Datasets"
+---
+
+import { CodeTabs, TSTab, PYTab } from "#/ui/docs/code-tabs";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import { Callout } from "fumadocs-ui/components/callout";
+import Link from "fumadocs-core/link";
+import { ThumbsUp, ThumbsDown } from "lucide-react";
+
+# Datasets
+
+Datasets allow you to collect data from production, staging, evaluations, and even manually, and then
+use that data to run evaluations and track improvements over time.
+
+For example, you can use Datasets to:
+
+- Store evaluation test cases for your eval script instead of managing large JSONL or CSV files
+- Log all production generations to assess quality manually or using model graded evals
+- Store user reviewed (<ThumbsUp className="size-4 inline" />, <ThumbsDown className="size-4 inline" />) generations to find new test cases
+
+In Braintrust, datasets have a few key properties:
+
+- **Integrated**. Datasets are integrated with the rest of the Braintrust platform, so you can use them in
+  evaluations, explore them in the playground, and log to them from your staging/production environments.
+- **Versioned**. Every insert, update, and delete is versioned, so you can pin evaluations to a specific version
+  of the dataset, rewind to a previous version, and track changes over time.
+- **Scalable**. Datasets are stored in a modern cloud data warehouse, so you can collect as much data as you want without worrying about
+  storage or performance limits.
+- **Secure**. If you run Braintrust [in your cloud environment](/docs/guides/self-hosting), datasets are stored in your warehouse and
+  never touch our infrastructure.
+
+## Creating a dataset
+
+Records in a dataset are stored as JSON objects, and each record has three top-level fields:
+
+- `input` is a set of inputs that you could use to recreate the example in your application. For example, if you're logging
+  examples from a question answering model, the input might be the question.
+- `expected` (optional) is the output of your model. For example, if you're logging examples from a question answering model, this
+  might be the answer. You can access `expected` when running evaluations as the `expected` field; however, `expected` does not need to be
+  the ground truth.
+- `metadata` (optional) is a set of key-value pairs that you can use to filter and group your data. For example, if you're logging
+  examples from a question answering model, the metadata might include the knowledge source that the question came from.
+
+Datasets are created automatically when you initialize them in the SDK.
+
+### Inserting records
+
+You can use the SDK to initialize and insert into a dataset:
+
+<CodeTabs>
+
+<TSTab>
+
+```javascript
+import { initDataset } from "braintrust";
+
+async function main() {
+  const dataset = initDataset("My App", { dataset: "My Dataset" });
+  for (let i = 0; i < 10; i++) {
+    const id = dataset.insert({
+      input: i,
+      expected: { result: i + 1, error: null },
+      metadata: { foo: i % 2 },
+    });
+    console.log("Inserted record with id", id);
+  }
+
+  console.log(await dataset.summarize());
+}
+
+main();
+```
+
+</TSTab>
+<PYTab>
+
+```python
+import braintrust
+
+dataset = braintrust.init_dataset(project="My App", name="My Dataset")
+for i in range(10):
+    id = dataset.insert(input=i, expected={"result": i + 1, "error": None}, metadata={"foo": i % 2})
+    print("Inserted record with id", id)
+
+print(dataset.summarize())
+```
+
+</PYTab>
+
+</CodeTabs>
+
+### Updating records
+
+In the above example, each `insert()` statement returns an `id`. You can use this `id` to update the record using `update()`:
+
+<CodeTabs>
+<TSTab>
+
+```javascript #skip-compile
+dataset.update({
+  id,
+  input: i,
+  expected: { result: i + 1, error: "Timeout" },
+});
+```
+
+</TSTab>
+<PYTab>
+
+```python
+dataset.update(input=i, expected={"result": i + 1, "error": "Timeout"}, id=id)
+```
+
+</PYTab>
+</CodeTabs>
+
+The `update()` method applies a merge strategy: only the fields you provide will be updated, and all other existing fields in the record will remain unchanged.
+
+### Deleting records
+
+You can also delete records by `id`:
+
+<CodeTabs>
+<TSTab>
+
+```javascript #skip-compile
+await dataset.delete(id);
+```
+
+</TSTab>
+<PYTab>
+
+```python
+dataset.delete(id)
+```
+
+</PYTab>
+</CodeTabs>
+
+{/* TODO ### Adding examples from an evaluation */}
+
+## Managing datasets in the UI
+
+In addition to managing datasets through the API, you can also manage them in the Braintrust UI.
+
+### Viewing a dataset
+
+You can view a dataset in the Braintrust UI by navigating to the project and then clicking on the dataset.
+
+![Dataset Viewer](/docs/guides/datasets/datasets.webp)
+
+From the UI, you can filter records, create new ones, edit values, and delete records. You can also copy records
+between datasets and from experiments into datasets. This feature is commonly used to collect interesting or
+anomalous examples into a golden dataset.
+
+### Creating a dataset
+
+The easiest way to create a dataset is to upload a CSV file.
+
+![Upload CSV](./datasets/CSV-Upload.gif)
+
+### Updating records
+
+Once you've uploaded a dataset, you can update records or add new ones directly in the UI.
+
+![Edit record](./datasets/Edit-record.gif)
+
+### Labeling records
+
+In addition to updating datasets through the API, you can edit and label them in the UI. Like experiments and logs, you can
+configure [categorical fields](/docs/guides/human-review#writing-categorical-scores-to-expected-field) to allow human reviewers
+to rapidly label records.
+
+![Write to expected](./human-review/write-to-expected.webp)
+
+## Using a dataset in an evaluation
+
+You can use a dataset in an evaluation by passing it directly to the `Eval()` function.
+
+<CodeTabs>
+
+<TSTab>
+
+```typescript
+import { initDataset, Eval } from "braintrust";
+import { Levenshtein } from "autoevals";
+
+Eval(
+  "Say Hi Bot", // Replace with your project name
+  {
+    data: initDataset("My App", { dataset: "My Dataset" }),
+    task: async (input) => {
+      return "Hi " + input; // Replace with your LLM call
+    },
+    scores: [Levenshtein],
+  },
+);
+```
+
+</TSTab>
+
+<PYTab>
+
+```python
+from braintrust import Eval, init_dataset
+
+from autoevals import Levenshtein
+
+Eval(
+    "Say Hi Bot",  # Replace with your project name
+    data=init_dataset(project="My App", name="My Dataset"),
+    task=lambda input: "Hi " + input,  # Replace with your LLM call
+    scores=[Levenshtein],
+)
+```
+
+</PYTab>
+
+</CodeTabs>
+
+You can also manually iterate through a dataset's records and run your tasks,
+then log the results to an experiment. Log the `id`s to link each dataset record
+to the corresponding result.
+
+<CodeTabs>
+
+<TSTab>
+
+```typescript
+import { initDataset, init, Dataset, Experiment } from "braintrust";
+
+function myApp(input: any) {
+  return `output of input ${input}`;
+}
+
+function myScore(output: any, rowExpected: any) {
+  return Math.random();
+}
+
+async function main() {
+  const dataset = initDataset("My App", { dataset: "My Dataset" });
+  const experiment = init("My App", {
+    experiment: "My Experiment",
+    dataset: dataset,
+  });
+  for await (const row of dataset) {
+    const output = myApp(row.input);
+    const closeness = myScore(output, row.expected);
+    experiment.log({
+      input: row.input,
+      output,
+      expected: row.expected,
+      scores: { closeness },
+      datasetRecordId: row.id,
+    });
+  }
+
+  console.log(await experiment.summarize());
+}
+
+main();
+```
+
+</TSTab>
+
+<PYTab>
+
+```python
+import random
+
+import braintrust
+
+
+def my_app(input):
+    return f"output of input {input}"
+
+
+def my_score(output, row_expected):
+    return random.random()
+
+
+dataset = braintrust.init_dataset(project="My App", name="My Dataset")
+experiment = braintrust.init(project="My App", experiment="My Experiment", dataset=dataset)
+for row in dataset:
+    output = my_app(row["input"])
+    closeness = my_score(output, row["expected"])
+    experiment.log(
+        input=row["input"],
+        output=output,
+        expected=row["expected"],
+        scores=dict(closeness=closeness),
+        dataset_record_id=row["id"],
+    )
+
+print(experiment.summarize())
+```
+
+</PYTab>
+
+</CodeTabs>
+
+You can also use the results of an experiment as baseline data for future experiments by calling the `asDataset()`/`as_dataset()` function, which converts the experiment into dataset format (`input`, `expected`, and `metadata`).
+
+<CodeTabs>
+
+<TSTab>
+
+```typescript
+import { init, Eval } from "braintrust";
+import { Levenshtein } from "autoevals";
+
+const experiment = init("My App", {
+  experiment: "my-experiment",
+  open: true,
+});
+
+Eval<string, string>("My App", {
+  data: experiment.asDataset(),
+  task: async (input) => {
+    return `hello ${input}`;
+  },
+  scores: [Levenshtein],
+});
+```
+
+</TSTab>
+
+<PYTab>
+
+```python
+from braintrust import Eval, init
+
+from autoevals import Levenshtein
+
+experiment = braintrust.init(
+    project="My App",
+    experiment="my-experiment",
+    open=True,
+)
+
+Eval(
+    "My App",
+    data=experiment.as_dataset(),
+    task=lambda input: input + 1,  # Replace with your LLM call
+    scores=[Levenshtein],
+)
+```
+
+</PYTab>
+
+</CodeTabs>
+
+For a more advanced overview of how to use an experiment as a baseline for other experiments, see [Hill climbing](/docs/guides/evals/write#hill-climbing).
+
+## Logging from your application
+
+To log to a dataset from your application, you can simply use the SDK and call `insert()`. Braintrust logs
+are queued and sent asynchronously, so you don't need to worry about critical path performance.
+
+Since the SDK uses API keys, it's recommended that you log from a privileged environment (e.g. backend server),
+instead of client applications directly.
+
+This example walks through how to track <ThumbsUp className="size-4 inline" /> / <ThumbsDown className="size-4 inline" /> from feedback:
+
+<CodeTabs>
+
+<TSTab>
+
+```javascript
+import { initDataset, Dataset } from "braintrust";
+
+class MyApplication {
+  private dataset: Dataset | undefined = undefined;
+
+  async initApp() {
+    this.dataset = await initDataset("My App", { dataset: "logs" });
+  }
+
+  async logUserExample(
+    input: any,
+    expected: any,
+    userId: string,
+    orgId: string,
+    thumbsUp: boolean,
+  ) {
+    if (this.dataset) {
+      this.dataset.insert({
+        input,
+        expected,
+        metadata: { userId, orgId, thumbsUp },
+      });
+    } else {
+      console.warn("Must initialize application before logging");
+    }
+  }
+}
+```
+
+</TSTab>
+<PYTab>
+
+```python
+from typing import Any
+
+import braintrust
+
+
+class MyApplication:
+    def init_app(self):
+        self.dataset = braintrust.init_dataset(project="My App", name="logs")
+
+    def log_user_example(self, input: Any, expected: Any, user_id: str, org_id: str, thumbs_up: bool):
+        if self.dataset:
+            self.dataset.insert(
+                input=input,
+                expected=expected,
+                metadata=dict(user_id=user_id, org_id=org_id, thumbs_up=thumbs_up),
+            )
+        else:
+            print("Must initialize application before logging")
+```
+
+</PYTab>
+
+</CodeTabs>
+
+## Troubleshooting
+
+### Downloading large datasets
+
+If you are trying to load a very large dataset, you may run into timeout errors while using the SDK. If so, you
+can [paginate](/docs/guides/api#downloading-a-dataset-using-pagination) through the dataset to download it in smaller chunks.

@@ -1,0 +1,24 @@
+{
+  "name": "tool-rag",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Braintrust engineering",
+  "license": "MIT",
+  "description": "Sample code for using hosted tool calls + RAG",
+  "dependencies": {
+    "@pinecone-database/pinecone": "^3.0.3",
+    "autoevals": "^0.0.94",
+    "braintrust": "^0.0.160",
+    "dotenv": "^16.4.5",
+    "marked": "^14.1.2",
+    "openai": "^4.67.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/marked": "^5.0.2",
+    "tsx": "^4.19.1"
+  }
+}

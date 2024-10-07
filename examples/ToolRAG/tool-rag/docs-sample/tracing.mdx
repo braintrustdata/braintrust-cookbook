@@ -1,0 +1,1436 @@
+---
+title: "Tracing"
+---
+
+import { CodeTabs, TSTab, PYTab } from "#/ui/docs/code-tabs";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import { Callout } from "fumadocs-ui/components/callout";
+import Link from "fumadocs-core/link";
+
+# Tracing
+
+This guide walks through how to trace your code in Braintrust. Tracing is an
+invaluable tool for exploring the sub-components of your program which produce
+each top-level input and output. We currently support tracing in
+[logging](/docs/guides/logging) and [evaluations](/docs/guides/eval).
+
+Before proceeding, make sure to read the [quickstart](/docs) guide and setup
+an <Link href="/app/settings?subroute=api-keys" target="_blank">API key</Link>.
+
+![Logging Screenshot](./logging/Logging-Basic.png)
+
+## Traces: the building block of logs
+
+The core building blocks of logging are _spans_ and _traces_. A _span_
+represents a unit of work, with a start and end time, and optional fields like
+input, output, metadata, scores, and metrics (the same fields you can log in an
+[Experiment](/docs/guides/evals)). Each span contains one or more children,
+which are usually run within their parent span (e.g. a nested function call).
+Common examples of spans include LLM calls, vector searches, the steps of an
+agent chain, and model evaluations.
+
+Together, spans form a _trace_, which represents a single independent request.
+Each trace is visible as a row in the final table. Well-designed traces make it
+easy to understand the flow of your application, and to debug issues when they
+arise. The rest of this guide walks through how to log rich, helpful traces. The
+tracing API works the same way whether you are logging online (production
+logging) or offline (evaluations), so the examples below apply to either
+use-case.
+
+## Annotating your code
+
+To log a trace, you simply wrap the code you want to trace. Braintrust will
+automatically capture and log information behind the scenes.
+
+<CodeTabs>
+<TSTab>
+```javascript
+import { initLogger, traced, wrapTraced } from "braintrust";
+import OpenAI from "openai";
+import { ChatCompletionMessageParam } from "openai/resources";
+
+const logger = initLogger({
+projectName: "My Project",
+apiKey: process.env.BRAINTRUST_API_KEY,
+});
+
+const client = new OpenAI({
+apiKey: process.env.OPENAI_API_KEY,
+});
+
+// wrapTraced() automatically logs the input (args) and output (return value)
+// of this function to a span. To ensure the span is named `preparePrompt`,
+// you should name the inline function definition (inside of wrapTraced).
+const preparePrompt = wrapTraced(function preparePrompt(
+body: string,
+): ChatCompletionMessageParam[] {
+return [
+{ role: "system", content: "You are a helpful assistant." },
+{ role: "user", content: body },
+];
+});
+
+const someLLMFunction = wrapTraced(async function someLLMFunction(
+prompt: ChatCompletionMessageParam[],
+) {
+const result = await client.chat.completions.create({
+model: "gpt-4o",
+messages: prompt,
+});
+return result.choices[0].message.content;
+});
+
+export async function POST(req: Request) {
+  // You can use `traced(...)` to do more granular tracing. In this case, it
+  // allows us to first load the request's text before logging it.
+  return traced(async (span) => {
+    const text = await req.text();
+    const result = await someLLMFunction(await preparePrompt(text));
+    span.log({ input: text, output: result });
+    return result;
+  });
+}
+```
+</TSTab>
+
+<PYTab>
+```python
+import os
+
+from braintrust import init_logger, start_span, traced, wrap_openai
+from openai import OpenAI
+
+logger = init_logger(project="My Project")
+client = wrap_openai(OpenAI(api_key=os.environ["OPENAI_API_KEY"]))
+
+# @traced automatically logs the input (args) and output (return value)
+
+# of this function to a span.
+
+@traced
+def prepare_prompt(body):
+return [
+dict(role="system", content="You are a helpful assistant."),
+dict(role="user", content=body),
+]
+
+@traced
+def some_llm_function(prompt):
+result = client.chat.completions.create(
+model="gpt-4o",
+messages=prompt,
+)
+return result.choices[0].message.content
+
+def my_route_handler(req): # You can use `start_span()` to do more granular tracing. In this case, # it allows us to log `req.body`, rather than `req`, as the input.
+with start_span() as span:
+result = some_llm_function(prepare_prompt(req.body))
+span.log(input=req.body, output=result)
+return result
+
+````
+</PYTab>
+</CodeTabs>
+
+### Wrapping OpenAI
+
+Braintrust includes a wrapper for the OpenAI API that automatically logs your
+requests. To use it, simply call `wrapOpenAI`/`wrap_openai` on your OpenAI
+instance. We intentionally do _not_ [monkey
+patch](https://en.wikipedia.org/wiki/Monkey_patch) the libraries directly, so
+that you can use the wrapper in a granular way.
+
+<CodeTabs>
+<TSTab>
+```javascript
+import { OpenAI } from "openai";
+import { initLogger, traced, wrapOpenAI, wrapTraced } from "braintrust";
+
+const client = wrapOpenAI(new OpenAI());
+const logger = initLogger({
+  projectName: "My Project",
+  apiKey: process.env.BRAINTRUST_API_KEY,
+});
+
+async function someLLMFunction(text: string) {
+  const result = await client.chat.completions.create({
+    model: "gpt-4o",
+    messages: [{ role: "user", content: text }],
+  });
+  return result.choices[0]?.message.content;
+}
+
+export async function POST(req: Request) {
+  return traced(async (span) => {
+    const body = await req.json();
+    const result = await someLLMFunction(body.message);
+    span.log({
+      input: body,
+      output: result,
+      metadata: { user_id: body.user.id },
+    });
+    return result;
+  });
+}
+````
+
+</TSTab>
+
+<PYTab>
+
+```python
+import openai
+from braintrust import init_logger, start_span, traced, wrap_openai
+
+client = wrap_openai(openai.OpenAI())  # or in v0 syntax, openai = wrap_openai(openai)
+logger = init_logger(project="My Project")
+
+
+def some_llm_function(text):
+    result = client.chat.completions.create(model="gpt-4o", messages=[{"role": "user", "content": text}])
+    content = result.choices[0].message.content
+    return content
+
+
+def my_route_handler(req):
+    with start_span() as span:
+        result = some_llm_function(req.body["text"])
+        span.log(
+            input=req.body,
+            output=result,
+            metadata=dict(user_id=req.body["user"]["id"]),
+        )
+        return result
+```
+
+</PYTab>
+</CodeTabs>
+
+![Logging Result](/docs/assets/OpenAITrace.gif)
+
+<Callout type="info">
+  When using `wrapOpenAI`/`wrap_openai`, you technically do not need to use
+  `traced` or `start_span`. In fact, just initializing a logger is enough to
+  start logging LLM calls. If you use `traced` or `start_span`, you will create
+  more detailed traces that include the functions surrounding the LLM calls and
+  can group multiple LLM calls together.
+</Callout>
+
+#### Streaming metrics
+
+`wrap_openai`/`wrapOpenAI` will automatically log metrics like `prompt_tokens`, `completion_tokens`, and `total_tokens` for
+streaming LLM calls if the LLM API returns them. OpenAI only returns these metrics if you set `include_usage` to `true` in
+the `stream_options` parameter.
+
+<CodeTabs>
+<TSTab>
+```javascript
+import { OpenAI } from "openai";
+import { initLogger, traced, wrapOpenAI, wrapTraced } from "braintrust";
+
+const client = wrapOpenAI(new OpenAI());
+const logger = initLogger({
+projectName: "My Project",
+apiKey: process.env.BRAINTRUST_API_KEY,
+});
+
+async function main() {
+const result = await client.chat.completions.create({
+model: "gpt-4o",
+messages: [{ role: "user", content: "What is 1+1?" }],
+stream: true,
+stream_options: {
+include_usage: true,
+},
+});
+
+for await (const chunk of result) {
+console.log(chunk);
+}
+}
+
+main().catch(console.error);
+
+````
+</TSTab>
+
+<PYTab>
+```python
+import openai
+from braintrust import init_logger, start_span, traced, wrap_openai
+
+client = wrap_openai(openai.OpenAI())
+logger = init_logger(project="My Project")
+
+result = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "What is 1+1?"}],
+    stream=True,
+    stream_options={"include_usage": True},
+)
+
+for chunk in result:
+    print(chunk)
+
+````
+
+</PYTab>
+
+</CodeTabs>
+
+### Wrapping a custom LLM client
+
+If you're using your own client, you can wrap it yourself using the same conventions
+as the OpenAI wrapper. Feel free to check out the [Python](https://github.com/braintrustdata/braintrust-sdk/blob/main/py/src/braintrust/oai.py)
+and [Typescript](https://github.com/braintrustdata/braintrust-sdk/blob/main/js/src/wrappers/oai.ts#L4) implementations for reference.
+
+To track the span as an LLM, you must:
+
+- Specify the `type` as `llm`. You can specify any `name` you'd like. This enables LLM duration metrics.
+- Add `prompt_tokens`, `completion_tokens`, and `total_tokens` to the `metrics` field. This enables LLM token usage metrics.
+- Format the `input` as a list of messages (using the OpenAI format), and put other parameters (like `model`) in `metadata`. This enables the "Try prompt" button in the UI.
+
+<CodeTabs>
+<TSTab>
+```javascript
+import { initLogger, traced, wrapTraced } from "braintrust";
+
+const logger = initLogger({
+projectName: "My Project",
+apiKey: process.env.BRAINTRUST_API_KEY,
+});
+
+interface LLMCompletion {
+completion: string;
+metrics: {
+prompt_tokens: number;
+completion_tokens: number;
+};
+}
+
+async function callMyLLM(
+input: string,
+params: { temperature: number },
+): Promise<LLMCompletion> {
+// Replace with your custom LLM implementation
+return {
+completion: "Hello, world!",
+metrics: {
+prompt_tokens: input.length,
+completion_tokens: 10,
+},
+};
+}
+
+export const invokeCustomLLM = wrapTraced(
+  async function invokeCustomLLM(
+    llmInput: string,
+    params: { temperature: number },
+  ) {
+    return traced(async (span) => {
+      const result = await callMyLLM(llmInput, params);
+      const content = result.completion;
+      span.log({
+        input: [{ role: "user", content: llmInput }],
+        output: content,
+        metrics: {
+          prompt_tokens: result.metrics.prompt_tokens,
+          completion_tokens: result.metrics.completion_tokens,
+          total_tokens:
+            result.metrics.prompt_tokens + result.metrics.completion_tokens,
+        },
+        metadata: params,
+      });
+      return content;
+    });
+  },
+  {
+    type: "llm",
+    name: "Custom LLM",
+  },
+);
+
+export async function POST(req: Request) {
+  return traced(async (span) => {
+    const result = await invokeCustomLLM(await req.text(), {
+      temperature: 0.1,
+    });
+    span.log({ input: req.body, output: result });
+    return result;
+  });
+}
+```
+
+</TSTab>
+
+<PYTab>
+
+```python
+from braintrust import current_span, init_logger, start_span, traced
+
+logger = init_logger(project="My Project")
+
+
+def call_my_llm(input: str, params: dict) -> dict:
+    # Replace with your custom LLM implementation
+    return {
+        "completion": "Hello, world!",
+        "metrics": {
+            "prompt_tokens": len(input),
+            "completion_tokens": 10,
+        },
+    }
+
+
+# notrace_io=True prevents logging the function arguments as input, and lets us
+# log a more specific input format.
+@traced(type="llm", name="Custom LLM", notrace_io=True)
+def invoke_custom_llm(llm_input: str, params: dict):
+    result = call_my_llm(llm_input, params)
+    content = result["completion"]
+    current_span().log(
+        input=[{"role": "user", "content": llm_input}],
+        output=content,
+        metrics=dict(
+            prompt_tokens=result["metrics"]["prompt_tokens"],
+            completion_tokens=result["metrics"]["completion_tokens"],
+            total_tokens=result["metrics"]["prompt_tokens"] + result["metrics"]["completion_tokens"],
+        ),
+        metadata=params,
+    )
+    return content
+
+
+def my_route_handler(req):
+    with start_span() as span:
+        result = invoke_custom_llm(
+            dict(
+                body=req.body,
+                params=dict(temperature=0.1),
+            )
+        )
+        span.log(input=req.body, output=result)
+        return result
+```
+
+</PYTab>
+</CodeTabs>
+
+### Errors
+
+When you run:
+
+- Python code inside of the `@traced` decorator or within a `start_span()` context
+- Typescript code inside of `traced` (or a `wrappedTraced` function)
+
+Braintrust will automatically log any exceptions that occur within the span.
+
+![Error tracing](./tracing/error-tracing.png)
+
+Under the hood, every span has an `error` field which you can also log to directly.
+
+<CodeTabs>
+<TSTab>
+```javascript
+import { wrapTraced, currentSpan } from "braintrust";
+
+async function processRequest(input: string) {
+return input.length > 10
+? { error: "Input too long" }
+: { data: "Hello, world!" };
+}
+
+const requestHandler = wrapTraced(async function requestHandler(req: Request) {
+const body = await req.text();
+const result = await processRequest(body);
+if (result.error) {
+currentSpan().log({ error: result.error });
+} else {
+currentSpan().log({ input: req.body, output: result.data });
+}
+return result;
+});
+
+````
+</TSTab>
+<PYTab>
+```python
+from braintrust import current_span, traced
+
+
+def process_request(input):
+    if len(input) > 10:
+        return {"error": "Input too long"}
+    else:
+        return {"data": "Hello, world!"}
+
+
+@traced
+def request_handler(req):
+    result = some_llm_function(req.body)
+    if "error" in result:
+        current_span().log(error=result["error"])
+    else:
+        current_span().log(input=req.body, output=result["data"])
+    return result
+````
+
+</PYTab>
+</CodeTabs>
+
+### Deeply nested code
+
+Often, you want to trace functions that are deep in the call stack, without
+having to propagate the `span` object throughout. Braintrust uses async-friendly
+context variables to make this workflow easy:
+
+- The `traced` function/decorator will create a span underneath the
+  currently-active span.
+- The `currentSpan()` / `current_span()` method returns the currently active
+  span, in case you need to do additional logging.
+
+<CodeTabs>
+
+<TSTab>
+
+```javascript
+import {
+  currentSpan,
+  initLogger,
+  traced,
+  wrapOpenAI,
+  wrapTraced,
+} from "braintrust";
+import OpenAI from "openai";
+
+const logger = initLogger();
+const client = wrapOpenAI(
+  new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  }),
+);
+
+export const runLLM = wrapTraced(async function runLLM(input) {
+  const model = Math.random() > 0.5 ? "gpt-4o" : "gpt-4o-mini";
+  const result = await client.chat.completions.create({
+    model,
+    messages: [{ role: "user", content: input }],
+  });
+  const output = result.choices[0].message.content;
+  currentSpan().log({
+    metadata: {
+      randomModel: model,
+    },
+  });
+  return output;
+});
+
+export const someLogic = wrapTraced(async function someLogic(input: string) {
+  return await runLLM(
+    "You are a magical wizard. Answer the following question: " + input,
+  );
+});
+
+export async function POST(req: Request) {
+  return await traced(async () => {
+    const body = await req.json();
+    const result = await someLogic(body.text);
+    currentSpan().log({
+      input: body.text,
+      output: result,
+      metadata: { user_id: body.userId },
+    });
+    return result;
+  });
+}
+```
+
+</TSTab>
+
+<PYTab>
+
+```python
+import os
+import random
+
+from braintrust import current_span, init_logger, start_span, traced, wrap_openai
+from openai import OpenAI
+
+logger = init_logger()
+client = wrap_openai(OpenAI(api_key=os.environ["OPENAI_API_KEY"]))
+
+
+@traced
+def run_llm(input):
+    model = "gpt-4o" if random.random() > 0.5 else "gpt-4o-mini"
+    result = client.chat.completions.create(model=model, messages=[{"role": "user", "content": input}])
+    current_span().log(metadata={"randomModel": model})
+    return result.content
+
+
+@traced
+def some_logic(input):
+    return run_llm("You are a magical wizard. Answer the following question: " + input)
+
+
+def my_route_handler(req):
+    with start_span() as span:
+        output = some_logic(req.body)
+        span.log(input=req.body, output=output, metadata=dict(user_id=req.user.id))
+```
+
+</PYTab>
+
+</CodeTabs>
+
+## Multi-modal content
+
+Currently, in addition to text and structured data, Braintrust supports logging images. To log an image,
+simply provide an image URL or base64 encoded image as a string. The tree viewer will automatically render
+the image.
+
+![Image logging](./tracing/multimodal.png)
+
+The tree viewer will look at the URL or string to determine if it is an image. If you want to force the
+viewer to treat it as an image, then nest it in an object like
+
+```json
+{
+  "image_url": {
+    "url": "https://example.com/image.jpg"
+  }
+}
+```
+
+and the viewer will render it as an image. Base64 images must be rendered in URL format, just like the [OpenAI API](https://platform.openai.com/docs/guides/vision?lang=curl).
+For example:
+
+```json
+data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAApgAAAKYB3X3/OAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAANCSURBVEiJtZZPbBtFFMZ/M7ubXdtdb1xSFyeilBapySVU8h8OoFaooFSqiihIVIpQBKci6KEg9Q6H9kovIHoCIVQJJCKE1ENFjnAgcaSGC6rEnxBwA04Tx43t2FnvDAfjkNibxgHxnWb2e/u992bee7tCa00YFsffekFY+nUzFtjW0LrvjRXrCDIAaPLlW0nHL0SsZtVoaF98mLrx3pdhOqLtYPHChahZcYYO7KvPFxvRl5XPp1sN3adWiD1ZAqD6XYK1b/dvE5IWryTt2udLFedwc1+9kLp+vbbpoDh+6TklxBeAi9TL0taeWpdmZzQDry0AcO+jQ12RyohqqoYoo8RDwJrU+qXkjWtfi8Xxt58BdQuwQs9qC/afLwCw8tnQbqYAPsgxE1S6F3EAIXux2oQFKm0ihMsOF71dHYx+f3NND68ghCu1YIoePPQN1pGRABkJ6Bus96CutRZMydTl+TvuiRW1m3n0eDl0vRPcEysqdXn+jsQPsrHMquGeXEaY4Yk4wxWcY5V/9scqOMOVUFthatyTy8QyqwZ+kDURKoMWxNKr2EeqVKcTNOajqKoBgOE28U4tdQl5p5bwCw7BWquaZSzAPlwjlithJtp3pTImSqQRrb2Z8PHGigD4RZuNX6JYj6wj7O4TFLbCO/Mn/m8R+h6rYSUb3ekokRY6f/YukArN979jcW+V/S8g0eT/N3VN3kTqWbQ428m9/8k0P/1aIhF36PccEl6EhOcAUCrXKZXXWS3XKd2vc/TRBG9O5ELC17MmWubD2nKhUKZa26Ba2+D3P+4/MNCFwg59oWVeYhkzgN/JDR8deKBoD7Y+ljEjGZ0sosXVTvbc6RHirr2reNy1OXd6pJsQ+gqjk8VWFYmHrwBzW/n+uMPFiRwHB2I7ih8ciHFxIkd/3Omk5tCDV1t+2nNu5sxxpDFNx+huNhVT3/zMDz8usXC3ddaHBj1GHj/As08fwTS7Kt1HBTmyN29vdwAw+/wbwLVOJ3uAD1wi/dUH7Qei66PfyuRj4Ik9is+hglfbkbfR3cnZm7chlUWLdwmprtCohX4HUtlOcQjLYCu+fzGJH2QRKvP3UNz8bWk1qMxjGTOMThZ3kvgLI5AzFfo379UAAAAASUVORK5CYII=
+```
+
+## Tracing integrations
+
+### Vercel AI SDK
+
+The [Vercel AI SDK](https://sdk.vercel.ai/docs/ai-sdk-core) is an elegant tool for building AI-powered applications.
+You can wrap the SDK in Braintrust to automatically log your requests.
+
+```typescript
+import { initLogger, wrapAISDKModel } from "braintrust";
+import { openai } from "@ai-sdk/openai";
+
+const logger = initLogger({
+  projectName: "My Project",
+  apiKey: process.env.BRAINTRUST_API_KEY,
+});
+
+const model = wrapAISDKModel(openai.chat("gpt-3.5-turbo"));
+
+async function main() {
+  // This will automatically log the request, response, and metrics to Braintrust
+  const response = await model.doGenerate({
+    inputFormat: "messages",
+    mode: {
+      type: "regular",
+    },
+    prompt: [
+      {
+        role: "user",
+        content: [{ type: "text", text: "What is the capital of France?" }],
+      },
+    ],
+  });
+  console.log(response);
+}
+
+main();
+```
+
+### Instructor
+
+To use [Instructor](https://github.com/jxnl/instructor) to generate structured outputs, you need to wrap the
+OpenAI client with both Instructor and Braintrust. It's important that you call Braintrust's `wrap_openai` first,
+because it uses low-level usage info and headers returned by the OpenAI call to log metrics to Braintrust.
+
+```python
+import instructor
+from braintrust import init_logger, load_prompt, wrap_openai
+
+logger = init_logger(project="Your project name")
+
+
+def run_prompt(text: str):
+    # Replace with your project name and slug
+    prompt = load_prompt("Your project name", "Your prompt name")
+
+    # wrap_openai will make sure the client tracks usage of the prompt.
+    client = instructor.patch(wrap_openai(OpenAI()))
+
+    # Render with parameters
+    return client.chat.completions.create(**prompt.build(input=text), response_model=MyResponseModel)
+```
+
+### Langchain
+
+To trace Langchain code in Braintrust, you can use the `BraintrustTracer` callback handler. The callback
+handler is currently only supported in Python, but if you need support for other languages, please
+[let us know](mailto:support@braintrustdata.com).
+
+To use it, simply initialize a `BraintrustTracer` and pass it as a callback handler to langchain objects
+you create.
+
+```python
+from braintrust import Eval
+from braintrust.wrappers.langchain import BraintrustTracer
+from langchain.chains import LLMMathChain
+from langchain.chat_models import ChatOpenAI
+
+from autoevals import Levenshtein
+
+tracer = BraintrustTracer()
+
+llm = ChatOpenAI(model="gpt-3.5-turbo", callbacks=[tracer])
+llm_math = LLMMathChain.from_llm(llm, callbacks=[tracer])
+
+Eval(
+    "Calculator",
+    data=[{"input": "1+1", "expected": "2"}],
+    task=lambda input: llm_math.invoke(input),
+    scores=[Levenshtein],
+)
+```
+
+## Distributed tracing
+
+Sometimes it's useful to be able to start a trace in one process and continue it
+in a different one. For this purpose, Braintrust provides an `export` function
+which returns an opaque string identifier. This identifier can be passed to
+`start_span` to resume the trace elsewhere. Consider the following example of
+tracing across separate client and server processes.
+
+### Client code
+
+<CodeTabs>
+<TSTab>
+```typescript
+import { currentSpan, initLogger, wrapTraced } from "braintrust";
+import { ChatCompletionMessageParam } from "openai/resources";
+
+const logger = initLogger({ projectName: "my-project" });
+
+async function remoteChatCompletion(args: {
+model: string;
+messages: ChatCompletionMessageParam[];
+extraHeaders?: Record<string, string>;
+}) {
+// This is a placeholder for code that would call a remote service
+}
+
+const bedTimeStory = wrapTraced(async function bedtimeStory(input: {
+summary: string;
+length: number;
+}) {
+return await remoteChatCompletion({
+model: "gpt-3.5-turbo",
+messages: [
+{
+role: "system",
+content:
+"Come up with a bedtime story with the following summary and approximate length (in words)",
+},
+{
+role: "user",
+content: `summary: ${input.summary}\nlength: ${input.length}`,
+},
+],
+extraHeaders: {
+request_id: await currentSpan().export(),
+},
+});
+});
+
+````
+</TSTab>
+<PYTab>
+
+```python
+from braintrust import current_span, init_logger, traced
+
+logger = init_logger(project="my-project")
+
+
+def remote_chat_completion(args):
+    # This is a placeholder for code that would call a remote service
+    pass
+
+
+@traced
+def bedtime_story(summary, length):
+    return remote_chat_completion(
+        model="gpt-3.5-turbo",
+        messages=[
+            {
+                "role": "system",
+                "content": "Come up with a bedtime story with the following summary and approximate length (in words)",
+            },
+            {
+                "role": "user",
+                "content": f"summary: {summary}\nlength: {length}",
+            },
+        ],
+        extra_headers={
+            "request_id": current_span().export(),
+        },
+    )
+````
+
+</PYTab>
+
+</CodeTabs>
+
+### Server code
+
+<CodeTabs>
+
+<TSTab>
+
+```javascript
+import { traced, wrapOpenAI } from "braintrust";
+import OpenAI from "openai";
+import { ChatCompletionMessageParam } from "openai/resources";
+
+const client = wrapOpenAI(
+  new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  }),
+);
+
+async function serverSideChatCompletion(request: {
+  model: string;
+  messages: ChatCompletionMessageParam[];
+  headers?: Record<string, string>;
+}) {
+  return await traced(
+    async (span) => {
+      const output = await client.chat.completions.create({
+        model: request.model,
+        messages: request.messages,
+      });
+      return output.choices[0].message.content;
+    },
+    {
+      name: "text_generator_server",
+      type: "llm",
+      // This will be a fresh, root-level trace if headers or request_id are undefined,
+      // or will create sub-spans under the parent trace if they are defined.
+      parent: request.headers?.request_id,
+    },
+  );
+}
+```
+
+</TSTab>
+
+<PYTab>
+
+```python
+from braintrust import SpanTypeAttribute, start_span
+
+
+@router.post("/chat/completion")
+def chat_completion(request):
+    with start_span(
+        name="text_generator_server", type=SpanTypeAttribute.LLM, parent=request.headers["request_id"]
+    ) as span:
+        output = invoke_llm(request.body)
+        span.log(input=request.body, output=output["completion"], metrics={"tokens": output["tokens"]})
+        return output["completion"]
+```
+
+</PYTab>
+
+</CodeTabs>
+
+## Updating spans
+
+Similar to distributed tracing, it can be useful to update spans after you initially log them.
+For example, if you collect the output of a span asynchronously.
+
+The `Experiment` and `Logger` classes each have an `updateSpan()` method, which you can call with
+the span's id to perform an update:
+
+<CodeTabs>
+<TSTab>
+```typescript #skip-compile
+import { initLogger, wrapTraced, currentSpan } from "braintrust";
+
+const logger = initLogger({
+projectName: "my-project", // Replace with your project name
+apiKey: process.env.BRAINTRUST_API_KEY, // Replace with your API key
+});
+
+const startRequest = wrapTraced(async function startRequest(request) {
+const handle = startSomething(request.body);
+return {
+result: handle,
+spanId: currentSpan().id,
+};
+});
+
+const finishRequest = wrapTraced(async function finishRequest(handle, spanId) {
+const result = await finishSomething(handle);
+logger.updateSpan({
+id: spanId,
+output: result,
+});
+return result;
+});
+
+````
+</TSTab>
+<PYTab>
+```python
+from braintrust import current_span, init_logger, traced
+
+logger = init_logger(project="my-project")
+
+
+@traced
+def start_request(request):
+    handle = start_something(request.body)
+    return {
+        "result": handle,
+        "span_id": current_span().id,
+    }
+
+
+def finish_request(handle, span_id):
+    result = finish_something(handle)
+    logger.update_span(
+        id=span_id,
+        output=result,
+    )
+    return result
+````
+
+</PYTab>
+</CodeTabs>
+
+You can also use `span.export()` to export the span in a fully contained string, which is useful if you
+have multiple loggers or perform the update from a different service.
+
+<CodeTabs>
+<TSTab>
+```typescript #skip-compile
+import { initLogger, wrapTraced, currentSpan, updateSpan } from "braintrust";
+
+const logger = initLogger({
+projectName: "my-project", // Replace with your project name
+apiKey: process.env.BRAINTRUST_API_KEY, // Replace with your API key
+});
+
+const startRequest = wrapTraced(async function startRequest(request) {
+const handle = startSomething(request.body);
+return {
+result: handle,
+exported: currentSpan().export(),
+};
+});
+
+const finishRequest = wrapTraced(
+async function finishRequest(handle, exported) {
+const result = await finishSomething(handle);
+updateSpan({
+exported,
+output: result,
+});
+return result;
+},
+);
+
+````
+
+</TSTab>
+
+<PYTab>
+```python
+from braintrust import current_span, init_logger, update_span
+
+logger = init_logger(project="my-project")
+
+
+def start_request(request):
+    handle = start_something(request.body)
+    return {
+        "result": handle,
+        "exported": current_span().export(),
+    }
+
+
+def finish_request(handle, exported):
+    result = await finish_something(handle)
+    update_span(
+        exported=exported,
+        output=result,
+    )
+    return result
+````
+
+</PYTab>
+</CodeTabs>
+
+<Callout type="warn">
+It's important to make sure the update happens _after_ the original span has been logged, otherwise
+they can trample on each other.
+
+Distributed tracing is designed specifically to prevent this edge case, and instead works by logging
+a new (sub) span.
+
+</Callout>
+
+## Manually managing spans
+
+In more complicated environments, it may not always be possible to wrap the
+entire duration of a span within a single block of code. In such cases, you can
+always pass spans around manually.
+
+Consider this hypothetical server handler, which logs to a span incrementally
+over several distinct callbacks:
+
+<CodeTabs>
+
+<TSTab>
+
+```javascript
+import {
+  Span,
+  initLogger,
+  startSpan,
+  wrapOpenAI,
+  wrapTraced,
+} from "braintrust";
+import { OpenAI } from "openai";
+
+const client = wrapOpenAI(new OpenAI({ apiKey: process.env.OPENAI_API_KEY }));
+const logger = initLogger({ projectName: "My long-running project" });
+
+const computeOutput = wrapTraced(async function computeOutput(
+  systemPrompt: string,
+  userInput: string,
+  parentSpan: Span,
+) {
+  return await client.chat.completions.create({
+    model: "gpt-3.5-turbo",
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userInput },
+    ],
+  });
+});
+
+class MyHandler {
+  private liveSpans: Record<string, { span: Span; input: string }>;
+
+  constructor() {
+    this.liveSpans = {};
+  }
+
+  async onRequestStart(requestId: string, input: string, expected: string) {
+    const span = startSpan({ name: requestId, event: { input, expected } });
+    this.liveSpans[requestId] = { span, input };
+  }
+
+  async onGetOutput(requestId: string, systemPrompt: string) {
+    const { span, input } = this.liveSpans[requestId];
+    const output = await computeOutput(systemPrompt, input, span);
+    span.log({ output });
+  }
+
+  async onRequestEnd(requestId: string, metadata: Record<string, string>) {
+    const { span } = this.liveSpans[requestId];
+    delete this.liveSpans[requestId];
+    span.log({ metadata });
+    span.end();
+  }
+}
+```
+
+</TSTab>
+
+<PYTab>
+
+```python
+from braintrust import init_logger, start_span, traced
+from openai import OpenAI
+
+client = OpenAI()
+logger = init_logger("My long-running project")
+
+
+@traced
+def compute_output(system_prompt, user_input, parent_span):
+    return client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            dict(role="system", content=system_prompt),
+            dict(role="user", content=user_input),
+        ],
+    )
+
+
+class MyHandler:
+    def __init__(self):
+        self._live_spans = dict()
+
+    def on_request_start(self, request_id, input, expected):
+        span = start_span(name=request_id, input=input, expected=expected)
+        self._live_spans[request_id] = dict(span=span, input=input)
+
+    def on_get_output(self, request_id, system_prompt):
+        span_info = self._live_spans[request_id]
+        span, input = span_info["span"], span_info["input"]
+        output = compute_output(system_prompt, input, span)
+        span.log(output=output)
+
+    def on_request_end(self, request_id, metadata):
+        span = self._live_spans.pop(request_id)["span"]
+        span.log(metadata=metadata)
+        span.end()
+```
+
+</PYTab>
+
+</CodeTabs>
+
+## Custom span iframes
+
+Although the built-in span viewers cover a variety of different cases—yaml, json, markdown, LLM calls, and more—you may
+want to further customize the display of your span data. For example, you could include the id of an internal database
+and want to fetch and display its contents in the span viewer. Or, you may want to reformat the data in the span in a way
+that's more useful for your use case than the built-in options.
+
+To support these use cases, Braintrust supports custom span iframe viewers. To enable a span iframe, visit the configuration
+section of a project, and create one. You can define the URL, and then customize its behavior:
+
+- Provide a title, which is displayed at the top of the section.
+- Provide, via [mustache](https://mustache.github.io/mustache.5.html), template parameters to the URL. These parameters are
+  in terms of the top-level span fields, e.g. `{{input}}`, `{{output}}`, `{{expected}}`, etc. or their subfields, e.g.
+  `{{input.question}}`.
+- Allow Braintrust to send a message to the iframe with the span data, which is useful when the data may be very large and
+  not fit in a URL.
+
+![Span iframe](./tracing/span-iframe.png)
+_In this example, the "Table" section is a custom span iframe._
+
+### Iframe message format
+
+In Zod format, the message schema looks like this:
+
+```typescript
+import { z } from "zod";
+
+export const settingsMessageSchema = z.object({
+  type: z.literal("settings"),
+  settings: z.object({
+    theme: z.enum(["light", "dark"]),
+    // This is not currently used, but in the future, span iframes will support
+    // editing and sending back data.
+    readOnly: z.boolean(),
+  }),
+});
+
+export const dataMessageSchema = z.object({
+  type: z.literal("data"),
+  data: z.object({
+    input: z.array(z.record(z.unknown())),
+  }),
+});
+
+export const messageSchema = z.union([
+  settingsMessageSchema,
+  dataMessageSchema,
+]);
+```
+
+### Example code
+
+To help you get started, check out the [braintrustdata/braintrust-viewers](https://github.com/braintrustdata/braintrust-viewers)
+repository on Github, which contains example code for rendering a table, x/tweet, and more.
+
+## Importing and exporting spans
+
+Spans are processed in Braintrust as a simple format, consisting of `input`, `output`, `expected`, `metadata`, `scores`,
+and `metrics` fields (all optional), as well as a few system-defined fields which you usually do not need to mess with, but
+are described below for completeness. This simple format makes
+it easy to import spans captured in other systems (e.g. languages other than Typescript/Python), or to export spans from
+Braintrust to consume in other systems.
+
+### Underlying format
+
+The underlying span format contains a number of fields which are not exposed directly through the SDK, but are useful to
+understand when importing/exporting spans.
+
+- `id` is a unique identifier for the span, within the container (e.g. an experiment, or logs for a project). You can technically
+  set this field yourself (to overwrite a span), but it is recommended to let Braintrust generate it automatically.
+- `input`, `output`, `expected`, `scores`, `metadata`, and `metrics` are optional fields which describe the span and are exposed in the
+  Braintrust UI. When you use the Typescript or Python SDK, these fields are validated for you (e.g. scores must be a mapping from strings
+  to numbers between 0 and 1).
+- `span_attributes` contains attributes about the span. Currently the recognized attributes are `name`, which is
+  used to display the span name in the UI, and `type`, which displays a helpful icon. `type` should be one of `"llm"`, `"score"`, `"function"`,
+  `"eval"`, `"task"`, or `"tool"`.
+- Depending on the container, e.g. an experiment, or project logs, or a dataset, fields like `project_id`, `experiment_id`, `dataset_id`, and
+  `log_id` are set automatically, by the SDK, so the span can be later retrieved by the UI and API. You should not set these fields yourself.
+- `span_id`, `root_span_id`, and `span_parents` are used to construct the span tree and are automatically set by Braintrust. You should not
+  set these fields yourself, but rather let the SDK create and manage them (even if importing from another system).
+
+When importing spans, the only fields you should need to think about are `input`, `output`, `expected`, `scores`, `metadata`, and `metrics`.
+You can use the SDK to populate the remaining fields, which the next section covers with an example.
+
+Here is an example of a span in the underlying format:
+
+```json
+{
+  "id": "385052b6-50a2-43b4-b52d-9afaa34f0bff",
+  "input": {
+    "question": "What is the origin of the customer support issue??"
+  },
+  "output": {
+    "answer": "The customer support issue originated from a bug in the code.",
+    "sources": ["http://www.example.com/faq/1234"]
+  },
+  "expected": {
+    "answer": "Bug in the code that involved dividing by zero.",
+    "sources": ["http://www.example.com/faq/1234"]
+  },
+  "scores": {
+    "Factuality": 0.6
+  },
+  "metadata": {
+    "pos": 1
+  },
+  "metrics": {
+    "end": 1704872988.726753,
+    "start": 1704872988.725727
+    // Can also include `tokens`, etc. here
+  },
+  "project_id": "d709efc0-ac9f-410d-8387-345e1e5074dc",
+  "experiment_id": "51047341-2cea-4a8a-a0ad-3000f4a94a96",
+  "created": "2024-01-10T07:49:48.725731+00:00",
+  "span_id": "70b04fd2-0177-47a9-a70b-e32ca43db131",
+  "root_span_id": "68b4ef73-f898-4756-b806-3bdd2d1cf3a1",
+  "span_parents": ["68b4ef73-f898-4756-b806-3bdd2d1cf3a1"],
+  "span_attributes": {
+    "name": "doc_included"
+  }
+}
+```
+
+### Example import/export
+
+The following example walks through how to generate spans in one program and then import them to Braintrust
+in a script. You can use this pattern to support tracing or running experiments in environments that use programming
+languages other than Typescript/Python (e.g. Kotlin, Java, Go, Ruby, Rust, C++), or codebases that cannot integrate the
+Braintrust SDK directly.
+
+#### Generating spans
+
+The following example runs a simple LLM app and collects logging information at each stage of the process, without using
+the Braintrust SDK. This could be implemented in any programming language, and you certainly do not need to collect or process
+information this way. All that matters is that your program generates a useful format that you can later parse and use to import
+the spans using the SDK.
+
+```python
+import json
+import time
+
+import openai
+
+client = openai.OpenAI()
+
+
+def run_llm(input, **params):
+    start = time.time()
+    messages = [{"role": "user", "content": input}]
+    result = client.chat.completions.create(
+        model="gpt-3.5-turbo", messages=[{"role": "user", "content": input}], **params
+    )
+    end = time.time()
+    return {
+        "input": messages,
+        "output": result.choices[0].message.dict(),
+        "metadata": {"model": "gpt-3.5-turbo", "params": params},
+        "metrics": {
+            "start": start,
+            "end": end,
+            "tokens": result.usage.total_tokens,
+            "prompt_tokens": result.usage.prompt_tokens,
+            "completion_tokens": result.usage.completion_tokens,
+        },
+        "name": "OpenAI Chat Completion",
+    }
+
+
+PROMPT_TEMPLATE = "Answer the following question: %s"
+
+
+def run_input(question, expected):
+    result = run_llm(PROMPT_TEMPLATE % question, max_tokens=32)
+    return {
+        "input": question,
+        "output": result["output"]["content"],
+        # Expected is propagated here to make it easy to use it in the import
+        # script, but it's not strictly needed to be here.
+        "expected": expected,
+        "metadata": {
+            "template": PROMPT_TEMPLATE,
+        },
+        "children": [result],
+        "name": "run_input",
+    }
+
+
+if __name__ == "__main__":
+    for question, expected in [
+        [
+            "What is 1+1?",
+            "2.",
+        ],
+        [
+            "Which is larger, the sun or the moon?",
+            "The sun.",
+        ],
+    ]:
+        print(json.dumps(run_input(question, expected)))
+```
+
+Running this script produces output like:
+
+```json
+{"input": "What is 1+1?", "output": "The sum of 1+1 is 2.", "expected": "2.", "metadata": {"template": "Answer the following question: %s"}, "children": [{"input": [{"role": "user", "content": "Answer the following question: What is 1+1?"}], "output": {"content": "The sum of 1+1 is 2.", "role": "assistant", "function_call": null, "tool_calls": null}, "metadata": {"model": "gpt-3.5-turbo", "params": {"max_tokens": 32}}, "metrics": {"start": 1704916642.978631, "end": 1704916643.450115, "tokens": 30, "prompt_tokens": 19, "completion_tokens": 11}, "name": "OpenAI Chat Completion"}], "name": "run_input"}
+{"input": "Which is larger, the sun or the moon?", "output": "The sun is larger than the moon.", "expected": "The sun.", "metadata": {"template": "Answer the following question: %s"}, "children": [{"input": [{"role": "user", "content": "Answer the following question: Which is larger, the sun or the moon?"}], "output": {"content": "The sun is larger than the moon.", "role": "assistant", "function_call": null, "tool_calls": null}, "metadata": {"model": "gpt-3.5-turbo", "params": {"max_tokens": 32}}, "metrics": {"start": 1704916643.450675, "end": 1704916643.839096, "tokens": 30, "prompt_tokens": 22, "completion_tokens": 8}, "name": "OpenAI Chat Completion"}], "name": "run_input"}
+```
+
+#### Importing spans
+
+The following program uses the Braintrust SDK in Python to import the spans generated by the previous script. Again, you can
+modify this program to fit the needs of your environment, e.g. to import spans from a different source or format.
+
+```python
+import json
+import sys
+
+import braintrust
+
+from autoevals import Factuality
+
+
+def upload_tree(span, node, **kwargs):
+    span.log(
+        input=node.get("input"),
+        output=node.get("output"),
+        expected=node.get("expected"),
+        metadata=node.get("metadata"),
+        metrics=node.get("metrics"),
+        **kwargs,
+    )
+    for c in node.get("children", []):
+        with span.start_span(name=c.get("name")) as span:
+            upload_tree(span, c)
+
+
+if __name__ == "__main__":
+    # This could be another container, like a log stream initialized
+    # via braintrust.init_logger()
+    experiment = braintrust.init("My Support App")
+
+    factuality = Factuality()
+    for line in sys.stdin:
+        tree = json.loads(line)
+        with experiment.start_span(name="task") as span:
+            upload_tree(span, tree)
+            with span.start_span(name="Factuality"):
+                score = factuality(input=tree["input"], output=tree["output"], expected=tree["expected"])
+            span.log(
+                scores={
+                    "factuality": score.score,
+                },
+                # This will merge the metadata from the factuality score with the
+                # metadata from the tree.
+                metadata={"factuality": score.metadata},
+            )
+
+    print(experiment.summarize())
+```
+
+## Frequently asked questions
+
+### How do I disable logging?
+
+If you are not running an eval or logging, then the tracing code will be a no-op with negligible
+performance overhead. In other words, if you do not call `initLogger`/`init_logger`/`init`, in your
+code, then the tracing annotations are a no-op.
+
+### What happens if Braintrust fails to log a span?
+
+If the Braintrust SDK cannot log for some reason (e.g. a network issue), then your application should
+not be affected. All logging operations run in a background thread, including api key validation,
+project/experiment registration, and flushing logs.
+
+When errors occur, the SDK retries a few times before eventually giving up. You'll see loud warning messages
+when this occurs. And you can tune this behavior via the environment variables defined in [Tuning parameters](#tuning-parameters).
+
+### How do I trace from languages other than Typescript/Python?
+
+You can use the Braintrust API to import spans from other languages. See the
+[import/export](#importing-and-exporting-spans) section for details. We are also
+exploring support for other languages. Feel free to [reach out](mailto:support@braintrustdata.com)
+if you have a specific request.
+
+### What are the limitations of the trace data structure? Can I trace a graph?
+
+A trace is a directed acyclic graph (DAG) of spans. Each span can have multiple parents, but most
+executions are a tree of spans. Currently, the UI only supports displaying a single root span, due to
+the popularity of this pattern.
+
+## Troubleshooting
+
+### Tuning Parameters
+
+The SDK includes several tuning knobs that may prove useful for debugging.
+
+- `BRAINTRUST_SYNC_FLUSH`: By default, the SDKs will log to the backend API in
+  the background, asynchronously. Logging is automatically batched and retried
+  upon encountering network errors. If you wish to have fine-grained control over
+  when logs are flushed to the backend, you may set `BRAINTRUST_SYNC_FLUSH=1`.
+  When true, flushing will only occur when you run `Experiment.flush` (or any of
+  the other object flush methods). If the flush fails, the SDK will raise an
+  exception which you can handle.
+- `BRAINTRUST_MAX_REQUEST_SIZE`: The SDK logger batches requests to save on
+  network roundtrips. The batch size is tuned for the AWS lambda gateway, but you
+  may adjust this if your backend has a different max payload requirement.
+- `BRAINTRUST_DEFAULT_BATCH_SIZE`: The maximum number of individual log messages
+  that are sent to the network in one payload.
+- `BRAINTRUST_NUM_RETRIES`: The number of times the logger will attempt to retry
+  network requests before failing.
+- `BRAINTRUST_QUEUE_SIZE` (Python only): The maximum number of elements in the
+  logging queue. This value limits the memory usage of the logger. Logging
+  additional elements beyond this size will block the calling thread. You may set
+  the queue size to unlimited (and thus non-blocking) by passing
+  `BRAINTRUST_QUEUE_SIZE=0`.
+- `BRAINTRUST_QUEUE_DROP_WHEN_FULL` (Python only): Useful in conjunction with
+  `BRAINTRUST_QUEUE_SIZE`. Change the behavior of the queue from blocking when it
+  reaches its max size to dropping excess elements. This can be useful for
+  guaranteeing non-blocking execution, at the cost of possibly dropping data.
+- `BRAINTRUST_QUEUE_DROP_EXCEEDING_MAXSIZE` (Javascript only): Essentially a
+  combination of `BRAINTRUST_QUEUE_SIZE` and `BRAINTRUST_QUEUE_DROP_WHEN_FULL`,
+  which changes the behavior of the queue from storing an unlimited number of
+  elements to capping out at the specified value. Additional elements are
+  discarded.
+- `BRAINTRUST_FAILED_PUBLISH_PAYLOADS_DIR`: Sometimes errors occur when writing
+  records to the backend. To aid in debugging errors, you may set this
+  environment variable to a directory of choice, and Braintrust will save any
+  payloads it failed to publish to this directory.
+- `BRAINTRUST_ALL_PUBLISH_PAYLOADS_DIR`: Analogous to
+  `BRAINTRUST_FAILED_PUBLISH_PAYLOADS_DIR`, except that Braintrust will save all
+  payloads to this directory.

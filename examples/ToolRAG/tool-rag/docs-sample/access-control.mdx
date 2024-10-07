@@ -1,0 +1,88 @@
+---
+title: "Access control"
+---
+
+import Link from "fumadocs-core/link";
+import { Callout } from "fumadocs-ui/components/callout";
+
+# Access control
+
+Braintrust has a robust and flexible access control system.
+It's possible to grant user permissions at both the organization level as well
+as scoped to individual objects within Braintrust (projects, experiments, logs, datasets, prompts, and playgrounds).
+
+## Permission Groups
+
+The core concept of Braintrust's access control system is the permission group. Permission groups are collections of users that can be granted specific permissions.
+Braintrust has three pre-configured Permission Groups that are scoped to the organization.
+
+1. **Owners** - Unrestricted access to the organization, its data, and its settings. Can add, modify, and delete projects and all other resources. Can invite and remove members and can manage group membership.
+2. **Engineers** - Can access, create, update, and delete projects and all resources within projects. Cannot invite or remove members or manage access to resources.
+3. **Viewers** - Can access projects and all resources within projects. Cannot create, update, or delete any resources. Cannot invite or remove members or manage access to resources.
+
+If your access control needs are simple and you do not need to restrict access to individual projects, these ready-made permission groups may be all that you need.
+
+A new user can be added to one of these three groups when you invite them to your organization.
+
+![Built-in Permission Groups](./access-control/built-in-permission-groups.png)
+
+## Creating custom permission groups
+
+In addition to the built-in permission groups, it's possible to create your own groups as well.
+To do so, go to the 'Permission groups' page of Settings and click on the 'Create permission group' button.
+Give your group a name and a description and then click 'Create'.
+
+![Create group](./access-control/create-group.png)
+
+To set organization-level permissions for your new group, find the group in the groups list and click on the Permissions button.
+
+![Custom group permissions](./access-control/custom-group-permissions.png)
+
+<Callout type="info">
+  The 'Manage Access' permission should be granted judiciously as it is a
+  super-user permission. It gives the user the ability to add and remove
+  permissions, thus any user with 'Manage Access' gains the ability to grant all
+  other permissions to themselves. \ \ The 'Manage Settings' permission grants
+  users the ability to change organization-level settings like the API URL.
+</Callout>
+
+## Project scoped permissions
+
+To limit access to a specific project, create a new permission group from the Settings page.
+![Project level permissions](./access-control/create-project-level.png)
+
+Navigate to the Configuration page of that project, and click on the Permissions link in the context menu.
+
+![Project level permissions](./access-control/project-level-permissions.png)
+
+Search for your group by typing in the text input at the top of the page, and then click the pencil icon next to the group to set permissions.
+![Search for group](./access-control/search-for-group.png)
+
+Set the project-level permissions for your group and click Save.
+![Set project level permissions](./access-control/set-project-level-permissions.png)
+
+## Object scoped permissions
+
+To limit access to a particular object (experiment, dataset, log, prompt, or playground) within a project, first create a permission group for those users on the 'Permission groups' section of Settings.
+![Create experiment level group](./access-control/create-experiment-level-group.png)
+
+Next, navigate to the Configuration page of the project that holds that object and grant the group 'Read' permission at the project level.
+This will allow users in that group to navigate to the project in the Braintrust UI.
+![Experiment level project permissions](./access-control/experiment-level-project-permissions.png)
+
+![Setting project permissions for experiment](./access-control/read-on-project-for-your-experiment.png)
+
+Finally, navigate to your object and select Permissions from the context menu in the top-right of that object's page.
+![Experiment level project permissions](./access-control/experiment-level-permissions-link.png)
+
+Find the permission group via the search input, and click the pencil icon to set permissions for the group.
+![Experiment level find group](./access-control/experiment-level-find-group.png)
+
+Set the desired permissions for the group scoped to this specific object.
+![Experiment level find group](./access-control/experiment-level-set-permissions.png)
+
+## API support
+
+If you need to automate the creation of permission groups and their access control rules, you can use the Braintrust API.
+The documentation for operating on permission groups via the API is [here](/docs/reference/api#list-groups).
+The documentation for manipulating permissions is [here](/docs/reference/api#list-acls).
