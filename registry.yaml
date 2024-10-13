@@ -167,3 +167,12 @@
     - functions
     - rag
     - tools
+- title: How to craft an effective LLM-as-a-judge
+  path: examples/Crafting-LLM-as-a-Judge/Crafting-LLM-as-a-Judge.ipynb
+  date: 2024-10-03
+  authors:
+    - ankrgyl
+  tags:
+    - evals
+    - llm-as-a-judge
+    - tools
