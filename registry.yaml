@@ -169,7 +169,7 @@
     - tools
 - title: How to craft an effective LLM-as-a-judge
   path: examples/Crafting-LLM-as-a-Judge/Crafting-LLM-as-a-Judge.ipynb
-  date: 2024-10-03
+  date: 2024-10-14
   authors:
     - ankrgyl
   tags:
