@@ -167,7 +167,7 @@
     - functions
     - rag
     - tools
-- title: How to craft an effective LLM-as-a-judge
+- title: Creating an LLM-as-a-judge scorer to detect hallucinations
   path: examples/Crafting-LLM-as-a-Judge/Crafting-LLM-as-a-Judge.ipynb
   date: 2024-10-14
   authors:
