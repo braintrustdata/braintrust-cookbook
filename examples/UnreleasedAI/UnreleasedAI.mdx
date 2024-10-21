@@ -67,7 +67,7 @@ Save the prompt, and it will be automatically updated in your your app – try i
 
 Running a prompt as an AI function is a faster and simpler way to iterate on your prompts and decide which model is right for your use case, and it comes out-of-the-box in Braintrust. Normally, you would need to choose a model upfront, hardcode the prompt text, and manage boilerplate code from various SDKs and observability tools. Once you create a prompt in Braintrust, you can invoke it with the arguments you created.
 
-In [app/generate/route.ts](http://route.ts), the prompt is invoked with three arguments: `url`, `since`, and `commits`.
+In [app/generate/route.ts](https://github.com/braintrustdata/unreleased-ai/blob/b611052e8a4705a098cbccbb71cdaa6cc18f2d35/app/generate/route.ts#L38), the prompt is invoked with three arguments: `url`, `since`, and `commits`.
 
 ```typescript
 return await invoke({
