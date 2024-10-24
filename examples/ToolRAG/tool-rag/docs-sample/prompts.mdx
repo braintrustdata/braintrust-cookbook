@@ -104,7 +104,7 @@ to push the function to Braintrust. Once the command completes, you should see t
 ![Tool code in library](./prompts/github-tool.png)
 
 <Callout type="warn">
-  Currently, tools must be defined in Typescript, but we are working on adding
+  Currently, tools must be defined in TypeScript, but we are working on adding
   Python support.
 </Callout>
 
@@ -508,7 +508,7 @@ optional arguments:
 ```
 
 <Callout type="warn">
-  Currently, `braintrust pull` only supports Typescript.
+  Currently, `braintrust pull` only supports TypeScript.
 </Callout>
 
 When you run `braintrust pull`, you can specify a project name, prompt slug, or version to pull. If you don't specify
@@ -609,7 +609,7 @@ prompt = load_prompt(
 
 ### Chat vs. completion format
 
-In Python, `prompt.build()` returns a dictionary with chat or completion parameters, depending on the prompt type. In Typescript, however,
+In Python, `prompt.build()` returns a dictionary with chat or completion parameters, depending on the prompt type. In TypeScript, however,
 `prompt.build()` accepts an additional parameter (`flavor`) to specify the format. This allows `prompt.build` to be used in a more type-safe
 manner. When you specify a flavor, the SDK also validates that the parameters are correct for that format.
 
