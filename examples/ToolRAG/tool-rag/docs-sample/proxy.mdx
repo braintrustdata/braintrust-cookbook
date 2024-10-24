@@ -35,7 +35,7 @@ To read more about why we launched the AI proxy, check out our [blog post](/blog
 You can use your favorite OpenAI drivers, and simply set the base url to `https://api.braintrust.dev/v1/proxy`.
 Try running the following script in your favorite language, twice.
 
-<CodeTabs items={['Typescript', 'Python', 'cURL']}>
+<CodeTabs items={['TypeScript', 'Python', 'cURL']}>
 <TSTab>
 ```typescript
 import { OpenAI } from "openai";
@@ -129,7 +129,7 @@ The cache follows the following rules:
 
 You can set the cache by passing the `x-bt-use-cache` header to your request. For example, to always use the cache,
 
-<CodeTabs items={['Typescript', 'Python', 'cURL']}>
+<CodeTabs items={['TypeScript', 'Python', 'cURL']}>
 <TSTab>
 ```javascript
 import { OpenAI } from "openai";
@@ -250,7 +250,7 @@ prices for experiment runs.
 If you are part of multiple organizations, you can specify which organization to use by passing the `x-bt-org-name`
 header in the SDK:
 
-<CodeTabs items={['Typescript', 'Python', 'cURL']}>
+<CodeTabs items={['TypeScript', 'Python', 'cURL']}>
 <TSTab>
 
 ```javascript

@@ -282,7 +282,7 @@ for chunk in result:
 
 If you're using your own client, you can wrap it yourself using the same conventions
 as the OpenAI wrapper. Feel free to check out the [Python](https://github.com/braintrustdata/braintrust-sdk/blob/main/py/src/braintrust/oai.py)
-and [Typescript](https://github.com/braintrustdata/braintrust-sdk/blob/main/js/src/wrappers/oai.ts#L4) implementations for reference.
+and [TypeScript](https://github.com/braintrustdata/braintrust-sdk/blob/main/js/src/wrappers/oai.ts#L4) implementations for reference.
 
 To track the span as an LLM, you must:
 
@@ -421,7 +421,7 @@ def my_route_handler(req):
 When you run:
 
 - Python code inside of the `@traced` decorator or within a `start_span()` context
-- Typescript code inside of `traced` (or a `wrappedTraced` function)
+- TypeScript code inside of `traced` (or a `wrappedTraced` function)
 
 Braintrust will automatically log any exceptions that occur within the span.
 
@@ -1163,7 +1163,7 @@ repository on Github, which contains example code for rendering a table, x/tweet
 Spans are processed in Braintrust as a simple format, consisting of `input`, `output`, `expected`, `metadata`, `scores`,
 and `metrics` fields (all optional), as well as a few system-defined fields which you usually do not need to mess with, but
 are described below for completeness. This simple format makes
-it easy to import spans captured in other systems (e.g. languages other than Typescript/Python), or to export spans from
+it easy to import spans captured in other systems (e.g. languages other than TypeScript/Python), or to export spans from
 Braintrust to consume in other systems.
 
 ### Underlying format
@@ -1174,7 +1174,7 @@ understand when importing/exporting spans.
 - `id` is a unique identifier for the span, within the container (e.g. an experiment, or logs for a project). You can technically
   set this field yourself (to overwrite a span), but it is recommended to let Braintrust generate it automatically.
 - `input`, `output`, `expected`, `scores`, `metadata`, and `metrics` are optional fields which describe the span and are exposed in the
-  Braintrust UI. When you use the Typescript or Python SDK, these fields are validated for you (e.g. scores must be a mapping from strings
+  Braintrust UI. When you use the TypeScript or Python SDK, these fields are validated for you (e.g. scores must be a mapping from strings
   to numbers between 0 and 1).
 - `span_attributes` contains attributes about the span. Currently the recognized attributes are `name`, which is
   used to display the span name in the UI, and `type`, which displays a helpful icon. `type` should be one of `"llm"`, `"score"`, `"function"`,
@@ -1230,7 +1230,7 @@ Here is an example of a span in the underlying format:
 
 The following example walks through how to generate spans in one program and then import them to Braintrust
 in a script. You can use this pattern to support tracing or running experiments in environments that use programming
-languages other than Typescript/Python (e.g. Kotlin, Java, Go, Ruby, Rust, C++), or codebases that cannot integrate the
+languages other than TypeScript/Python (e.g. Kotlin, Java, Go, Ruby, Rust, C++), or codebases that cannot integrate the
 Braintrust SDK directly.
 
 #### Generating spans
@@ -1380,7 +1380,7 @@ project/experiment registration, and flushing logs.
 When errors occur, the SDK retries a few times before eventually giving up. You'll see loud warning messages
 when this occurs. And you can tune this behavior via the environment variables defined in [Tuning parameters](#tuning-parameters).
 
-### How do I trace from languages other than Typescript/Python?
+### How do I trace from languages other than TypeScript/Python?
 
 You can use the Braintrust API to import spans from other languages. See the
 [import/export](#importing-and-exporting-spans) section for details. We are also
