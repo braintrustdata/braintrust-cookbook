@@ -20,10 +20,8 @@ Then, we’ll need to create a `.env` file to set the required environment varia
 OPENAI_API_KEY=<your-api-key>
 ```
 
-<Callout>
-
+<Callout type="info">
 You can also use the OpenAI API by adding your Braintrust API key and using the Braintrust [AI Proxy](https://www.notion.so/d46ec4e2ee77473bb4fd99c95a843938?pvs=21).
-
 </Callout>
 
 ## Setting up OTel
@@ -37,10 +35,8 @@ OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer <Your API Key>, x-bt-parent=pro
 
 Replace `<Your API Key>` with your Braintrust API key, and `<Your Project Name>` with the name of the project in Braintrust where you’d like to store your logs. 
 
-<Callout>
-
+<Callout type="info">
 The `x-bt-parent` header sets the trace's parent project or experiment. You can use a prefix like `project_id:`, `project_name:`, or `experiment_id:` here, or pass in a [**span slug**](https://www.braintrust.dev/docs/guides/tracing#distributed-tracing) (`span.export()`) to nest the trace under a span within the parent object.
-
 </Callout>
 
 You’ll also need to set up an [**OpenTelemetry Protocol Exporter**](https://opentelemetry.io/docs/languages/js/exporters/) (OTLP) to send traces to Braintrust. Create a new file called `instrumentation.ts` to register OTel:
