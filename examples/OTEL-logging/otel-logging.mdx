@@ -1,4 +1,4 @@
-# Using OpenTelemetry and Braintrust for LLM observability
+# Using OpenTelemetry for LLM observability
 
 [OpenTelemetry](https://opentelemetry.io/docs/) (OTel) is an open-source observability framework designed to help developers collect, process, and export telemetry data from their applications for performance monitoring and debugging. It’s used by popular libraries like the [Vercel AI SDK](https://sdk.vercel.ai/), [LlamaIndex](https://docs.llamaindex.ai/en/stable/module_guides/observability/), and [Traceloop OpenLLMetry](https://www.traceloop.com/docs) for observability in AI applications. OTel support extends to many programming languages including Python, TypeScript, Java, and Go. 
 
@@ -122,7 +122,7 @@ Run `npm install` to install the required dependencies, then `npm run dev` to la
 
 Open your Braintrust project to the **Logs** page, and select **What orders have shipped?** in your applications. You should be able to watch the logs filter in as your application makes HTTP requests and LLM calls. 
 
-<video src="assets/otel-demo.mp4" autoplay loop muted controls></video>
+![LLM calls and logging side by side](assets/otel-demo.mp4)
 
 Because this application is using multi-step streaming and tool calls, the logs are especially interesting. In Braintrust, logs consist of [traces](/docs/guides/tracing), which roughly correspond to a single request or interaction in your application. Traces consist of one or more spans, each of which corresponds to a unit of work in your application. In this example, each step and tool call is logged inside of its own span. This level of granularity makes it easier to debug issues, track user behavior, and collect data into datasets. 
 
