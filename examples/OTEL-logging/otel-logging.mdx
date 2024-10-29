@@ -124,7 +124,7 @@ Run `npm install` to install the required dependencies, then `npm run dev` to la
 
 Open your Braintrust project to the **Logs** page, and select **What orders have shipped?** in your applications. You should be able to watch the logs filter in as your application makes HTTP requests and LLM calls. 
 
-![App streaming and logging side by side](assets/otel-demo.mp4)
+<video src="assets/otel-demo.mp4" autoplay loop muted controls></video>
 
 Because this application is using multi-step streaming and tool calls, the logs are especially interesting. In Braintrust, logs consist of traces, which roughly correspond to a single request or interaction in your application. Traces consist of one or more spans, each of which corresponds to a unit of work in your application. In this example, each step and tool call is logged inside of its own span. This level of granularity makes it easier to debug issues, track user behavior, and collect data into datasets. 
 
@@ -132,7 +132,7 @@ Because this application is using multi-step streaming and tool calls, the logs 
 
 Run a couple more queries in the app and notice the logs that are generated. Our app is logging both `GET`  and `POST` requests, but we’re most interested in the `POST` requests since they contain our LLM calls. We can apply a filter using the BTQL query `Name LIKE 'POST%'` so that we only see the traces we care about:
 
-![Adding filter to logs](assets/add-post-filter.mp4)
+<video src="assets/add-post-filter.mp4" autoplay loop muted controls></video>
 
 You should now have a list of traces for all the  `POST` requests your app has made. Each contains the inputs and outputs of each LLM call in a span called `ai.streamText`. If you go further into the trace, you’ll also notice a span for each tool call. 
 
