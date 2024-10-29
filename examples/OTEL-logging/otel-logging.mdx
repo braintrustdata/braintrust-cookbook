@@ -2,7 +2,9 @@
 
 [OpenTelemetry](https://opentelemetry.io/docs/) (OTel) is an open-source observability framework designed to help developers collect, process, and export telemetry data from their applications for performance monitoring and debugging. It’s used by popular libraries like the [Vercel AI SDK](https://sdk.vercel.ai/), [LlamaIndex](https://docs.llamaindex.ai/en/stable/module_guides/observability/), and [Traceloop OpenLLMetry](https://www.traceloop.com/docs) for observability in AI applications. OTel support extends to many programming languages including Python, TypeScript, Java, and Go. 
 
-In Braintrust, we enable observability in AI applications through [**Logging**](https://www.braintrust.dev/docs/guides/logging). Logs are the recorded data and metadata from an AI routine — we record the inputs and outputs of your LLM calls to help you understand and debug your application. We want to make it simple for you to log to Braintrust from many different environments, so we defined a way to set up Braintrust as an OpenTelemetry backend. This guide will walk you through how to log to Braintrust from a sample project built with the Vercel AI SDK.
+![Popular AI SDKs -> OTel -> traces](assets/otel.png)
+
+In Braintrust, we enable observability in AI applications through [**logging**](/docs/guides/logging). Logs are the recorded data and metadata from an AI routine — we record the inputs and outputs of your LLM calls to help you understand and debug your application. We want to make it simple for you to log to Braintrust from many different environments, so we defined a way to set up Braintrust as an OpenTelemetry backend. This guide will walk you through how to log to Braintrust from a sample project built with the Vercel AI SDK.
 
 ## Getting started
 
@@ -21,7 +23,7 @@ OPENAI_API_KEY=<your-api-key>
 ```
 
 <Callout type="info">
-You can also use the OpenAI API by adding your Braintrust API key and using the Braintrust [AI Proxy](https://www.notion.so/d46ec4e2ee77473bb4fd99c95a843938?pvs=21).
+You can also use the OpenAI API by adding your Braintrust API key and using the Braintrust [AI Proxy](/docs/guides/proxy).
 </Callout>
 
 ## Setting up OTel
@@ -36,7 +38,7 @@ OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer <Your API Key>, x-bt-parent=pro
 Replace `<Your API Key>` with your Braintrust API key, and `<Your Project Name>` with the name of the project in Braintrust where you’d like to store your logs. 
 
 <Callout type="info">
-The `x-bt-parent` header sets the trace's parent project or experiment. You can use a prefix like `project_id:`, `project_name:`, or `experiment_id:` here, or pass in a [**span slug**](https://www.braintrust.dev/docs/guides/tracing#distributed-tracing) (`span.export()`) to nest the trace under a span within the parent object.
+The `x-bt-parent` header sets the trace's parent project or experiment. You can use a prefix like `project_id:`, `project_name:`, or `experiment_id:` here, or pass in a [**span slug**](/docs/guides/tracing#distributed-tracing) (`span.export()`) to nest the trace under a span within the parent object.
 </Callout>
 
 You’ll also need to set up an [**OpenTelemetry Protocol Exporter**](https://opentelemetry.io/docs/languages/js/exporters/) (OTLP) to send traces to Braintrust. Create a new file called `instrumentation.ts` to register OTel:
@@ -64,7 +66,7 @@ You can then use the `experimental_telemetry` option to enable telemetry on su
 import { getOrders, getTrackingInformation } from "@/components/data";
 ```
 
-and add the `experimental_telemetry`  parameter to your LLM call: 
+and add the `experimental_telemetry` parameter to your LLM call: 
 
 ```tsx
 export async function POST(request: Request) {
@@ -122,15 +124,17 @@ Open your Braintrust project to the **Logs** page, and select **What orders have
 
 <video src="assets/otel-demo.mp4" autoplay loop muted controls></video>
 
-Because this application is using multi-step streaming and tool calls, the logs are especially interesting. In Braintrust, logs consist of traces, which roughly correspond to a single request or interaction in your application. Traces consist of one or more spans, each of which corresponds to a unit of work in your application. In this example, each step and tool call is logged inside of its own span. This level of granularity makes it easier to debug issues, track user behavior, and collect data into datasets. 
+Because this application is using multi-step streaming and tool calls, the logs are especially interesting. In Braintrust, logs consist of [traces](/docs/guides/tracing), which roughly correspond to a single request or interaction in your application. Traces consist of one or more spans, each of which corresponds to a unit of work in your application. In this example, each step and tool call is logged inside of its own span. This level of granularity makes it easier to debug issues, track user behavior, and collect data into datasets. 
 
-## Filtering your logs
+### Filtering your logs
 
-Run a couple more queries in the app and notice the logs that are generated. Our app is logging both `GET`  and `POST` requests, but we’re most interested in the `POST` requests since they contain our LLM calls. We can apply a filter using the BTQL query `Name LIKE 'POST%'` so that we only see the traces we care about:
+Run a couple more queries in the app and notice the logs that are generated. Our app is logging both `GET` and `POST` requests, but we’re most interested in the `POST` requests since they contain our LLM calls. We can apply a filter using the [BTQL](/docs/reference/btql) query `Name LIKE 'POST%'` so that we only see the traces we care about:
 
 <video src="assets/add-post-filter.mp4" autoplay loop muted controls></video>
 
-You should now have a list of traces for all the  `POST` requests your app has made. Each contains the inputs and outputs of each LLM call in a span called `ai.streamText`. If you go further into the trace, you’ll also notice a span for each tool call. 
+You should now have a list of traces for all the `POST` requests your app has made. Each contains the inputs and outputs of each LLM call in a span called `ai.streamText`. If you go further into the trace, you’ll also notice a span for each tool call. 
+
+<video src="assets/spans.mp4" autoplay loop muted controls></video>
 
 This is valuable data that can be used to evaluate the quality of accuracy of your application in Braintrust. 
 
@@ -138,6 +142,6 @@ This is valuable data that can be used to evaluate the quality of accuracy of yo
 
 Now that you’re able to log your application in Braintrust, you can explore other workflows like:
 
-- Adding your [tools](https://www.braintrust.dev/docs/guides/functions/tools) to your library and using them in [experiments](https://www.braintrust.dev/docs/guides/evals) and the [playground](https://www.braintrust.dev/docs/guides/playground)
-- Creating [custom scorers](https://www.braintrust.dev/docs/guides/functions/scorers) to assess the quality of your LLM calls
-- Adding your logs to a [dataset](https://www.braintrust.dev/docs/guides/datasets) and running evaluations comparing models and prompts
+- Adding your [tools](/docs/guides/functions/tools) to your library and using them in [experiments](/docs/guides/evals) and the [playground](/docs/guides/playground)
+- Creating [custom scorers](/docs/guides/functions/scorers) to assess the quality of your LLM calls
+- Adding your logs to a [dataset](/docs/guides/datasets) and running evaluations comparing models and prompts

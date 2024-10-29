@@ -167,9 +167,9 @@
     - functions
     - rag
     - tools
-- title: Using OpenTelemetry and Braintrust for LLM observability
+- title: Using OpenTelemetry for LLM observability
   path: examples/OTEL-logging/OTEL-logging.mdx
-  date: 2024-10-30
+  date: 2024-10-31
   authors:
     - ornellaaltunyan
   tags:
