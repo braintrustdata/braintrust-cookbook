@@ -130,7 +130,7 @@ Because this application is using multi-step streaming and tool calls, the logs 
 
 Run a couple more queries in the app and notice the logs that are generated. Our app is logging both `GET` and `POST` requests, but we’re most interested in the `POST` requests since they contain our LLM calls. We can apply a filter using the [BTQL](/docs/reference/btql) query `Name LIKE 'POST%'` so that we only see the traces we care about:
 
-![Filter using BTQL](assets/add-post-filter.mp4)
+![Filter using BTQL](assets/add-post-filter.gif)
 
 You should now have a list of traces for all the `POST` requests your app has made. Each contains the inputs and outputs of each LLM call in a span called `ai.streamText`. If you go further into the trace, you’ll also notice a span for each tool call. 
 
