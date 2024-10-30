@@ -60,13 +60,7 @@ nextConfig.experimental = {
 };
 ```
 
-You can then use the `experimental_telemetry` option to enable telemetry on supported AI SDK function calls. In your `route.ts` file, add this import statement:
-
-```tsx
-import { getOrders, getTrackingInformation } from "@/components/data";
-```
-
-and add the `experimental_telemetry` parameter to your LLM call: 
+You can then use the `experimental_telemetry` option to enable telemetry on supported AI SDK function calls. In your `route.ts` file, add the `experimental_telemetry` parameter to your LLM call: 
 
 ```tsx
 export async function POST(request: Request) {
@@ -113,6 +107,8 @@ export async function POST(request: Request) {
   return stream.toDataStreamResponse();
 }
 ```
+You can also add additional metadata here to make your LLM calls easier to track, and they'll end up as metadata in the Braintrust span. 
+
 
 ## Logging LLM requests in Braintrust
 
