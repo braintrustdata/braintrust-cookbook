@@ -6,7 +6,19 @@ recipes = [
   
 ]
 
-main() {
+def main():
+    dataset = braintrust.init_dataset(project="toolOCR", name="recipes")
+    for recipe in recipes:
+        dataset.insert(input=recipe)
+
+
+
+
+
+
+
+
+{
   const dataset = initDataset(PROJECT_NAME, {
     dataset: "Questions",
   });
