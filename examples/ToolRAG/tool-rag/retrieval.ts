@@ -1,24 +1,25 @@
 import braintrust from "braintrust";
 import { OpenAI } from "openai";
-import { Pinecone } from "@pinecone-database/pinecone";
-
-import { PROJECT_NAME, INDEX_NAME } from "./constants";
+import { MongoClient } from "mongodb";
+import { PROJECT_NAME } from "./constants";
 import { z } from "zod";
-
-const project = braintrust.projects.create({
-  name: PROJECT_NAME,
-});
 
 if (!process.env.BRAINTRUST_API_KEY) {
   throw new Error("BRAINTRUST_API_KEY is not set");
 }
-if (!process.env.PINECONE_API_KEY) {
-  throw new Error("PINECONE_API_KEY is not set");
+if (!process.env.MONGO_URI) {
+  throw new Error("MONGO_URI is not set");
 }
 
-const openai = new OpenAI(); // These env vars are automatically set by Braintrust
-const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY });
-const pc = pinecone.Index(INDEX_NAME);
+const openai = new OpenAI({
+  baseURL: "https://api.braintrust.dev/v1/proxy",
+  apiKey: process.env.BRAINTRUST_API_KEY,
+});
+const client = new MongoClient(process.env.MONGO_URI);
+
+const project = braintrust.projects.create({
+  name: PROJECT_NAME,
+});
 
 export const retrieval = project.tools.create({
   name: "Retrieve",
@@ -32,6 +33,12 @@ export const retrieval = project.tools.create({
       .describe("The number of results to return"),
   }),
   handler: async ({ query, top_k }) => {
+    // Connect to MongoDB and select the database and collection
+    await client.connect();
+    const db = client.db("braintrust-docs"); // Replace with your database name
+    const collection = db.collection("documents"); // Replace with your collection name
+
+    // Generate the embedding for the query
     const embedding = await openai.embeddings
       .create({
         input: query,
@@ -39,16 +46,43 @@ export const retrieval = project.tools.create({
       })
       .then((res) => res.data[0].embedding);
 
-    const queryResponse = await pc.query({
-      vector: embedding,
-      topK: top_k,
-      includeMetadata: true,
-    });
+    // Perform the vector search in MongoDB Atlas
+    try {
+      const queryResponse = await collection
+        .aggregate([
+          {
+            $search: {
+              index: "INDEX_NAME", // Replace with your MongoDB Atlas Search index name
+              knnBeta: {
+                vector: embedding,
+                path: "embedding",
+                k: top_k,
+                numCandidates: 100, // Adjust based on performance
+                similarity: "cosine" // Match the similarity measure you configured in Atlas
+              },
+            },
+          },
+          {
+            $project: {
+              title: 1,
+              content: 1,
+              score: { $meta: "searchScore" },
+            },
+          },
+        ])
+        .toArray();
 
-    return queryResponse.matches.map((match) => ({
-      title: match.metadata?.title,
-      content: match.metadata?.content,
-    }));
+      // Return the results in the format expected
+      return queryResponse.map((match) => ({
+        title: match.title,
+        content: match.content,
+      }));
+    } catch (error) {
+      console.error("Error executing MongoDB vector search:", error);
+      throw new Error("Vector search failed due to a server error.");
+    } finally {
+      await client.close(); // Ensure connection is closed to prevent leaks
+    }
   },
   ifExists: "replace",
 });
