@@ -1,8 +1,8 @@
 # Using Python functions to extract text from images
 
-From digitizing and archiving images of your handwritten notes, to automating invoice processing, there are a multitude of reasons you’d want to extract text from an image. Maybe you find the perfect recipe on the internet, but it’s surrounded by ads and people’s life stories, or you want to digitize an old recipe written by your grandmother. You also want the recipes to be in a specific format so you can quickly shop for groceries. 
+From digitizing and archiving images of your handwritten notes, to automating invoice processing, there are a multitude of reasons you’d want to extract text from an image. You could use an LLM for image processing, but doing so can sometimes be inaccurate, expensive, and slow. Optical character recognition, or OCR, is a great preprocessing step that allows you to convert raw image data into text that can then be processed or summarized by an LLM. 
 
-In Braintrust, you can experiment with different prompts in conjunction with the text extraction tool side-by-side in the playground. This way, your formatting will be just right, and you can deploy the perfect version. Let’s walk through this workflow step by step.
+Maybe you find the perfect recipe on the internet, but it’s surrounded by ads and people’s life stories, or you want to digitize an old recipe written by your grandmother. You also want the recipes to be in a specific format so you can quickly shop for groceries. You build an app to accomplish this, but you're getting mixed results. In Braintrust, you can create the OCR text extraction tool and experiment with different LLM prompts side-by-side in the playground. This way, your formatting will be just right, and you can deploy the perfect version. Let’s walk through this workflow step by step.
 
 ## Getting started
 
@@ -12,7 +12,7 @@ To get started, you'll need a few accounts:
 - [OpenAI](https://platform.openai.com/signup)
 
 and `python` and `pip` installed locally. If you'd like to follow along in code,
-the [tool-ocr](https://github.com/braintrustdata/braintrust-cookbook/tree/main/examples/ToolRAG/tool-rag)
+the [tool-ocr](https://github.com/braintrustdata/braintrust-cookbook/tree/main/examples/ToolOCR/tool-ocr)
 project contains a working example with all the code snippets we'll use.
 
 ## Clone the repo
@@ -25,7 +25,7 @@ cd braintrust-cookbook/examples/ToolOCR/tool-ocr
 pip install
 ```
 
-Next, create a `.env` file with your API key:
+Next, create a `.env` file with your Braintrust API key:
 
 ```bash
 BRAINTRUST_API_KEY=<your-api-key>
@@ -36,7 +36,7 @@ of your account.
 
 ## Creating an OCR tool
 
-Optical character recognition, or OCR, is any type of technology that converts images of typed, handwritten or printed text into machine-encoded text. There are many well known libraries for OCR — in this cookbook, we’ll use pytesseract, a well known open-source library for OCR in Python.
+Optical character recognition, or OCR, is any type of technology that converts images of typed, handwritten or printed text into machine-encoded text. There are many well known libraries for OCR — in this cookbook, we’ll use [OCR.Space](https://ocr.space/), a free API you can use for testing without creating an account.
 
 In Braintrust, you can create tools and then run them in the UI, API, and, of course, via prompts. This will make it easier to iterate on your prompt without having to worry about the OCR logic. 
 
@@ -44,133 +44,62 @@ The OCR tool is defined in `ocr.py`:
 
 
 
-In just a few lines of code, it takes a base64 image string, decodes the image, and performs OCR to extract the text. It returns the text contained in the image. 
 
-To push the tool to Braintrust, run:
+In just a few lines of code, it takes an image URL, parses and extracts the text, and returns the text contained in the image. 
+
+To push the tool to Braintrust along with all its dependencies, run:
 
 ```bash
-braintrust push ocr.py
-```
-
-The output should be:
-
-```
-1 file uploaded successfully
+braintrust push ocr.py --requirements requirements.txt
 ```
 
 ### Try out the tool
 
-To try out the tool, visit the project in Braintrust, and navigate to the **Tools** section of your **Library**.
+To try out the tool, visit the **toolOCR** project in Braintrust, and navigate to the **Tools** section of your **Library**. Here, you can test different images and see what kinds of outputs you're getting from the tool.
 
 
-Here, you can test different searches and refine the logic. For example, you could try playing with various
-`top_k` values, or adding a prefix to the query to guide the results. If you change the code, run
-`npx braintrust push retrieval.ts` again to update the tool.
+This is helpful information for deciding if you'd like to do any additional post processing to the text output. For example, you may notice that your output contains `/n` to indicate new lines in the parsed text. You could include additional processing in your tool to do this. If you change your code, just run `braintrust push ocr.py` again to sync the tool with Braintrust. 
 
 ## Writing a prompt
 
-Next, let's wire the tool into a prompt. In `prompt.ts`, there's an initial definition of the prompt:
+Next, let's wire the tool into a prompt. In `prompt.py`, there's an initial definition of the prompt:
 
-```javascript
-  messages: [
-    {
-      role: "system",
-      content:
-        "You are a helpful assistant that can " +
-        "answer questions about the Braintrust documentation.",
-    },
-    {
-      role: "user",
-      content: "{{{question}}}",
-    },
-  ],
+```python
+
 ```
 
 Run the following command to initialize the prompt:
 
 ```
-npx braintrust push prompt.ts
+braintrust push prompt.py
 ```
 
 Once the prompt uploads, you can run it in the UI and even try it out on some examples:
 
-![Test prompt](./assets/Test-prompt.gif)
-
 If you visit the **Logs** tab, you can check out detailed logs for each call:
-
-![Prompt logs](./assets/Prompt-logs.png)
 
 <Callout type="info">
   We recommend using code-based prompts to initialize projects, but we'll show
   how convenient it is to tweak your prompts in the UI in a moment.
 </Callout>
 
-## Import a dataset
-
-To get a better sense of how well this prompt and tool work, let's upload a dataset with
-a few questions and assertions. The assertions allow us to test specific characteristics
-about the answers, without spelling out the exact answer itself.
-
-The dataset is defined in `questions-dataset.ts`, and you can upload it by running:
-
-```bash
-npx tsx questions-dataset.ts
-```
-
-Once you create it, if you visit the **Datasets** tab, you'll be able to explore it:
-
-![Dataset](./assets/Dataset.png)
-
 ## Create a playground
 
-To try out the prompt together with the dataset, we'll create a playground.
+To try out the prompt together with some data, we'll create a playground. 
 
 ![Create playground](./assets/Create-playground.gif)
 
-Once you create the playground, hit **Run** to run the prompt and tool on the questions
-in the dataset.
+Navigate to **Dataset** > **Upload dataset** and drag in the `recipes_dataset.csv` file.
+
+Then, hit **Run** to run the prompt and tool on the images in the dataset.
 
 ![Run playground](./assets/Run-playground.gif)
 
-### Define a scorer
+## Iterating on the prompt
 
-Now that we have an interactive environment to test out our prompt and tool call, let's define
-a scorer that helps us evaluate the results.
+Now that we have an interactive environment to test out our prompt and tool call, we can tweak the prompt and model until we get the desired results. 
 
-Select the **Scorers** dropdown menu, then **Create custom scorer**. Choose the **LLM-as-a-judge** tab, and enter
-
-```javascript
-Consider the following question:
-
-{{input.question}}
-
-and answer:
-
-{{output}}
-
-Does the answer satisfy each of the following assertions? Meticulously check each one, and write out your reasoning in the rationale section.
-
-{{#expected.assertions}}
-{{.}}
-{{/expected.assertions}}
-
-a) It correctly satisfies every assertion.
-b) It satisfies some of the assertions
-c) It satisfies none of the assertions
-```
-
-For the choice scores, configure (a) as 1, (b) as 0.5, and (c) as 0.
-
-![Choice scores](./assets/Choice-scores.png)
-
-Once you define the scorer, hit **Run** to run it on the questions in the dataset.
-
-![Playground with scores](./assets/Playground-scored.png)
-
-### Tweak the prompt
-
-Now, let's tweak the prompt to see if we can improve the results. Hit the copy icon to duplicate your prompt and start tweaking. You can also tweak the original prompt and save your changes there if you'd like. For example, you can try instructing the model to always include a Python and
-TypeScript code snippet.
+Hit the copy icon to duplicate your prompt and start tweaking. You can also tweak the original prompt and save your changes there if you'd like. For example, you can try instructing the model to always list ingredients in grams.
 
 ![Tweak prompt](./assets/Tweak-prompt.gif)
 
@@ -192,7 +121,7 @@ then you can run a full experiment by selecting **+Experiments**. Once you run t
 
 ## Next steps
 
-Now that you've built a RAG app in Braintrust, you can:
+Now that you've written tool and prompt Python functions in Braintrust, you can:
 
 - [Deploy the prompt in your app](/docs/guides/prompts#using-prompts-in-your-code)
 - [Conduct more detailed evaluations](/docs/guides/evals)
