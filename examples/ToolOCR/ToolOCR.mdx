@@ -2,7 +2,11 @@
 
 From digitizing and archiving images of your handwritten notes, to automating invoice processing, there are a multitude of reasons you’d want to extract text from an image. You could use an LLM for image processing, but doing so can sometimes be inaccurate, expensive, and slow. Optical character recognition, or OCR, is a great pre-processing step that allows you to convert raw image data into text that can then be processed or summarized by an LLM. 
 
-Maybe you find the perfect recipe on the internet, but it’s surrounded by ads and people’s life stories, or you want to digitize an old recipe written by your grandmother. You also want the recipes to be in a specific format so you can quickly shop for groceries. You build an app to accomplish this, but you're getting mixed results. In Braintrust, you can create the OCR text extraction tool and experiment with different LLM prompts side-by-side in the playground. This way, your formatting will be just right, and you can deploy the perfect version. Let’s walk through this workflow step by step.
+Maybe you find the perfect recipe on the internet, but it’s surrounded by ads and people’s life stories, or you want to digitize an old recipe written by your grandmother. 
+
+![100 good cookies](assets/recipe.png)
+
+You also want the recipes to be in a specific format so you can quickly shop for groceries. You build an app to accomplish this, but you're getting mixed results. In Braintrust, you can create the OCR text extraction tool and experiment with different LLM prompts side-by-side in the playground. This way, your formatting will be just right, and you can deploy the perfect version. Let’s walk through this workflow step by step.
 
 ## Getting started
 
@@ -101,7 +105,7 @@ When we pushed the tool to Braintrust, we also included an initial definition of
 prompt = project.prompts.create(
     name= "Recipe text generator",
     messages= [{"role": "system", "content": "You are a helpful assistant that turns images of recipes into text-based grocery lists that are organized by category.",},
-        {"role": "user", "image": "{{{image}}}",},
+        {"role": "user", "content": "{{{image}}}",},
     ],
 model= "gpt-4o-mini",
 tools= [ocr_tool],
@@ -126,7 +130,7 @@ If you visit the **Logs** tab, you can check out detailed logs for each call:
 
 To try out the prompt together with some data, we'll create a playground. Scroll to the bottom of your prompt modal and select **Create playground with prompt**.
 
-In the `tool-ocr` directory, we set up a script for you that will upload a sample dataset of recipe images. To upload the dataset to Braintrust, run:
+In the `tool-ocr` project, we set up a [script](https://github.com/braintrustdata/braintrust-cookbook/tree/main/examples/ToolOCR/tool-ocr/dataset.py) for you that will upload a sample dataset of recipe images. To upload the dataset to Braintrust, run:
 
 ```bash
 python dataset.py
