@@ -46,7 +46,7 @@ In Braintrust, you can create tools and then run them in the UI, API, and, of co
 
 The OCR tool is defined in `ocr.py`:
 
-```python
+```python #skip-compile
 def ocr_image(**kwargs) -> str:
     # Parse input arguments
     args = Args(**kwargs)
@@ -97,7 +97,7 @@ This is helpful information for deciding if you'd like to do any additional post
 
 When we pushed the tool to Braintrust, we also included an initial definition of the prompt: 
 
-```python
+```python #skip-compile
 prompt = project.prompts.create(
     name= "Recipe text generator",
     messages= [{"role": "system", "content": "You are a helpful assistant that turns images of recipes into text-based grocery lists that are organized by category.",},
@@ -136,7 +136,7 @@ Then, navigate to **Dataset** in your playground and select the **Recipes** data
 
 Your playground is now set up with a prompt, model choice, dataset, and the tool we created. Hit **Run** to run the prompt and tool on the images in the dataset.
 
-![Run playground](/assets/run-playground.gif)
+![Run playground](assets/run-playground.gif)
 
 ## Iterating on the prompt
 
@@ -144,7 +144,7 @@ Now that we have an interactive environment to test out our prompt and tool call
 
 Hit the copy icon to duplicate your prompt and start tweaking. You can also tweak the original prompt and save your changes there if you'd like. For example, you can try instructing the model to always list the quantity of each ingredient you need to purchase.
 
-![Tweak prompt](/assets/tweak-prompt.gif)
+![Tweak prompt](assets/tweak-prompt.gif)
 
 Once you're satisfied with the prompt, hit **Update** to save the changes. Each time you save the prompt, you
 create a new version. To learn more about how to use a prompt in your code, check out the
