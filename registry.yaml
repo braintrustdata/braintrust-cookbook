@@ -175,3 +175,13 @@
   tags:
     - evals
     - tools
+- title: Using Python functions to extract text from images
+  path: examples/ToolOCR/ToolOCR.mdx
+  date: 2024-11-22
+  authors:
+    - ornellaaltunyan
+  tags:
+    - python
+    - tools
+    - ocr
+    - functions
