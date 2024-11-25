@@ -107,9 +107,9 @@ prompt = project.prompts.create(
     messages= [{"role": "system", "content": "You are a helpful assistant that turns images of recipes into text-based grocery lists that are organized by category.",},
         {"role": "user", "content": "{{{image}}}",},
     ],
-model= "gpt-4o-mini",
-tools= [ocr_tool],
-if_exists= "replace",
+    model= "gpt-4o-mini",
+    tools= [ocr_tool],
+    if_exists= "replace",
 )
 ```
 
