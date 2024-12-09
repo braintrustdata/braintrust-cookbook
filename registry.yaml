@@ -185,3 +185,12 @@
     - tools
     - ocr
     - functions
+- title: Evaluating SimpleQA
+  path: examples/SimpleQA/SimpleQA.ipynb
+  date: 2024-12-06
+  authors:
+  - ankrgyl
+  - ornellaaltunyan
+  tags:
+  - datasets
+  - evals
