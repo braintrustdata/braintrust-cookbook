@@ -5,8 +5,6 @@ The OpenAI [Realtime API](https://platform.openai.com/docs/guides/realtime), des
 ## Getting started 
 In this cookbook, we're going to build a speech-to-speech RAG agent that answers questions about the Braintrust documentation. 
 
-Building with the OpenAI Realtime API is complex because it is built on WebSockets, and it lacks client-side authentication. However, the Braintrust [AI Proxy](/docs/guides/proxy) makes it easy to connect to the API in a secure and scalable way. The proxy securely manages your OpenAI API key, issuing [**temporary credentials**](/docs/guides/proxy#temporary-credentials-for-end-user-access) to your backend and frontend. The frontend sends any voice data from your app to the proxy, which handles secure communication with OpenAI’s Realtime API.
-
 To get started, you'll need a few accounts:
 
 - [Braintrust](https://www.braintrust.dev/signup)
@@ -52,17 +50,11 @@ npx tsx .web/utils/upload-vectors.ts
 
 This script reads all the files from the `docs-sample` directory, breaks them into sections based on headings, and creates vector embeddings for each section using OpenAI's API. It then stores those embeddings along with the section's title and content in Pinecone.
 
-That's it for setup! Now let's run the app, and deep dive into the code. 
-
-## Running the app
-
-To run the app, navigate to `/web` and run `npm run dev`. You should have the app load on `localhost:3000`.
-
-Start a new conversation, and ask a few questions about Braintrust. Feel free to interrupt the bot, or ask unrelated questions, and see what happens. When you're finished, end the conversation. 
-
-Let's dig into the code. 
+That's it for setup! Now let's dig into the code. 
 
 ## Accessing the Realtime API
+
+Building with the OpenAI Realtime API is complex because it is built on WebSockets, and it lacks client-side authentication. However, the Braintrust [AI Proxy](/docs/guides/proxy) makes it easy to connect to the API in a secure and scalable way. The proxy securely manages your OpenAI API key, issuing [**temporary credentials**](/docs/guides/proxy#temporary-credentials-for-end-user-access) to your backend and frontend. The frontend sends any voice data from your app to the proxy, which handles secure communication with OpenAI’s Realtime API.
 
 To access the Realtime API through the Braintrust proxy, we changed the proxy URL when instantiating the `RealtimeClient` to `https://braintrustproxy.com/v1/realtime`. In our app, the `RealtimeClient` is initialized when the `ConsolePage` component is rendered. We also generate a [Braintrust temporary credential](/docs/guides/proxy#temporary-credentials-for-end-user-access), to be used instead of the OpenAI API key. This means your OpenAI API key will not be exposed to the client.
 
@@ -171,18 +163,18 @@ client.addTool(
 Because of the way the RealtimeAPI works, we have to use OpenAI tool calling here instead of Braintrust tool functions. 
 </Callout>
 
+## Running the app
+
+To run the app, navigate to `/web` and run `npm run dev`. You should have the app load on `localhost:3000`.
+
+Start a new conversation, and ask a few questions about Braintrust. Feel free to interrupt the bot, or ask unrelated questions, and see what happens. When you're finished, end the conversation. 
+
 ## Logging in Braintrust
 
-In addition to client-side authentication, you’ll also get the other benefits of building with Braintrust, like logging, built in. We support logging audio, as well as text, structured data, and images. When you ran the app and connected to the Realtime API, logs were generated for each conversation. When you closed the session, the log was complete and ready to view in Braintrust. Each LLM and tool call is contained in its own span inside of the trace. In addition, the audio files were uploaded as [attachments](/blog/attachments) in your trace. This means that you won’t have to exit the UI to listen to each of the inputs and outputs for the LLM calls.
+In addition to client-side authentication, you’ll also get the other benefits of building with Braintrust, like logging, built in. When you ran the app and connected to the Realtime API, logs were generated for each conversation. When you closed the session, the log was complete and ready to view in Braintrust. Each LLM and tool call is contained in its own span inside of the trace. In addition, the audio files were uploaded as [attachments](/blog/attachments) in your trace. This means that you won’t have to exit the UI to listen to each of the inputs and outputs for the LLM calls.
 
 ![Realtime log with attachment](./assets/realtime-log.png)
 
 ## Adding spans to a dataset
 
 
-
-## What’s next
-
-You can use this [open-source repo](https://github.com/braintrustdata/openai-realtime-console) as a starting point for any projects using the Realtime API. Because your app will automatically generate logs in Braintrust, you will have data in exactly the right format to run [evaluations](/docs/guides/evals).
-
-[Try building with the OpenAI Realtime API](/docs/guides/proxy#websocket-based-models) today and [let us know](/contact) what you create!
