@@ -68,8 +68,7 @@ To access the Realtime API through the Braintrust proxy, we changed the proxy UR
 
 We set up this logic in `page.tsx`:
 
-<CodeTabs items={["TypeScript"]}>
-<TSTab>
+
 ```typescript
 import { ConsolePage } from '@/components/ConsolePage';
 import './App.scss';
@@ -122,8 +121,6 @@ export default async function Home() {
   return <ConsolePage apiKey={key} url={`${PROXY_URL}/realtime`} />;
 }
 ```
-</TSTab>
-</CodeTabs>
 
 <Callout>
   You can also use our proxy with an AI provider’s API key, but you will not have access to other Braintrust features, like logging.
@@ -133,8 +130,6 @@ export default async function Home() {
 
 The retrieval logic also happens on the server side. We set up the helper function and route handler that queries Pinecone in `web/app/api/retrievePinecone/route.ts` so that we can call the retrieval tool on the client side. 
 
-<CodeTabs>
-<TSTab>
 ```typescript
 client.addTool(
       {
@@ -171,8 +166,6 @@ client.addTool(
       }
     );
 ```
-</TSTab>
-</CodeTabs>
 
 <Callout type="info">
 Because of the way the RealtimeAPI works, we have to use OpenAI tool calling here instead of Braintrust tool functions. 
