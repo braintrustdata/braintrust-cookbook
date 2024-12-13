@@ -150,7 +150,7 @@ client.addTool(
             )
             .join('\n\n');
 
-          return { context: formattedContext };
+          return formattedContext;
         } catch (error) {
           console.error('Pinecone retrieval error:', error);
           throw error;
@@ -163,18 +163,136 @@ client.addTool(
 Because of the way the RealtimeAPI works, we have to use OpenAI tool calling here instead of Braintrust tool functions. 
 </Callout>
 
+## Setting up the system prompt
+
+When we call the RealtimeAPI, we pass it a set of instructions that are configured in [conversation_config.js]:
+
+```javascript
+export const instructions = `System settings:
+Tool use: enabled.
+
+Instructions:
+- You are an AI agent responsible for helping users with questions about Braintrust
+- Always use the pinecone_retrieval tool to get additional context for your responses
+- You should only answer questions about Braintrust
+- If you are asked a question that is irrelevant to Braintrust, give a simple and polite refusal
+- Make sure there is no code in your responses, responses should be text information-based only giving as much detail as possible
+- Please make sure to respond with a helpful voice via audio
+- Be kind, helpful, and curteous
+- It is okay to ask the user questions
+- Use tools and functions you have available liberally, it is part of the training apparatus
+- Be open to exploration and conversation
+- Someone is relying on you - help them be as successful as possible!
+
+Personality:
+- Be upbeat and genuine
+- Try speaking quickly as if excited
+`;
+```
+
+Feel free to play around with the system prompt at any point, and see how it impacts the LLM's responses in the app. 
+
 ## Running the app
 
 To run the app, navigate to `/web` and run `npm run dev`. You should have the app load on `localhost:3000`.
 
-Start a new conversation, and ask a few questions about Braintrust. Feel free to interrupt the bot, or ask unrelated questions, and see what happens. When you're finished, end the conversation. 
+Start a new conversation, and ask a few questions about Braintrust. Feel free to interrupt the bot, or ask unrelated questions, and see what happens. When you're finished, end the conversation. Have a couple of conversations to get a feel for some of the limitations and nuances of the bot - each conversation will come in handy in the next step. 
 
 ## Logging in Braintrust
 
-In addition to client-side authentication, you’ll also get the other benefits of building with Braintrust, like logging, built in. When you ran the app and connected to the Realtime API, logs were generated for each conversation. When you closed the session, the log was complete and ready to view in Braintrust. Each LLM and tool call is contained in its own span inside of the trace. In addition, the audio files were uploaded as [attachments](/blog/attachments) in your trace. This means that you won’t have to exit the UI to listen to each of the inputs and outputs for the LLM calls.
+In addition to client-side authentication, you’ll also get the other benefits of building with Braintrust, like logging, built in. When you ran the app and connected to the Realtime API, logs were generated for each conversation. When you closed the session, the log was complete and ready to view in Braintrust. Each LLM and tool call is contained in its own span inside of the trace. In addition, the audio files were uploaded as [attachments](/blog/attachments) in your trace. This means that you don’t have to exit the UI to listen to each of the inputs and outputs for the LLM calls.
 
 ![Realtime log with attachment](./assets/realtime-log.png)
 
-## Adding spans to a dataset
+## Online evaluations
+
+In Braintrust, you can run server-side online evaluations that are automatically run asynchronously as you upload logs. This makes it easier to evaluate your app in situations like this, where the prompt and tool might not be synced to Braintrust. 
+
+Audio evals are complex, because there are multiple aspects of your application you can focus on. In this cookbook, we'll use the call to Pinecone as a proxy for the quality of the Realtime API's interpretation of the user's input. 
+
+### Setting up your scorer
+
+We'll need to create a scorer that captures the criteria we want to evaluate. Since we're dealing with complex RAG outputs, we'll use a custom LLM-as-a-judge scorer. 
+For an LLM-as-a-judge scorer, you define a prompt that evaluates the output and maps its choices to specific scores. 
+
+Navigate to **Library** > **Scorers** and create a new scorer. Call your scorer **BraintrustRAG** and add the following prompt: 
+
+```
+Consider the following question:
+ 
+{{input.arguments.query}}
+ 
+and answer:
+ 
+{{output}}
+
+How well does the answer answer the question?
+a) Very well
+b) Reasonably well
+c) Not well
+```
+
+The prompt uses mustache syntax to map the input to the query that gets sent to Pinecone, and get the output. We'll also assign choice score to the options we included in the prompt. 
+
+![RAG scorer](./assets/rag-scorer.png)
+
+### Configuring your online eval
+
+Navigate to **Configuration** and scroll down to **Online scoring**. Select **Add rule** to configure your online scoring rule. Select the scorer we just created from the menu, and deselect **Apply to root span**. We'll filter to the **function** span since that's where our tool is called. 
+
+![Configure score](./assets/configure-score.png)
+
+The score will now automatically run at the specified sampling rate for all logs in the project.
+
+### Viewing your evaluations
+
+Now that you've set up your online evaluations, you can view the scores from within your logs. Underneath each function span that was included in the sampling rate, you'll have an additional span with the score. 
+
+![Scoring span](./assets/scoring-span.png)
+
+This particular function call was scored a 0. But if we take a closer look at the logs, we can see that the question was actually answered pretty well. 
+You may notice this pattern for other logs as well - so is our function actually not performing well?
+
+## Improving your evals 
+
+There are three main ways to improve your evals:
+- Refine the scoring function to ensure it accurately reflects the success criteria.
+- Add new scoring functions to capture different performance aspects (for example, correctness or efficiency).
+- Expand your dataset with more diverse or challenging test cases.
+
+In this case, we need to be more precise about what we're testing for in our scoring function. In our application, we're asking for answers within the specific context of Braintrust, but our current scoring function is attempting to judge the responses to our questions objectively. 
+
+Let's edit our scoring function to test for that as precisely as possible. 
+
+### Improving our existing scorer
+
+Let's change the prompt for our scoring function to: 
+
+```
+Consider the following question from an existing Braintrust user:
+ 
+{{input.arguments.query}}
+ 
+and answer:
+ 
+{{output}}
+
+How helpful is the answer, assuming the question is always in the context of Braintrust?
+a) Very helpful
+b) Reasonably helpful
+c) Not helpful
+```
+
+As you continue to iterate on your scoring function and generate more logs, you should aim to see your scores go up. 
+
+![Logs over time](./assets/logs-over-time.png)
+
+## What's next
+
+As you continue to build more AI applications with complex function calls and new APIs, it's important to continuously improve both your AI application and your evaluation process. Here are some resources to help you do just that:
+-[I ran an eval. Now what?](/blog/after-evals)
+- [What to do when a new AI model comes out](/blog/new-model)
+
+
 
 
