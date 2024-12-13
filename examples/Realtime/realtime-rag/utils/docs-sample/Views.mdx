@@ -1,0 +1,67 @@
+---
+title: Views
+full: true
+_openapi:
+  toc:
+    - depth: 2
+      title: List views
+      url: '#list-views'
+    - depth: 2
+      title: Create view
+      url: '#create-view'
+    - depth: 2
+      title: Create or replace view
+      url: '#create-or-replace-view'
+    - depth: 2
+      title: Get view
+      url: '#get-view'
+    - depth: 2
+      title: Partially update view
+      url: '#partially-update-view'
+    - depth: 2
+      title: Delete view
+      url: '#delete-view'
+  structuredData:
+    headings:
+      - content: List views
+        id: list-views
+      - content: Create view
+        id: create-view
+      - content: Create or replace view
+        id: create-or-replace-view
+      - content: Get view
+        id: get-view
+      - content: Partially update view
+        id: partially-update-view
+      - content: Delete view
+        id: delete-view
+    contents:
+      - content: >-
+          List out all views. The views are sorted by creation date, with the
+          most recently-created views coming first
+        heading: list-views
+      - content: >-
+          Create a new view. If there is an existing view with the same name as
+          the one specified in the request, will return the existing view
+          unmodified
+        heading: create-view
+      - content: >-
+          Create or replace view. If there is an existing view with the same
+          name as the one specified in the request, will replace the existing
+          view with the provided fields
+        heading: create-or-replace-view
+      - content: Get a view object by its id
+        heading: get-view
+      - content: >-
+          Partially update a view object. Specify the fields to update in the
+          payload. Any object-type fields will be deep-merged with existing
+          content. Currently we do not support removing fields or setting them
+          to null.
+        heading: partially-update-view
+      - content: Delete a view object by its id
+        heading: delete-view
+---
+
+import jsonSpec from "@braintrust/openapi/spec.json";
+
+<APIPage document={jsonSpec} operations={[{"method":"get","path":"/v1/view"},{"method":"post","path":"/v1/view"},{"method":"put","path":"/v1/view"},{"method":"get","path":"/v1/view/{view_id}"},{"method":"patch","path":"/v1/view/{view_id}"},{"method":"delete","path":"/v1/view/{view_id}"}]} hasHead={true} />

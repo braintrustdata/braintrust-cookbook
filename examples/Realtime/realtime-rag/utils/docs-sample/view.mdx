@@ -1,0 +1,60 @@
+---
+title: "View traces"
+---
+
+import { CodeTabs, TSTab, PYTab } from "#/ui/docs/code-tabs";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import { Callout } from "fumadocs-ui/components/callout";
+import Link from "fumadocs-core/link";
+
+# View traces
+
+To view a trace, select a log from your project's **Logs** page, or from an experiment on the **Evaluations** page. The trace will open on the right-hand side of your screen.
+
+![Log with trace](./log-with-trace.png)
+
+To get a closer look, select **Toggle fullscreen trace**.
+
+Inside of your trace, you'll see a tree view of all of the spans that make up the trace.
+
+![Trace](./trace.png)
+
+You can select an individual span to see the metrics, input, output, expected, metadata, and activity.
+
+![Span](./span.png)
+
+## Span search
+
+Often, you'll have a large number of spans inside of a given trace. To make it easier to locate a specific span or set of spans, you can search through your trace by selecting the magnifying glass icon.
+
+<video className="w-full rounded-md aspect-auto" controls autoPlay muted poster="/docs/guides/traces/find-in-trace-poster.png">
+  <source src="/docs/guides/traces/find-in-trace.mp4" type="video/mp4" />
+  <a href="/docs/guides/traces/find-in-trace.mp4">Video</a>
+</video>
+
+### Span filtering
+
+Once you've entered a search query, you can also filter the results of your search by span type or span field.
+
+<video className="w-full rounded-md aspect-auto" controls autoPlay muted poster="/docs/guides/traces/filter-span-poster.png">
+  <source src="/docs/guides/traces/filter-span.mp4" type="video/mp4" />
+  <a href="/docs/guides/traces/filter-span.mp4">Video</a>
+</video>
+
+### Bulk selection
+
+When you're ready to add specific spans to a dataset, you can bulk select them to add them to a new or existing dataset in your project.
+
+<video className="w-full rounded-md aspect-auto" controls autoPlay muted poster="/docs/guides/traces/multiselect-poster.png">
+  <source src="/docs/guides/traces/multiselect.mp4" type="video/mp4" />
+  <a href="/docs/guides/traces/multiselect.mp4">Video</a>
+</video>
+
+## Diffing traces
+
+When you're digging into traces in an experiment, you can toggle **Diff** view to compare across experiments, as well as output vs expected values.
+
+<video className="w-full rounded-md aspect-auto" controls autoPlay muted poster="/docs/guides/traces/diff-trace-poster.png">
+  <source src="/docs/guides/traces/diff-trace.mp4" type="video/mp4" />
+  <a href="/docs/guides/traces/diff-trace.mp4">Video</a>
+</video>

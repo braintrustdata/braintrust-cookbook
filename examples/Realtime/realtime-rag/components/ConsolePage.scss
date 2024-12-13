@@ -1,0 +1,228 @@
+[data-component='ConsolePage'] {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #f5f5f5;
+  overflow: hidden;
+
+  .chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #f7f7f8;
+    width: 100%;
+    position: relative;
+  }
+
+  .chat-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    background-color: white;
+    border-bottom: 1px solid #e5e5e5;
+    width: 100%;
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin: 0;
+    }
+  }
+
+  .chat-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: calc(100vh - 134px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .messages-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+    overflow-y: auto;
+    height: 100%;
+    box-sizing: border-box;
+
+    @media (min-width: 640px) {
+      padding: 2rem;
+    }
+
+    &:empty+.welcome-message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+  }
+
+  .welcome-message {
+    text-align: center;
+    max-width: 90%;
+    margin: auto;
+
+    p {
+      font-size: 1.25rem;
+      color: #1a1a1a;
+      margin: 0;
+    }
+  }
+
+  .message {
+    display: flex;
+    margin-bottom: 1rem;
+    width: 100%;
+    
+    &.user {
+      justify-content: flex-end;
+      
+      .message-content {
+        background-color: #2563eb;
+        color: white;
+        border-radius: 1.25rem 1.25rem 0 1.25rem;
+        max-width: 700px;
+      }
+    }
+  
+    &.assistant {
+      justify-content: flex-start;
+      
+      .message-content {
+        max-width: 700px; 
+        padding: 0; 
+        margin: 0.5rem 0;
+        
+        p {
+          color: #1a1a1a; 
+        }
+  
+        .message-audio {
+          width: 100%;
+          margin-top: 0.5rem;
+        }
+      }
+    }
+  }
+
+  .message-content {
+    padding: 0.75rem 1rem;
+    width: fit-content;
+    max-width: 100%;
+    box-sizing: border-box;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    
+    @media (min-width: 640px) {
+      padding: 1rem 1.25rem;
+    }
+
+    p {
+      margin: 0 0 0.5rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    strong {
+      font-weight: 600;
+    }
+
+    ul,
+    ol {
+      margin: 0.5rem 0;
+      padding-left: 1.5rem;
+    }
+
+    li {
+      margin: 0.25rem 0;
+    }
+
+    .message-audio {
+      margin-top: 0.75rem;
+      width: 100%;
+      border-radius: 0.5rem;
+    }
+  }
+
+  .chat-controls {
+    position: sticky;
+    bottom: 0;
+    width: 100%;
+    padding: 1rem 0;
+    background-color: #f7f7f8;
+    border-top: 1px solid #e5e5e5;
+    z-index: 10;
+
+    @media (min-width: 640px) {
+      padding: 1.25rem 0;
+    }
+
+    .input-controls {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 1rem;
+      
+      @media (min-width: 640px) {
+        gap: 1rem;
+        padding: 0 2rem;
+      }
+
+      .start-button {
+        width: auto;
+        min-width: 200px;
+        max-width: 250px;
+      }
+
+      .active-controls {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        max-width: 375px;
+
+        @media (min-width: 640px) {
+          gap: 1rem;
+        }
+
+        [data-component="Button"]:first-child {
+          flex: 0 0 auto;
+          min-width: 120px;
+        }
+
+        [data-component="Button"]:last-child {
+          flex: 1;
+        }
+      }
+    }
+  }
+}

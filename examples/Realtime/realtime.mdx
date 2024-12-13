@@ -12,7 +12,7 @@ To get started, you'll need a few accounts:
 - [OpenAI](https://platform.openai.com/signup)
 
 and `node`, `npm`, and `typescript` installed locally. If you'd like to follow along in code,
-the [openai-realtime-rag-bot](link)
+the [realtime-rag](https://github.com/braintrustdata/braintrust-cookbook/tree/main/examples/Realtime/realtime-rag)
 project contains a working example with all of the documents and code snippets we'll use.
 
 ## Clone the repo
@@ -45,7 +45,7 @@ of your account, and set the `PINECONE_API_KEY` environment variable in the [Env
 To upload the vectors, run the `upload-vectors.ts` script:
 
 ```bash
-npx tsx .web/utils/upload-vectors.ts
+npx tsx upload-vectors.ts
 ```
 
 This script reads all the files from the `docs-sample` directory, breaks them into sections based on headings, and creates vector embeddings for each section using OpenAI's API. It then stores those embeddings along with the section's title and content in Pinecone.
@@ -56,10 +56,9 @@ That's it for setup! Now let's dig into the code.
 
 Building with the OpenAI Realtime API is complex because it is built on WebSockets, and it lacks client-side authentication. However, the Braintrust [AI Proxy](/docs/guides/proxy) makes it easy to connect to the API in a secure and scalable way. The proxy securely manages your OpenAI API key, issuing [**temporary credentials**](/docs/guides/proxy#temporary-credentials-for-end-user-access) to your backend and frontend. The frontend sends any voice data from your app to the proxy, which handles secure communication with OpenAI’s Realtime API.
 
-To access the Realtime API through the Braintrust proxy, we changed the proxy URL when instantiating the `RealtimeClient` to `https://braintrustproxy.com/v1/realtime`. In our app, the `RealtimeClient` is initialized when the `ConsolePage` component is rendered. We also generate a [Braintrust temporary credential](/docs/guides/proxy#temporary-credentials-for-end-user-access), to be used instead of the OpenAI API key. This means your OpenAI API key will not be exposed to the client.
+To access the Realtime API through the Braintrust proxy, we changed the proxy URL when instantiating the `RealtimeClient` to `https://braintrustproxy.com/v1/realtime`. In our app, the `RealtimeClient` is initialized when the `ConsolePage` component is rendered.
 
 We set up this logic in `page.tsx`:
-
 
 ```typescript
 import { ConsolePage } from '@/components/ConsolePage';
@@ -120,7 +119,7 @@ export default async function Home() {
 
 ## Creating a RAG tool
 
-The retrieval logic also happens on the server side. We set up the helper function and route handler that queries Pinecone in `web/app/api/retrievePinecone/route.ts` so that we can call the retrieval tool on the client side. 
+The retrieval logic also happens on the server side. We set up the helper function and route handler that queries Pinecone in `route.ts` so that we can call the retrieval tool on the client side like this:
 
 ```typescript
 client.addTool(
@@ -143,16 +142,10 @@ client.addTool(
           setLastQuery(query);
           const results = await fetchFromPinecone(query);
           setRetrievalResults(results);
-
-          const formattedContext = results
-            .map(result =>
-              `[Score: ${result.score.toFixed(2)}] ${result.metadata.title}\n${result.metadata.content}`
-            )
+          return results
+            .map(result => `[Score: ${result.score.toFixed(2)}] ${result.metadata.title}\n${result.metadata.content}`)
             .join('\n\n');
-
-          return formattedContext;
         } catch (error) {
-          console.error('Pinecone retrieval error:', error);
           throw error;
         }
       }
@@ -160,12 +153,12 @@ client.addTool(
 ```
 
 <Callout type="info">
-Because of the way the RealtimeAPI works, we have to use OpenAI tool calling here instead of Braintrust tool functions. 
+Because of the way the Realtime API works, we have to use OpenAI tool calling here instead of Braintrust tool functions. 
 </Callout>
 
 ## Setting up the system prompt
 
-When we call the RealtimeAPI, we pass it a set of instructions that are configured in [conversation_config.js]:
+When we call the Realtime API, we pass it a set of instructions that are configured in `conversation_config.js`:
 
 ```javascript
 export const instructions = `System settings:
@@ -217,7 +210,7 @@ For an LLM-as-a-judge scorer, you define a prompt that evaluates the output and 
 
 Navigate to **Library** > **Scorers** and create a new scorer. Call your scorer **BraintrustRAG** and add the following prompt: 
 
-```
+```javascript
 Consider the following question:
  
 {{input.arguments.query}}
@@ -268,7 +261,7 @@ Let's edit our scoring function to test for that as precisely as possible.
 
 Let's change the prompt for our scoring function to: 
 
-```
+```javascript
 Consider the following question from an existing Braintrust user:
  
 {{input.arguments.query}}
@@ -290,7 +283,8 @@ As you continue to iterate on your scoring function and generate more logs, you 
 ## What's next
 
 As you continue to build more AI applications with complex function calls and new APIs, it's important to continuously improve both your AI application and your evaluation process. Here are some resources to help you do just that:
--[I ran an eval. Now what?](/blog/after-evals)
+
+- [I ran an eval. Now what?](/blog/after-evals)
 - [What to do when a new AI model comes out](/blog/new-model)
 
 

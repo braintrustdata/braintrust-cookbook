@@ -1,0 +1,1695 @@
+---
+title: "Write evals"
+metaTitle: "Write evaluations"
+---
+
+import { CodeTabs, TSTab, PYTab } from "#/ui/docs/code-tabs";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import { Callout } from "fumadocs-ui/components/callout";
+
+# Write evals
+
+An `Eval()` statement logs results to a Braintrust project. (Note: you can have multiple eval statements for one project and/or multiple eval statements in one file.)
+
+<CodeTabs>
+<TSTab>
+The first argument is the name of the project, and the second argument is an object with the following properties:
+
+- `data`, a function that returns an evaluation dataset: a list of inputs, expected outputs (optional), and metadata
+- `task`, a function that takes a single input and returns an output (usually an LLM completion)
+- `scores`, a set of scoring functions that take an input, output, and expected output (optional) and return a score
+- `metadata` about the experiment, like the model you're using or configuration values
+- `experimentName` a name to use for the experiment. Braintrust will automatically add a unique suffix if this name already exists.
+
+The return value of `Eval()` includes the full results of the eval as well as a summary that you can use to
+see the average scores, duration, improvements, regressions, and other metrics.
+
+```typescript title="basic.eval.ts"
+import { Eval } from "braintrust";
+import { Factuality } from "autoevals";
+
+Eval(
+  "Say Hi Bot", // Replace with your project name
+  {
+    data: () => {
+      return [
+        {
+          input: "David",
+          expected: "Hi David",
+        },
+      ]; // Replace with your eval dataset
+    },
+    task: (input) => {
+      return "Hi " + input; // Replace with your LLM call
+    },
+    scores: [Factuality],
+  },
+);
+```
+
+For a full list of parameters, see the [SDK docs](/docs/reference/libs/nodejs/interfaces/Evaluator).
+
+</TSTab>
+
+<PYTab>
+The first argument is the name of the project, and the remaining arguments allow you to specify the following:
+
+- `data`, a function that returns an evaluation dataset: a list of inputs, expected outputs (optional), and metadata
+- `task`, a function that takes a single input and returns an output like an LLM completion
+- `scores`, a set of scoring functions that take an input, output, and expected output (optional) and return a score
+- `metadata` about the experiment, like the model you're using or configuration values
+- `experiment_name` a name to use for the experiment. Braintrust will automatically add a unique suffix if this name already exists.
+
+The return value of `Eval()` includes the full results of the eval as well as a summary that you can use to
+see the average scores, duration, improvements, regressions, and other metrics.
+
+```python title="eval_basic.py"
+from braintrust import Eval
+
+from autoevals import Factuality
+
+Eval(
+    "Say Hi Bot",  # Replace with your project name
+    data=lambda: [
+        {
+            "input": "David",
+            "expected": "Hi David",
+        },
+    ],  # Replace with your eval dataset
+    task=lambda input: "Hi " + input,  # Replace with your LLM call
+    scores=[Factuality],
+)
+```
+
+For a full list of parameters, see the [SDK docs](/docs/reference/libs/python#evaluator-objects).
+
+</PYTab>
+
+</CodeTabs>
+
+## Data
+
+An evaluation dataset is a list of test cases. Each has an input and optional expected output, metadata, and tags. The key fields in a data record are:
+
+- **Input**: The arguments that uniquely define a test case (an arbitrary, JSON serializable object). Braintrust uses the `input` to know whether
+  two test cases are the same between evaluation runs, so the cases should not contain run-specific state. A simple rule of thumb is that if you run the same
+  eval twice, the `input` should be identical.
+- **Expected**. (Optional) the ground truth value (an arbitrary, JSON serializable object) that you'd compare to `output` to determine if your `output` value is
+  correct or not. Braintrust currently does not compare `output` to `expected` for you, since there are many different ways to do that correctly. For example, you
+  may use a subfield in `expected` to compare to a subfield in `output` for a certain scoring function. Instead, these values are just used to help you navigate
+  your evals while debugging and comparing results.
+- **Metadata**. (Optional) a dictionary with additional data about the test example, model outputs, or just about anything else that's relevant, that you can use
+  to help find and analyze examples later. For example, you could log the `prompt`, example's `id`, model parameters, or anything else that would be useful to
+  slice/dice later.
+- **Tags**. (Optional) a list of strings that you can use to filter and group records later.
+
+### Getting started
+
+To get started with evals, you need some test data. A fine starting point is to write 5-10 examples that you believe are representative. The data must have an input
+field (which could be complex JSON, or just a string) and should ideally have an expected output field, (although this is not required).
+
+Once you have an evaluation set up end-to-end, you can always add more test cases. You'll know you need more data if your eval scores and outputs seem fine, but your production
+app doesn't look right. And once you have Braintrust's [Logging](/docs/guides/logging) set up, your real application data will provide a rich source of examples to use as test cases.
+
+As you scale, Braintrust's [Datasets](/docs/guides/datasets) are a great tool for managing your test cases.
+
+<Callout type="warn">
+  It's a common misconception that you need a large volume of perfectly labeled
+  evaluation data, but that's not the case. In practice, it's better to assume
+  your data is noisy, your AI model is imperfect, and your scoring methods are a little
+  bit wrong. The goal of evaluation is to assess each of these components and
+  improve them over time.
+</Callout>
+
+## Scorers
+
+A scoring function allows you to compare the expected output of a task to the actual output and produce a score
+between 0 and 1. You use a scoring function by referencing it in the `scores` array in your eval.
+
+We recommend starting with the scorers provided by Braintrust's [autoevals library](/docs/autoevals). They work out of the box and will get you up and running quickly. Just like with test cases, once you begin running evaluations, you will find areas that need improvement. This will lead you create your own scorers, customized to your usecases, to get a well rounded view of your application's
+performance.
+
+### Define your own scorers
+
+You can define your own score, e.g.
+
+<CodeTabs>
+<TSTab>
+```typescript {4-9, 25}
+import { Eval } from "braintrust";
+import { Factuality } from "autoevals";
+
+const exactMatch = (args: {
+  input: string;
+  output: string;
+  expected: string;
+}) => {
+  return {
+    name: "Exact match",
+    score: args.output === args.expected ? 1 : 0,
+  };
+};
+
+Eval(
+  "Say Hi Bot", // Replace with your project name
+  {
+    data: () => {
+      return [
+        {
+          input: "David",
+          expected: "Hi David",
+        },
+      ]; // Replace with your eval dataset
+    },
+    task: (input) => {
+      return "Hi " + input; // Replace with your LLM call
+    },
+    scores: [Factuality, exactMatch],
+  },
+);
+```
+</TSTab>
+
+<PYTab>
+```python {4-5, 16}
+from braintrust import Eval
+
+from autoevals import Factuality
+
+
+def exact_match(input, expected, output):
+    return 1 if output == expected else 0
+
+
+Eval(
+    "Say Hi Bot",  # Replace with your project name
+    data=lambda: [
+        {
+            "input": "David",
+            "expected": "Hi David",
+        },
+    ],  # Replace with your eval dataset
+    task=lambda input: "Hi " + input,  # Replace with your LLM call
+    scores=[Factuality, exact_match],
+)
+```
+</PYTab>
+</CodeTabs>
+
+### Score using AI
+
+You can also define your own prompt-based scoring functions. For example,
+
+<CodeTabs>
+
+<TSTab>
+
+```typescript {4-12, 28}
+import { Eval } from "braintrust";
+import { LLMClassifierFromTemplate } from "autoevals";
+
+const noApology = LLMClassifierFromTemplate({
+  name: "No apology",
+  promptTemplate: "Does the response contain an apology? (Y/N)\n\n{{output}}",
+  choiceScores: {
+    Y: 0,
+    N: 1,
+  },
+  useCoT: true,
+});
+
+Eval(
+  "Say Hi Bot", // Replace with your project name
+  {
+    data: () => {
+      return [
+        {
+          input: "David",
+          expected: "Hi David",
+        },
+      ]; // Replace with your eval dataset
+    },
+    task: (input) => {
+      return "Sorry " + input; // Replace with your LLM call
+    },
+    scores: [noApology],
+  },
+);
+```
+
+</TSTab>
+
+<PYTab>
+
+```python {5-10, 21}
+from braintrust import Eval
+
+from autoevals import LLMClassifier
+
+no_apology = LLMClassifier(
+    name="No apology",
+    prompt_template="Does the response contain an apology? (Y/N)\n\n{{output}}",
+    choice_scores={"Y": 0, "N": 1},
+    use_cot=True,
+)
+
+Eval(
+    "Say Hi Bot",  # Replace with your project name
+    data=lambda: [
+        {
+            "input": "David",
+            "expected": "Hi David",
+        },
+    ],  # Replace with your eval dataset
+    task=lambda input: "Sorry " + input,  # Replace with your LLM call
+    scores=[no_apology],
+)
+```
+
+</PYTab>
+</CodeTabs>
+
+### Conditional scoring
+
+Sometimes, the scoring function(s) you want to use depend on the input data. For example, if you're evaluating a
+chatbot, you might want to use a scoring function that measures whether calculator-style inputs are correctly
+answered.
+
+#### Skip scorers
+
+Return `null`/`None` to skip a scorer for a particular test case.
+
+<CodeTabs>
+<TSTab>
+
+```typescript title="calculator.eval.ts"
+import { NumericDiff } from "autoevals";
+
+interface QueryInput {
+  type: string;
+  text: string;
+}
+
+const calculatorAccuracy = ({
+  input,
+  output,
+}: {
+  input: QueryInput;
+  output: number;
+}) => {
+  if (input.type !== "calculator") {
+    return null;
+  }
+  return NumericDiff({ output, expected: eval(input.text) });
+};
+```
+
+</TSTab>
+
+<PYTab>
+
+```python title="eval_calculator.py"
+from autoevals import NumericDiff
+
+
+def calculator_accuracy(input, output, **kwargs):
+    if input["type"] != "calculator":
+        return None
+
+    return NumericDiff()(output=output, expected=eval(input["text"]))
+```
+
+</PYTab>
+
+</CodeTabs>
+
+<Callout emoji="💡">
+  Scores with `null`/`None` values will be ignored when computing the overall
+  score, improvements/regressions, and summary metrics like standard deviation.
+</Callout>
+
+#### List of scorers
+
+You can also return a list of scorers from a scorer function. This allows you to dynamically generate scores based on the input data, or even combine scores together into a single score. When you return a list of scores, you must return a `Score` object, which has a `name` and a `score` field.
+
+<CodeTabs>
+
+<TSTab>
+```typescript title="calculator_accuracy.eval.ts"
+import { NumericDiff } from "autoevals";
+
+interface QueryInput {
+  type: string;
+  text: string;
+}
+
+const calculatorAccuracy = ({
+  input,
+  output,
+}: {
+  input: QueryInput;
+  output: number;
+}) => {
+  if (input.type !== "calculator") {
+    return null;
+  }
+  return [
+    {
+      name: "Numeric diff",
+      score: NumericDiff({ output, expected: eval(input.text) }),
+    },
+    {
+      name: "Exact match",
+      score: output === eval(input.text) ? 1 : 0,
+    },
+  ];
+};
+```
+</TSTab>
+<PYTab>
+```python title="eval_calculator_accuracy.py"
+from autoevals import NumericDiff
+
+
+def calculator_accuracy(input, output, **kwargs):
+    if input["type"] != "calculator":
+        return None
+
+    return [
+        {
+            "name": "Numeric diff",
+            "score": NumericDiff()(output=output, expected=eval(input["text"])),
+        },
+        {
+            "name": "Exact match",
+            "score": 1 if output == eval(input["text"]) else 0,
+        },
+    ]
+```
+</PYTab>
+</CodeTabs>
+
+### Scorers with additional fields
+
+Certain scorers, like [ClosedQA](https://github.com/braintrustdata/autoevals/blob/main/templates/closed_q_a.yaml),
+allow additional fields to be passed in. You can pass them in by initializing them with `.partial(...)`.
+
+<CodeTabs>
+<TSTab>
+```typescript title="closed_q_a.eval.ts"
+import { Eval, wrapOpenAI } from "braintrust";
+import { ClosedQA } from "autoevals";
+import { OpenAI } from "openai";
+
+const client = wrapOpenAI(
+  new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  }),
+);
+
+Eval("QA bot", {
+  data: () => [
+    {
+      input: "Which insect has the highest population?",
+      expected: "ant",
+    },
+  ],
+  task: async (input) => {
+    const response = await client.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content:
+            "Answer the following question. Specify how confident you are (or not)",
+        },
+        { role: "user", content: "Question: " + input },
+      ],
+    });
+    return response.choices[0].message.content || "Unknown";
+  },
+  scores: [
+    ClosedQA.partial({
+      criteria:
+        "Does the submission specify whether or not it can confidently answer the question?",
+    }),
+  ],
+});
+```
+</TSTab>
+<PYTab>
+```python title="eval_closed_q_a.py"
+import os
+
+from braintrust import Eval, wrap_openai
+from openai import OpenAI
+
+from autoevals import ClosedQA
+
+openai = wrap_openai(OpenAI(api_key=os.environ["OPENAI_API_KEY"]))
+
+Eval(
+    "QA bot",
+    data=lambda: [
+        {
+            "input": "Which insect has the highest population?",
+            "expected": "ant",
+        },
+    ],
+    task=lambda input: openai.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": "Answer the following question."},
+            {"role": "user", "content": "Question: " + input},
+        ],
+    )
+    .choices[0]
+    .message.content
+    or "Unknown",
+    scores=[
+        ClosedQA.partial(criteria="Does the submission specify whether or not it can confidently answer the question?")
+    ],
+)
+```
+</PYTab>
+</CodeTabs>
+
+This approach works well if the criteria is static, but if the criteria is dynamic, you can pass them in via a wrapper function, e.g.
+
+<CodeTabs>
+<TSTab>
+```typescript title="closed_q_a.eval.ts"
+import { Eval, wrapOpenAI } from "braintrust";
+import { ClosedQA } from "autoevals";
+import { OpenAI } from "openai";
+
+const openai = wrapOpenAI(new OpenAI());
+
+interface Metadata {
+  criteria: string;
+}
+
+const closedQA = (args: {
+  input: string;
+  output: string;
+  metadata: Metadata;
+}) => {
+  return ClosedQA({
+    input: args.input,
+    output: args.output,
+    criteria: args.metadata.criteria,
+  });
+};
+
+Eval("QA bot", {
+  data: () => [
+    {
+      input: "Which insect has the highest population?",
+      expected: "ant",
+      metadata: {
+        criteria:
+          "Does the submission specify whether or not it can confidently answer the question?",
+      },
+    },
+  ],
+  task: async (input) => {
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "system",
+          content:
+            "Answer the following question. Specify how confident you are (or not)",
+        },
+        { role: "user", content: "Question: " + input },
+      ],
+    });
+    return response.choices[0].message.content || "Unknown";
+  },
+  scores: [closedQA],
+});
+```
+</TSTab>
+<PYTab>
+```python title="eval_closed_q_a.py"
+from braintrust import Eval, wrap_openai
+from openai import OpenAI
+
+from autoevals import ClosedQA
+
+openai = wrap_openai(OpenAI())
+
+
+def closed_q_a(input, output, metadata):
+    # NOTE: You need to instantiate the scorer class before passing
+    # arguments to it directly.
+    return ClosedQA()(
+        input=input,
+        output=output,
+        criteria=metadata["criteria"],
+    )
+
+
+Eval(
+    "QA bot",
+    data=lambda: [
+        {
+            "input": "Which insect has the highest population?",
+            "expected": "ant",
+            "metadata": {
+                "criteria": "Does the submission specify whether or not it can confidently answer the question?",
+            },
+        },
+    ],
+    task=lambda input: openai.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {
+                "role": "system",
+                "content": "Answer the following question. Specify how confident you are (or not)",
+            },
+            {"role": "user", "content": "Question: " + input},
+        ],
+    )
+    .choices[0]
+    .message.content
+    or "Unknown",
+    scores=[closed_q_a],
+)
+```
+</PYTab>
+</CodeTabs>
+
+### Composing scorers
+
+Sometimes, it's useful to build scorers that call other scorers. For example, if you're building a translation app,
+you could reverse translate the output, and use `EmbeddingSimilarity` to compare it to the original input.
+
+To compose scorers, simply call one scorer from another.
+
+<CodeTabs>
+<TSTab>
+```typescript title="translation.eval.ts"
+import { EmbeddingSimilarity } from "autoevals";
+import { Eval, wrapOpenAI } from "braintrust";
+import OpenAI from "openai";
+
+const client = wrapOpenAI(
+  new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  }),
+);
+
+async function translationScore({
+  input,
+  output,
+}: {
+  input: string;
+  output: string;
+}) {
+  const completion = await client.chat.completions.create({
+    model: "gpt-4o",
+    messages: [
+      {
+        role: "system",
+        content:
+          "You are a helpful assistant that translates from French to English.",
+      },
+      { role: "user", content: output },
+    ],
+  });
+  const reverseTranslated = completion.choices[0].message.content ?? "";
+  const similarity = await EmbeddingSimilarity({
+    output: reverseTranslated,
+    expected: input,
+  });
+  return {
+    name: "TranslationScore",
+    score: similarity.score,
+    metadata: {
+      original: input,
+      translated: output,
+      reverseTranslated,
+    },
+  };
+}
+
+Eval("Translate", {
+  data: [
+    { input: "May I order a pizza?" },
+    { input: "Where is the nearest bank?" },
+  ],
+  task: async (input) => {
+    const completion = await client.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a helpful assistant that translates from English to French.",
+        },
+        { role: "user", content: input },
+      ],
+    });
+    return completion.choices[0].message.content ?? "";
+  },
+  scores: [translationScore],
+});
+```
+</TSTab>
+<PYTab>
+```python title="translate.py"
+import os
+
+from braintrust import Eval, wrap_openai
+from openai import OpenAI
+
+from autoevals import EmbeddingSimilarity, Score
+
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+
+
+def translation_score(input, output):
+    completion = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant that translates from French to English."},
+            {"role": "user", "content": output},
+        ],
+    )
+    reverse_translated = completion.choices[0].message.content
+    similarity = EmbeddingSimilarity()(output=reverse_translated, expected=input)
+    return Score(
+        name="TranslationScore",
+        score=similarity.score,
+        metadata={"original": input, "translated": output, "reverseTranslated": reverse_translated},
+    )
+
+
+def task(input):
+    completion = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant that translates from English to French."},
+            {"role": "user", "content": input},
+        ],
+    )
+    return completion.choices[0].message.content
+
+
+Eval(
+    "Translate",
+    data=[
+        {"input": "May I order a pizza?"},
+        {"input": "Where is the nearest bank?"},
+    ],
+    task=task,
+    scores=[translation_score],
+)
+```
+</PYTab>
+</CodeTabs>
+
+## Additional metadata
+
+### While executing the `task`
+
+Although you can provide `metadata` about each test case in the `data` function, it can be helpful to add additional
+metadata while your `task` is executing. The second argument to `task` is a `hooks` object, which allows you to save
+top-level metadata to the test case.
+
+<CodeTabs>
+<TSTab>
+
+```typescript
+import { Eval } from "braintrust";
+import { Factuality } from "autoevals";
+
+Eval(
+  "Say Hi Bot", // Replace with your project name
+  {
+    data: () => [
+      {
+        input: "David",
+        expected: "Hi David",
+      },
+    ],
+    task: (input, hooks) => {
+      hooks.meta({
+        flavor: "apple",
+      });
+      return "Hi " + input; // Replace with your LLM call
+    },
+    scores: [Factuality],
+  },
+);
+```
+
+</TSTab>
+<PYTab>
+
+```python
+from braintrust import Eval
+
+from autoevals import Factuality
+
+
+def task(input, hooks):
+    hooks.meta(
+        flavor="apple",
+    )
+    return "Hi " + input
+
+
+Eval(
+    "Say Hi Bot",  # Replace with your project name
+    data=lambda: [
+        {
+            "input": "David",
+            "expected": "Hi David",
+        },
+    ],
+    task=task,
+    scores=[Factuality],
+)
+```
+
+</PYTab>
+</CodeTabs>
+
+### Experiment-level metadata
+
+It can be useful to add custom metadata to your experiments, e.g. to store information about the model or other
+parameters that you use. To set custom metadata, pass a `metadata` field to your `Eval` block:
+
+<CodeTabs>
+<TSTab>
+
+```typescript title="metadata.eval.ts"
+import { Eval } from "braintrust";
+import { Factuality } from "autoevals";
+
+Eval(
+  "Say Hi Bot", // Replace with your project name
+  {
+    data: () => [
+      {
+        input: "David",
+        expected: "Hi David",
+      },
+    ],
+    task: (input) => {
+      return "Hi " + input; // Replace with your LLM call
+    },
+    scores: [Factuality],
+    metadata: {
+      model: "gpt-4o",
+    },
+  },
+);
+```
+</TSTab>
+
+<PYTab>
+```python title="eval_metadata.py"
+from braintrust import Eval
+
+from autoevals import Factuality
+
+Eval(
+    "Say Hi Bot",  # Replace with your project name
+    data=lambda: [
+        {
+            "input": "David",
+            "expected": "Hi David",
+        },
+    ],  # Replace with your eval dataset
+    task=lambda input: "Hi " + input,  # Replace with your LLM call
+    scores=[Factuality],
+    metadata={"model": "gpt-4o"},
+)
+```
+</PYTab>
+</CodeTabs>
+
+Once you set metadata, you can view and filter by it on the Experiments page:
+
+<video className="border rounded-md" src="/docs/guides/evals/metadata-filter.mp4" loop autoPlay muted poster="/docs/guides/evals/metadata-filter-poster.png"></video>
+
+You can also construct complex analyses across experiments. See [Analyze across experiments](./interpret#analyze-across-experiments)
+for more details.
+
+## Trials
+
+It is often useful to run each input in an evaluation multiple times, to get a sense of the variance in
+responses and get a more robust overall score. Braintrust supports _trials_ as a first-class concept, allowing
+you to run each input multiple times. Behind the scenes, Braintrust will intelligently aggregate the results
+by bucketing test cases with the same `input` value and computing summary statistics for each bucket.
+
+To enable trials, add a `trialCount`/`trial_count` property to your evaluation:
+
+<CodeTabs>
+
+<TSTab>
+
+```typescript title="trials.eval.ts"
+import { Eval } from "braintrust";
+import { Factuality } from "autoevals";
+
+Eval(
+  "Say Hi Bot", // Replace with your project name
+  {
+    data: () => {
+      return [
+        {
+          input: "David",
+          expected: "Hi David",
+        },
+      ]; // Replace with your eval dataset
+    },
+    task: (input) => {
+      return "Hi " + input; // Replace with your LLM call
+    },
+    scores: [Factuality],
+    trialCount: 10,
+  },
+);
+```
+
+</TSTab>
+
+<PYTab>
+
+```python title="eval_trials.py"
+from braintrust import Eval
+
+from autoevals import Factuality
+
+Eval(
+    "Say Hi Bot",  # Replace with your project name
+    data=lambda: [
+        {
+            "input": "David",
+            "expected": "Hi David",
+        },
+    ],  # Replace with your eval dataset
+    task=lambda input: "Hi " + input,  # Replace with your LLM call
+    scores=[Factuality],
+    trial_count=10,
+)
+```
+
+</PYTab>
+</CodeTabs>
+
+## Hill climbing
+
+Sometimes you do not have expected outputs, and instead want to use a previous experiment as a baseline. Hill climbing
+is inspired by, but not exactly the same as, the term used in [numerical optimization](https://en.wikipedia.org/wiki/Hill_climbing).
+In the context of Braintrust, hill climbing is a way to iteratively improve a model's performance by comparing new
+experiments to previous ones. This is especially useful when you don't have a pre-existing benchmark to evaluate against.
+
+Braintrust supports hill climbing as a first-class concept, allowing you to use a previous experiment's `output`
+field as the `expected` field for the current experiment. Autoevals also includes a number of scoreres, like
+`Summary` and `Battle`, that are designed to work well with hill climbing.
+
+To enable hill climbing, use `BaseExperiment()` in the `data` field of an eval:
+
+<CodeTabs>
+<TSTab>
+```typescript title="hill_climbing.eval.ts"
+import { Battle } from "autoevals";
+import { Eval, BaseExperiment } from "braintrust";
+
+Eval<string, string, string>(
+  "Say Hi Bot", // Replace with your project name
+  {
+    data: BaseExperiment(),
+    task: (input) => {
+      return "Hi " + input; // Replace with your LLM call
+    },
+    scores: [Battle.partial({ instructions: "Which response said 'Hi'?" })],
+  },
+);
+```
+</TSTab>
+<PYTab>
+```python title="eval_hill_climbing.py"
+from braintrust import BaseExperiment, Eval
+
+from autoevals import Battle
+
+Eval(
+    "Say Hi Bot",  # Replace with your project name
+    data=BaseExperiment(),
+    task=lambda input: "Hi " + input,  # Replace with your LLM call
+    scores=[Battle.partial(instructions="Which response said 'Hi'?")],
+)
+```
+</PYTab>
+</CodeTabs>
+
+That's it! Braintrust will automatically pick the best base experiment, either using git metadata if available or
+timestamps otherwise, and then populate the `expected` field by merging the `expected` and `output`
+field of the base experiment. This means that if you set `expected`, e.g. through the UI while reviewing results,
+it will be used as the `expected` field for the next experiment.
+
+**Using a specific experiment**
+
+If you want to use a specific experiment as the base experiment, you can pass the `name` field to `BaseExperiment()`:
+
+<CodeTabs>
+
+<TSTab>
+
+```typescript title="hill_climbing_specific.eval.ts"
+import { Battle } from "autoevals";
+import { Eval, BaseExperiment } from "braintrust";
+
+Eval<string, string, string>(
+  "Say Hi Bot", // Replace with your project name
+  {
+    data: BaseExperiment({ name: "main-123" }),
+    task: (input) => {
+      return "Hi " + input; // Replace with your LLM call
+    },
+    scores: [Battle.partial({ instructions: "Which response said 'Hi'?" })],
+  },
+);
+```
+
+</TSTab>
+
+<PYTab>
+
+```python
+from braintrust import BaseExperiment, Eval
+
+from autoevals import Battle
+
+Eval(
+    "Say Hi Bot",  # Replace with your project name
+    data=BaseExperiment(name="main-123"),
+    task=lambda input: "Hi " + input,  # Replace with your LLM call
+    scores=[Battle.partial(instructions="Which response said 'Hi'?")],
+)
+```
+
+</PYTab>
+</CodeTabs>
+
+**Scoring considerations**
+
+Often while hill climbing, you want to use two different types of scoring functions:
+
+- Methods that do not require an expected output, e.g. `ClosedQA`, so that you can judge the quality of the output
+  purely based on the input and output. This measure is useful to track across experiments, and it can be used to
+  compare any two experiments, even if they are not sequentially related.
+- Comparative methods, e.g. `Battle` or `Summary`, that accept an `expected` output but do not treat it as a ground
+  truth. Generally speaking, if you score > 50% on a comparative method, it means you're doing better than the base
+  on average. To learn more about how `Battle` and `Summary` work, check out [their prompts](https://github.com/braintrustdata/autoevals/tree/main/templates).
+
+## Custom reporters
+
+When you run an experiment, Braintrust logs the results to your terminal, and `braintrust eval` returns a non-zero exit code if any eval throws an exception. However, it's often useful to customize this behavior, e.g. in your CI/CD pipeline to precisely define what constitutes a failure, or to report results to a different system.
+
+Braintrust allows you to define custom reporters that can be used to process and log results anywhere you'd like. You can define a reporter by adding a `Reporter(...)` block. A Reporter has two functions:
+
+<CodeTabs>
+
+<TSTab>
+
+```typescript title="reporter.eval.ts"
+import { Reporter } from "braintrust";
+
+Reporter(
+  "My reporter", // Replace with your reporter name
+  {
+    reportEval(evaluator, result, opts) {
+      // Summarizes the results of a single reporter, and return whatever you
+      // want (the full results, a piece of text, or both!)
+    },
+
+    reportRun(results) {
+      // Takes all the results and summarizes them. Return a true or false
+      // which tells the process to exit.
+      return true;
+    },
+  },
+);
+```
+
+</TSTab>
+
+<PYTab>
+
+```python title="eval_reporter.py"
+from braintrust import Reporter
+
+
+def report_eval(evaluator, result, opts):
+    # Summarizes the results of a single reporter, and return whatever you
+    # want (the full results, a piece of text, or both!)
+    pass
+
+
+def report_run(results):
+    # Takes all the results and summarizes them. Return a true or false
+    # which tells the process to exit.
+    return True
+
+
+Reporter(
+    "My reporter",  # Replace with your reporter name
+    report_eval=report_eval,
+    report_run=report_run,
+)
+```
+
+</PYTab>
+
+</CodeTabs>
+
+Any `Reporter` included among your evaluated files will be automatically picked up by the `braintrust eval` command.
+
+- If no reporters are defined, the default reporter will be used which logs the results to the console.
+- If you define one reporter, it'll be used for all `Eval` blocks.
+- If you define multiple `Reporter`s, you have to specify the reporter name as an optional 3rd argument to `Eval()`.
+
+**Example: the default reporter**
+
+As an example, here's the default reporter that Braintrust uses:
+
+<CodeTabs>
+<TSTab>
+```typescript title="reporter_default.eval.ts"
+import { Reporter, reportFailures } from "braintrust";
+
+Reporter("Braintrust default reporter", {
+  reportEval: async (evaluator, result, { verbose, jsonl }) => {
+    const { results, summary } = result;
+    const failingResults = results.filter(
+      (r: { error: unknown }) => r.error !== undefined,
+    );
+
+    if (failingResults.length > 0) {
+      reportFailures(evaluator, failingResults, { verbose, jsonl });
+    }
+
+    console.log(jsonl ? JSON.stringify(summary) : summary);
+    return failingResults.length === 0;
+  },
+  reportRun: async (evalReports: boolean[]) => {
+    return evalReports.every((r) => r);
+  },
+});
+```
+</TSTab>
+
+<PYTab>
+```python title="eval_reporter_default.py"
+import json
+
+from braintrust import Reporter
+from braintrust.framework import report_failures
+
+
+def report_eval(evaluator, result, verbose, jsonl):
+    results = result.results
+    summary = result.summary
+
+    failing_results = [x for x in results if x.error]
+    if len(failing_results) > 0:
+        report_failures(evaluator, failing_results, verbose=verbose, jsonl=jsonl)
+    else:
+        print(json.dumps(summary.as_dict()) if jsonl else f"{summary}")
+
+    return len(failing_results) == 0
+
+
+def report_run(eval_reports, verbose, jsonl):
+    return all(x for x in eval_reports)
+
+
+Reporter(
+    "default",
+    report_eval=report_eval,
+    report_run=report_run,
+)
+```
+</PYTab>
+</CodeTabs>
+
+## Attachments
+
+Braintrust allows you to log arbitrary binary data, like images, audio, and
+PDFs, as [attachments](/docs/guides/tracing#uploading-attachments). The easiest way
+to use attachments in your evals is to initialize an `Attachment` object in your
+data.
+
+<CodeTabs>
+<TSTab>
+```typescript title="attachment.eval.ts"
+import { Eval, Attachment } from "braintrust";
+import { NumericDiff } from "autoevals";
+import path from "path";
+
+function loadPdfs() {
+  return ["example.pdf"].map((pdf) => ({
+    input: {
+      file: new Attachment({
+        filename: pdf,
+        contentType: "application/pdf",
+        data: path.join("files", pdf),
+      }),
+    },
+    // This is a toy example where we check that the file size is what we expect.
+    expected: 469513,
+  }));
+}
+
+async function getFileSize(input: { file: Attachment }) {
+  return (await input.file.data()).size;
+}
+
+Eval("Project with PDFs", {
+  data: loadPdfs,
+  task: getFileSize,
+  scores: [NumericDiff],
+});
+```
+</TSTab>
+<PYTab>
+```python title="attachment.py"
+import os
+from typing import Any, Dict, Iterable
+
+from braintrust import Attachment, Eval, EvalCase
+
+from autoevals import NumericDiff
+
+
+def load_pdfs() -> Iterable[EvalCase[Dict[str, Any], int]]:
+    for filename in ["example.pdf"]:
+        yield EvalCase(
+            input={
+                "file": Attachment(
+                    filename=filename,
+                    content_type="application/pdf",
+                    # The file on your filesystem or the file's bytes.
+                    data=os.path.join("files", filename),
+                )
+            },
+            # This is a toy example where we check that the file size is what we expect.
+            expected=469513,
+        )
+
+
+def get_file_size(input: Dict[str, Any]) -> int:
+    return len(input["file"].data)
+
+
+# Our evaluation uses a `NumericDiff` scorer to check the file size.
+Eval(
+    "Project with PDFs",
+    data=load_pdfs(),
+    task=get_file_size,
+    scores=[NumericDiff],
+)
+```
+</PYTab>
+</CodeTabs>
+
+You can also store attachments in a dataset for reuse across multiple experiments.
+
+<CodeTabs>
+<TSTab>
+```typescript title="attachment_dataset_eval.ts"
+import { NumericDiff } from "autoevals";
+import { Attachment, ReadonlyAttachment, initDataset, Eval } from "braintrust";
+import path from "node:path";
+
+async function createPdfDataset(): Promise<void> {
+  const dataset = initDataset({
+    project: "Project with PDFs",
+    dataset: "My PDF Dataset",
+  });
+  for (const filename of ["example.pdf"]) {
+    dataset.insert({
+      input: {
+        file: new Attachment({
+          filename,
+          contentType: "application/pdf",
+          data: path.join("files", filename),
+        }),
+      },
+    });
+  }
+  await dataset.flush();
+}
+
+async function getFileSize(input: {
+  file: ReadonlyAttachment;
+}): Promise<number> {
+  return (await input.file.data()).size;
+}
+
+// First create a dataset with attachments.
+createPdfDataset();
+
+// Later, we can refer to the dataset by name to load it from Braintrust.
+Eval("Project with PDFs", {
+  data: initDataset({
+    project: "Project with PDFs",
+    dataset: "My PDF Dataset",
+  }),
+  task: getFileSize,
+  scores: [NumericDiff],
+});
+```
+</TSTab>
+<PYTab>
+```python title="attachment_dataset_eval.py"
+import os
+from typing import Any, Dict
+
+from braintrust import Attachment, Eval, init_dataset
+
+from autoevals import NumericDiff
+
+
+def create_pdf_dataset() -> None:
+    """Create a dataset with attachments."""
+    dataset = init_dataset("Project with PDFs", "My PDF Dataset")
+    for filename in ["example.pdf"]:
+        dataset.insert(
+            input={
+                "file": Attachment(
+                    filename=filename,
+                    content_type="application/pdf",
+                    # The file on your filesystem or the file's bytes.
+                    data=os.path.join("files", filename),
+                )
+            },
+            # This is a toy example where we check that the file size is what we expect.
+            expected=469513,
+        )
+    dataset.flush()
+
+
+def get_file_size(input: Dict[str, Any]) -> int:
+    """Download the attachment and get its length."""
+    return len(input["file"].data)
+
+
+# First create a dataset with attachments.
+create_pdf_dataset()
+
+# Later, we can refer to the dataset in an experiment. Upon access, the attachment data will be automatically downloaded from Braintrust.
+Eval(
+    "Project with PDFs",
+    data=init_dataset("Project with PDFs", "My PDF Dataset"),
+    task=get_file_size,
+    scores=[NumericDiff],
+)
+```
+</PYTab>
+</CodeTabs>
+
+## Tracing
+
+Braintrust allows you to trace detailed debug information and metrics about your
+application that you can use to measure performance and debug issues. The trace
+is a tree of spans, where each span represents an expensive task, e.g. an LLM
+call, vector database lookup, or API request.
+
+<Callout type="info">
+  If you are using the OpenAI API, Braintrust includes a wrapper function that
+  automatically logs your requests. To use it, simply call
+  `wrapOpenAI/wrap_openai` on your OpenAI instance. See [Wrapping
+  OpenAI](https://www.braintrustdata.com/docs/guides/tracing#wrapping-openai)
+  for more info.
+</Callout>
+
+<Callout type="warn">
+  Each call to `experiment.log()` creates its own trace, starting at the time of
+  the previous log statement and ending at the completion of the current. Do not
+  mix `experiment.log()` with tracing. It will result in extra traces that are
+  not correctly parented.
+</Callout>
+
+For more detailed tracing, you can wrap existing code with the
+`braintrust.traced` function. Inside the wrapped function, you can log
+incrementally to `braintrust.currentSpan()`. For example, you can progressively
+log the input, output, and expected output of a task, and then log a score at the
+end:
+
+<CodeTabs>
+<TSTab>
+```typescript
+import { Eval, traced } from "braintrust";
+
+async function callModel(input: string) {
+  return traced(
+    async (span) => {
+      const messages = { messages: [{ role: "system", text: input }] };
+      span.log({ input: messages });
+
+      // Replace this with a model call
+      const result = {
+        content: "China",
+        latency: 1,
+        prompt_tokens: 10,
+        completion_tokens: 2,
+      };
+
+      span.log({
+        output: result.content,
+        metrics: {
+          latency: result.latency,
+          prompt_tokens: result.prompt_tokens,
+          completion_tokens: result.completion_tokens,
+        },
+      });
+      return result.content;
+    },
+    {
+      name: "My AI model",
+    },
+  );
+}
+
+const exactMatch = (args: {
+  input: string;
+  output: string;
+  expected?: string;
+}) => {
+  return {
+    name: "Exact match",
+    score: args.output === args.expected ? 1 : 0,
+  };
+};
+
+Eval("My Evaluation", {
+  data: () => [
+    { input: "Which country has the highest population?", expected: "China" },
+  ],
+  task: async (input, { span }) => {
+    return await callModel(input);
+  },
+  scores: [exactMatch],
+});
+```
+</TSTab>
+<PYTab>
+```python
+from braintrust import Eval, current_span, traced
+
+
+@traced
+async def call_model(input):
+    messages = dict(
+        messages=[
+            dict(role="system", text=input),
+        ]
+    )
+    current_span().log(input=messages)
+
+    # Replace this with a model call
+    result = {
+        "content": "China",
+        "latency": 1,
+        "prompt_tokens": 10,
+        "completion_tokens": 2,
+    }
+    current_span().log(
+        output=result["content"],
+        metrics=dict(
+            latency=result["latency"],
+            prompt_tokens=result["prompt_tokens"],
+            completion_tokens=result["completion_tokens"],
+        ),
+    )
+    return result["content"]
+
+
+async def run_input(input):
+    return await call_model(input)
+
+
+def exact_match(input, expected, output):
+    return 1 if output == expected else 0
+
+
+Eval(
+    "My Evaluation",
+    data=[dict(input="Which country has the highest population?", expected="China")],
+    task=run_input,
+    scores=[exact_match],
+)
+```
+</PYTab>
+</CodeTabs>
+
+This results in a span tree you can visualize in the UI by clicking on each test case
+in the experiment:
+
+![Root Span](/docs/root_span_trace.png)
+![Subspan](/docs/subspan_trace.png)
+
+## Logging SDK
+
+The SDK allows you to report evaluation results directly from your code, without using the `Eval()` or `.traced()` functions.
+This is useful if you want to structure your own complex evaluation logic, or integrate Braintrust with an
+existing testing or evaluation framework.
+
+<CodeTabs>
+
+<TSTab>
+
+```typescript
+import * as braintrust from "braintrust";
+import { Factuality } from "autoevals";
+
+async function runEvaluation() {
+  const experiment = braintrust.init("Say Hi Bot"); // Replace with your project name
+  const dataset = [{ input: "David", expected: "Hi David" }]; // Replace with your eval dataset
+
+  const promises = [];
+  for (const { input, expected } of dataset) {
+    // You can await here instead to run these sequentially
+    promises.push(
+      experiment.traced(async (span) => {
+        const output = "Hi David"; // Replace with your LLM call
+
+        const { name, score } = await Factuality({ input, output, expected });
+
+        span.log({
+          input,
+          output,
+          expected,
+          scores: {
+            [name]: score,
+          },
+          metadata: { type: "Test" },
+        });
+      }),
+    );
+  }
+  await Promise.all(promises);
+
+  const summary = await experiment.summarize();
+  console.log(summary);
+  return summary;
+}
+
+runEvaluation();
+```
+
+</TSTab>
+<PYTab>
+
+```python
+import braintrust
+
+from autoevals import Factuality
+
+
+def run_evaluation():
+    experiment = braintrust.init(project="Say Hi Bot")  # Replace with your project name
+    dataset = [
+        {"input": "David", "expected": "Hi David"},
+    ]  # Replace with your eval dataset
+
+    for data in dataset:
+        with experiment.start_span(name="task") as span:
+            input = data["input"]
+            expected = data["expected"]
+
+            output = "Hi David"  # Replace with your LLM call
+
+            factuality = Factuality()
+            factualityScore = factuality(output, expected, input=input)
+
+            span.log(
+                input=dataset,
+                output=output,
+                expected=expected,
+                scores={
+                    factualityScore.name: factualityScore.score,
+                },  # The scores dictionary
+                metadata={"type": "Test"},  # The metadata dictionary
+            )
+
+    summary = experiment.summarize(summarize_scores=True)
+    print(summary)
+    return summary
+
+
+run_evaluation()
+```
+
+</PYTab>
+</CodeTabs>
+
+Refer to the [tracing](/docs/guides/tracing) guide for examples of how to trace
+evaluations using the low-level SDK. For more details on how to use the low
+level SDK, see the [Python](/docs/libs/python) or [Node.js](/docs/libs/nodejs)
+documentation.
+
+## Troubleshooting
+
+### Exception when mixing `log` with `traced`
+
+There are two ways to log to Braintrust: `Experiment.log` and
+`Experiment.traced`. `Experiment.log` is for non-traced logging, while
+`Experiment.traced` is for tracing. This exception is thrown when you mix both
+methods on the same object, for instance:
+
+<CodeTabs>
+<TSTab>
+
+```typescript
+import { init, traced } from "braintrust";
+
+function foo() {
+  return traced((span) => {
+    const output = 1;
+    span.log({ output });
+    return output;
+  });
+}
+
+const experiment = init("my-project");
+for (let i = 0; i < 10; ++i) {
+  const output = foo();
+  // ❌ This will throw an exception, because we have created a trace for `foo`
+  // with `traced` but here we are logging to the toplevel object, NOT the
+  // trace.
+  experiment.log({ input: "foo", output, scores: { rating: 1 } });
+}
+```
+
+</TSTab>
+<PYTab>
+
+```python
+from braintrust import init, traced
+
+
+@traced
+def foo():
+    return 1
+
+
+experiment = init("my-project")
+for i in range(10):
+    output = foo()
+    # This will throw an exception, because we have created a trace for `foo`
+    # with `@traced` but here we are logging to the toplevel object, NOT the
+    # trace.
+    experiment.log(input="foo", output=output, scores={"rating": 1})
+```
+
+</PYTab>
+</CodeTabs>
+
+Most of the time, you should use either `Experiment.log` or `Experiment.traced`,
+but not both, so the SDK throws an error to prevent accidentally mixing them
+together. For the above example, you most likely want to write:
+
+<CodeTabs>
+<TSTab>
+
+```typescript
+import { init, traced } from "braintrust";
+
+function foo() {
+  return traced((span) => {
+    const output = 1;
+    span.log({ output });
+    return output;
+  });
+}
+
+const experiment = init("my-project");
+for (let i = 0; i < 10; ++i) {
+  // Create a toplevel trace with `traced`.
+  experiment.traced((span) => {
+    // The call to `foo` is nested as a subspan under our toplevel trace.
+    const output = foo();
+    // We log to the toplevel trace with `span.log`.
+    span.log({ input: "foo", output: "bar" });
+  });
+}
+```
+
+</TSTab>
+<PYTab>
+
+```python
+from braintrust import init, start_span, traced
+
+
+@traced
+def foo():
+    return 1
+
+
+experiment = init("my-project")
+for i in range(10):
+    # Create a toplevel trace with `start_span`.
+    with experiment.start_span() as span:
+        # The call to `foo` is nested as a subspan under our toplevel trace.
+        output = foo()
+        # We log to the toplevel trace with `span.log`.
+        span.log(input="foo", output="bar")
+```
+
+</PYTab>
+</CodeTabs>
+
+In rare cases, if you are certain you want to mix traced and
+non-traced logging on the same object, you may pass the argument
+`allowConcurrentWithSpans: true`/`allow_concurrent_with_spans=True` to
+`Experiment.log`.
+
+## Online evaluation
+
+Although you can log scores from your application, it can be awkward and computationally intensive to run evals code in your
+production environment. To solve this, Braintrust supports server-side online evaluations that are automatically run asynchronously as you
+upload logs. You can pick from the pre-built [autoevals](/docs/reference/autoevals) functions or your custom scorers, and define
+a sampling rate along with more granular filters to control which logs get evaluated.
+
+### Configuring online evaluation
+
+To create an online evaluation, navigate to the **Configuration** tab in a project and create an online scoring rule.
+
+<video className="border rounded-md" src="/docs/guides/logging/Online-Scoring-Setup.mp4" loop autoPlay muted poster="/docs/guides/logging/Online-Scoring-Setup-Poster.png"></video>
+
+The score will now automatically run at the specified sampling rate for all logs in the project.
+
+### Defining custom scoring logic
+
+In addition to the pre-built autoevals, you can define your own custom scoring logic by creating custom scorers. Currently, you can
+do that by visiting the [Playground](/docs/guides/playground) and creating custom scorers.

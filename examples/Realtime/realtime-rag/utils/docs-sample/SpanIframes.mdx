@@ -1,0 +1,67 @@
+---
+title: Span Iframes
+full: true
+_openapi:
+  toc:
+    - depth: 2
+      title: List span_iframes
+      url: '#list-span_iframes'
+    - depth: 2
+      title: Create span_iframe
+      url: '#create-span_iframe'
+    - depth: 2
+      title: Create or replace span_iframe
+      url: '#create-or-replace-span_iframe'
+    - depth: 2
+      title: Get span_iframe
+      url: '#get-span_iframe'
+    - depth: 2
+      title: Partially update span_iframe
+      url: '#partially-update-span_iframe'
+    - depth: 2
+      title: Delete span_iframe
+      url: '#delete-span_iframe'
+  structuredData:
+    headings:
+      - content: List span_iframes
+        id: list-span_iframes
+      - content: Create span_iframe
+        id: create-span_iframe
+      - content: Create or replace span_iframe
+        id: create-or-replace-span_iframe
+      - content: Get span_iframe
+        id: get-span_iframe
+      - content: Partially update span_iframe
+        id: partially-update-span_iframe
+      - content: Delete span_iframe
+        id: delete-span_iframe
+    contents:
+      - content: >-
+          List out all span_iframes. The span_iframes are sorted by creation
+          date, with the most recently-created span_iframes coming first
+        heading: list-span_iframes
+      - content: >-
+          Create a new span_iframe. If there is an existing span_iframe with the
+          same name as the one specified in the request, will return the
+          existing span_iframe unmodified
+        heading: create-span_iframe
+      - content: >-
+          Create or replace span_iframe. If there is an existing span_iframe
+          with the same name as the one specified in the request, will replace
+          the existing span_iframe with the provided fields
+        heading: create-or-replace-span_iframe
+      - content: Get a span_iframe object by its id
+        heading: get-span_iframe
+      - content: >-
+          Partially update a span_iframe object. Specify the fields to update in
+          the payload. Any object-type fields will be deep-merged with existing
+          content. Currently we do not support removing fields or setting them
+          to null.
+        heading: partially-update-span_iframe
+      - content: Delete a span_iframe object by its id
+        heading: delete-span_iframe
+---
+
+import jsonSpec from "@braintrust/openapi/spec.json";
+
+<APIPage document={jsonSpec} operations={[{"method":"get","path":"/v1/span_iframe"},{"method":"post","path":"/v1/span_iframe"},{"method":"put","path":"/v1/span_iframe"},{"method":"get","path":"/v1/span_iframe/{span_iframe_id}"},{"method":"patch","path":"/v1/span_iframe/{span_iframe_id}"},{"method":"delete","path":"/v1/span_iframe/{span_iframe_id}"}]} hasHead={true} />
