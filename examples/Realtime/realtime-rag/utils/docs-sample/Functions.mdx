@@ -1,0 +1,74 @@
+---
+title: Functions
+full: true
+_openapi:
+  toc:
+    - depth: 2
+      title: List functions
+      url: '#list-functions'
+    - depth: 2
+      title: Create function
+      url: '#create-function'
+    - depth: 2
+      title: Create or replace function
+      url: '#create-or-replace-function'
+    - depth: 2
+      title: Get function
+      url: '#get-function'
+    - depth: 2
+      title: Partially update function
+      url: '#partially-update-function'
+    - depth: 2
+      title: Delete function
+      url: '#delete-function'
+    - depth: 2
+      title: Invoke function
+      url: '#invoke-function'
+  structuredData:
+    headings:
+      - content: List functions
+        id: list-functions
+      - content: Create function
+        id: create-function
+      - content: Create or replace function
+        id: create-or-replace-function
+      - content: Get function
+        id: get-function
+      - content: Partially update function
+        id: partially-update-function
+      - content: Delete function
+        id: delete-function
+      - content: Invoke function
+        id: invoke-function
+    contents:
+      - content: >-
+          List out all functions. The functions are sorted by creation date,
+          with the most recently-created functions coming first
+        heading: list-functions
+      - content: >-
+          Create a new function. If there is an existing function in the project
+          with the same slug as the one specified in the request, will return
+          the existing function unmodified
+        heading: create-function
+      - content: >-
+          Create or replace function. If there is an existing function in the
+          project with the same slug as the one specified in the request, will
+          replace the existing function with the provided fields
+        heading: create-or-replace-function
+      - content: Get a function object by its id
+        heading: get-function
+      - content: >-
+          Partially update a function object. Specify the fields to update in
+          the payload. Any object-type fields will be deep-merged with existing
+          content. Currently we do not support removing fields or setting them
+          to null.
+        heading: partially-update-function
+      - content: Delete a function object by its id
+        heading: delete-function
+      - content: Invoke a function.
+        heading: invoke-function
+---
+
+import jsonSpec from "@braintrust/openapi/spec.json";
+
+<APIPage document={jsonSpec} operations={[{"method":"get","path":"/v1/function"},{"method":"post","path":"/v1/function"},{"method":"put","path":"/v1/function"},{"method":"get","path":"/v1/function/{function_id}"},{"method":"patch","path":"/v1/function/{function_id}"},{"method":"delete","path":"/v1/function/{function_id}"},{"method":"post","path":"/v1/function/{function_id}/invoke"}]} hasHead={true} />

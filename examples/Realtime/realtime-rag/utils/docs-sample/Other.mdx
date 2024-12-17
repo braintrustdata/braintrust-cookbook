@@ -1,0 +1,22 @@
+---
+title: Other
+full: true
+_openapi:
+  toc:
+    - depth: 2
+      title: Hello world endpoint
+      url: '#hello-world-endpoint'
+  structuredData:
+    headings:
+      - content: Hello world endpoint
+        id: hello-world-endpoint
+    contents:
+      - content: >-
+          Default endpoint. Simply replies with 'Hello, World!'. Authorization
+          is not required
+        heading: hello-world-endpoint
+---
+
+import jsonSpec from "@braintrust/openapi/spec.json";
+
+<APIPage document={jsonSpec} operations={[{"method":"get","path":"/v1"}]} hasHead={true} />

@@ -1,0 +1,45 @@
+---
+title: Api Keys
+full: true
+_openapi:
+  toc:
+    - depth: 2
+      title: List api_keys
+      url: '#list-api_keys'
+    - depth: 2
+      title: Create api_key
+      url: '#create-api_key'
+    - depth: 2
+      title: Get api_key
+      url: '#get-api_key'
+    - depth: 2
+      title: Delete api_key
+      url: '#delete-api_key'
+  structuredData:
+    headings:
+      - content: List api_keys
+        id: list-api_keys
+      - content: Create api_key
+        id: create-api_key
+      - content: Get api_key
+        id: get-api_key
+      - content: Delete api_key
+        id: delete-api_key
+    contents:
+      - content: >-
+          List out all api_keys. The api_keys are sorted by creation date, with
+          the most recently-created api_keys coming first
+        heading: list-api_keys
+      - content: >-
+          Create a new api_key. It is possible to have multiple API keys with
+          the same name. There is no de-duplication
+        heading: create-api_key
+      - content: Get an api_key object by its id
+        heading: get-api_key
+      - content: Delete an api_key object by its id
+        heading: delete-api_key
+---
+
+import jsonSpec from "@braintrust/openapi/spec.json";
+
+<APIPage document={jsonSpec} operations={[{"method":"get","path":"/v1/api_key"},{"method":"post","path":"/v1/api_key"},{"method":"get","path":"/v1/api_key/{api_key_id}"},{"method":"delete","path":"/v1/api_key/{api_key_id}"}]} hasHead={true} />

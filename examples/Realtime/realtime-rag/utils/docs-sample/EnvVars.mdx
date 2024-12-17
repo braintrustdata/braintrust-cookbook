@@ -1,0 +1,67 @@
+---
+title: Env Vars
+full: true
+_openapi:
+  toc:
+    - depth: 2
+      title: List env_vars
+      url: '#list-env_vars'
+    - depth: 2
+      title: Create env_var
+      url: '#create-env_var'
+    - depth: 2
+      title: Create or replace env_var
+      url: '#create-or-replace-env_var'
+    - depth: 2
+      title: Get env_var
+      url: '#get-env_var'
+    - depth: 2
+      title: Partially update env_var
+      url: '#partially-update-env_var'
+    - depth: 2
+      title: Delete env_var
+      url: '#delete-env_var'
+  structuredData:
+    headings:
+      - content: List env_vars
+        id: list-env_vars
+      - content: Create env_var
+        id: create-env_var
+      - content: Create or replace env_var
+        id: create-or-replace-env_var
+      - content: Get env_var
+        id: get-env_var
+      - content: Partially update env_var
+        id: partially-update-env_var
+      - content: Delete env_var
+        id: delete-env_var
+    contents:
+      - content: >-
+          List out all env_vars. The env_vars are sorted by creation date, with
+          the most recently-created env_vars coming first
+        heading: list-env_vars
+      - content: >-
+          Create a new env_var. If there is an existing env_var with the same
+          name as the one specified in the request, will return the existing
+          env_var unmodified
+        heading: create-env_var
+      - content: >-
+          Create or replace env_var. If there is an existing env_var with the
+          same name as the one specified in the request, will replace the
+          existing env_var with the provided fields
+        heading: create-or-replace-env_var
+      - content: Get an env_var object by its id
+        heading: get-env_var
+      - content: >-
+          Partially update an env_var object. Specify the fields to update in
+          the payload. Any object-type fields will be deep-merged with existing
+          content. Currently we do not support removing fields or setting them
+          to null.
+        heading: partially-update-env_var
+      - content: Delete an env_var object by its id
+        heading: delete-env_var
+---
+
+import jsonSpec from "@braintrust/openapi/spec.json";
+
+<APIPage document={jsonSpec} operations={[{"method":"get","path":"/v1/env_var"},{"method":"post","path":"/v1/env_var"},{"method":"put","path":"/v1/env_var"},{"method":"get","path":"/v1/env_var/{env_var_id}"},{"method":"patch","path":"/v1/env_var/{env_var_id}"},{"method":"delete","path":"/v1/env_var/{env_var_id}"}]} hasHead={true} />

@@ -1,0 +1,67 @@
+---
+title: Project Tags
+full: true
+_openapi:
+  toc:
+    - depth: 2
+      title: List project_tags
+      url: '#list-project_tags'
+    - depth: 2
+      title: Create project_tag
+      url: '#create-project_tag'
+    - depth: 2
+      title: Create or replace project_tag
+      url: '#create-or-replace-project_tag'
+    - depth: 2
+      title: Get project_tag
+      url: '#get-project_tag'
+    - depth: 2
+      title: Partially update project_tag
+      url: '#partially-update-project_tag'
+    - depth: 2
+      title: Delete project_tag
+      url: '#delete-project_tag'
+  structuredData:
+    headings:
+      - content: List project_tags
+        id: list-project_tags
+      - content: Create project_tag
+        id: create-project_tag
+      - content: Create or replace project_tag
+        id: create-or-replace-project_tag
+      - content: Get project_tag
+        id: get-project_tag
+      - content: Partially update project_tag
+        id: partially-update-project_tag
+      - content: Delete project_tag
+        id: delete-project_tag
+    contents:
+      - content: >-
+          List out all project_tags. The project_tags are sorted by creation
+          date, with the most recently-created project_tags coming first
+        heading: list-project_tags
+      - content: >-
+          Create a new project_tag. If there is an existing project_tag in the
+          project with the same name as the one specified in the request, will
+          return the existing project_tag unmodified
+        heading: create-project_tag
+      - content: >-
+          Create or replace project_tag. If there is an existing project_tag in
+          the project with the same name as the one specified in the request,
+          will replace the existing project_tag with the provided fields
+        heading: create-or-replace-project_tag
+      - content: Get a project_tag object by its id
+        heading: get-project_tag
+      - content: >-
+          Partially update a project_tag object. Specify the fields to update in
+          the payload. Any object-type fields will be deep-merged with existing
+          content. Currently we do not support removing fields or setting them
+          to null.
+        heading: partially-update-project_tag
+      - content: Delete a project_tag object by its id
+        heading: delete-project_tag
+---
+
+import jsonSpec from "@braintrust/openapi/spec.json";
+
+<APIPage document={jsonSpec} operations={[{"method":"get","path":"/v1/project_tag"},{"method":"post","path":"/v1/project_tag"},{"method":"put","path":"/v1/project_tag"},{"method":"get","path":"/v1/project_tag/{project_tag_id}"},{"method":"patch","path":"/v1/project_tag/{project_tag_id}"},{"method":"delete","path":"/v1/project_tag/{project_tag_id}"}]} hasHead={true} />

@@ -1,0 +1,67 @@
+---
+title: Prompts
+full: true
+_openapi:
+  toc:
+    - depth: 2
+      title: List prompts
+      url: '#list-prompts'
+    - depth: 2
+      title: Create prompt
+      url: '#create-prompt'
+    - depth: 2
+      title: Create or replace prompt
+      url: '#create-or-replace-prompt'
+    - depth: 2
+      title: Get prompt
+      url: '#get-prompt'
+    - depth: 2
+      title: Partially update prompt
+      url: '#partially-update-prompt'
+    - depth: 2
+      title: Delete prompt
+      url: '#delete-prompt'
+  structuredData:
+    headings:
+      - content: List prompts
+        id: list-prompts
+      - content: Create prompt
+        id: create-prompt
+      - content: Create or replace prompt
+        id: create-or-replace-prompt
+      - content: Get prompt
+        id: get-prompt
+      - content: Partially update prompt
+        id: partially-update-prompt
+      - content: Delete prompt
+        id: delete-prompt
+    contents:
+      - content: >-
+          List out all prompts. The prompts are sorted by creation date, with
+          the most recently-created prompts coming first
+        heading: list-prompts
+      - content: >-
+          Create a new prompt. If there is an existing prompt in the project
+          with the same slug as the one specified in the request, will return
+          the existing prompt unmodified
+        heading: create-prompt
+      - content: >-
+          Create or replace prompt. If there is an existing prompt in the
+          project with the same slug as the one specified in the request, will
+          replace the existing prompt with the provided fields
+        heading: create-or-replace-prompt
+      - content: Get a prompt object by its id
+        heading: get-prompt
+      - content: >-
+          Partially update a prompt object. Specify the fields to update in the
+          payload. Any object-type fields will be deep-merged with existing
+          content. Currently we do not support removing fields or setting them
+          to null.
+        heading: partially-update-prompt
+      - content: Delete a prompt object by its id
+        heading: delete-prompt
+---
+
+import jsonSpec from "@braintrust/openapi/spec.json";
+
+<APIPage document={jsonSpec} operations={[{"method":"get","path":"/v1/prompt"},{"method":"post","path":"/v1/prompt"},{"method":"put","path":"/v1/prompt"},{"method":"get","path":"/v1/prompt/{prompt_id}"},{"method":"patch","path":"/v1/prompt/{prompt_id}"},{"method":"delete","path":"/v1/prompt/{prompt_id}"}]} hasHead={true} />
