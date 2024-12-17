@@ -1,0 +1,54 @@
+---
+title: Organizations
+full: true
+_openapi:
+  toc:
+    - depth: 2
+      title: List organizations
+      url: '#list-organizations'
+    - depth: 2
+      title: Get organization
+      url: '#get-organization'
+    - depth: 2
+      title: Partially update organization
+      url: '#partially-update-organization'
+    - depth: 2
+      title: Delete organization
+      url: '#delete-organization'
+    - depth: 2
+      title: Modify organization membership
+      url: '#modify-organization-membership'
+  structuredData:
+    headings:
+      - content: List organizations
+        id: list-organizations
+      - content: Get organization
+        id: get-organization
+      - content: Partially update organization
+        id: partially-update-organization
+      - content: Delete organization
+        id: delete-organization
+      - content: Modify organization membership
+        id: modify-organization-membership
+    contents:
+      - content: >-
+          List out all organizations. The organizations are sorted by creation
+          date, with the most recently-created organizations coming first
+        heading: list-organizations
+      - content: Get an organization object by its id
+        heading: get-organization
+      - content: >-
+          Partially update an organization object. Specify the fields to update
+          in the payload. Any object-type fields will be deep-merged with
+          existing content. Currently we do not support removing fields or
+          setting them to null.
+        heading: partially-update-organization
+      - content: Delete an organization object by its id
+        heading: delete-organization
+      - content: Modify organization membership
+        heading: modify-organization-membership
+---
+
+import jsonSpec from "@braintrust/openapi/spec.json";
+
+<APIPage document={jsonSpec} operations={[{"method":"get","path":"/v1/organization"},{"method":"get","path":"/v1/organization/{organization_id}"},{"method":"patch","path":"/v1/organization/{organization_id}"},{"method":"delete","path":"/v1/organization/{organization_id}"},{"method":"patch","path":"/v1/organization/members"}]} hasHead={true} />

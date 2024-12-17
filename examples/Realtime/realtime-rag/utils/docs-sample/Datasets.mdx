@@ -1,0 +1,98 @@
+---
+title: Datasets
+full: true
+_openapi:
+  toc:
+    - depth: 2
+      title: List datasets
+      url: '#list-datasets'
+    - depth: 2
+      title: Create dataset
+      url: '#create-dataset'
+    - depth: 2
+      title: Get dataset
+      url: '#get-dataset'
+    - depth: 2
+      title: Partially update dataset
+      url: '#partially-update-dataset'
+    - depth: 2
+      title: Delete dataset
+      url: '#delete-dataset'
+    - depth: 2
+      title: Insert dataset events
+      url: '#insert-dataset-events'
+    - depth: 2
+      title: Fetch dataset (GET form)
+      url: '#fetch-dataset-get-form'
+    - depth: 2
+      title: Fetch dataset (POST form)
+      url: '#fetch-dataset-post-form'
+    - depth: 2
+      title: Feedback for dataset events
+      url: '#feedback-for-dataset-events'
+    - depth: 2
+      title: Summarize dataset
+      url: '#summarize-dataset'
+  structuredData:
+    headings:
+      - content: List datasets
+        id: list-datasets
+      - content: Create dataset
+        id: create-dataset
+      - content: Get dataset
+        id: get-dataset
+      - content: Partially update dataset
+        id: partially-update-dataset
+      - content: Delete dataset
+        id: delete-dataset
+      - content: Insert dataset events
+        id: insert-dataset-events
+      - content: Fetch dataset (GET form)
+        id: fetch-dataset-get-form
+      - content: Fetch dataset (POST form)
+        id: fetch-dataset-post-form
+      - content: Feedback for dataset events
+        id: feedback-for-dataset-events
+      - content: Summarize dataset
+        id: summarize-dataset
+    contents:
+      - content: >-
+          List out all datasets. The datasets are sorted by creation date, with
+          the most recently-created datasets coming first
+        heading: list-datasets
+      - content: >-
+          Create a new dataset. If there is an existing dataset in the project
+          with the same name as the one specified in the request, will return
+          the existing dataset unmodified
+        heading: create-dataset
+      - content: Get a dataset object by its id
+        heading: get-dataset
+      - content: >-
+          Partially update a dataset object. Specify the fields to update in the
+          payload. Any object-type fields will be deep-merged with existing
+          content. Currently we do not support removing fields or setting them
+          to null.
+        heading: partially-update-dataset
+      - content: Delete a dataset object by its id
+        heading: delete-dataset
+      - content: Insert a set of events into the dataset
+        heading: insert-dataset-events
+      - content: >-
+          Fetch the events in a dataset. Equivalent to the POST form of the same
+          path, but with the parameters in the URL query rather than in the
+          request body. For more complex queries, use the `POST /btql` endpoint.
+        heading: fetch-dataset-get-form
+      - content: >-
+          Fetch the events in a dataset. Equivalent to the GET form of the same
+          path, but with the parameters in the request body rather than in the
+          URL query. For more complex queries, use the `POST /btql` endpoint.
+        heading: fetch-dataset-post-form
+      - content: Log feedback for a set of dataset events
+        heading: feedback-for-dataset-events
+      - content: Summarize dataset
+        heading: summarize-dataset
+---
+
+import jsonSpec from "@braintrust/openapi/spec.json";
+
+<APIPage document={jsonSpec} operations={[{"method":"get","path":"/v1/dataset"},{"method":"post","path":"/v1/dataset"},{"method":"get","path":"/v1/dataset/{dataset_id}"},{"method":"patch","path":"/v1/dataset/{dataset_id}"},{"method":"delete","path":"/v1/dataset/{dataset_id}"},{"method":"post","path":"/v1/dataset/{dataset_id}/insert"},{"method":"get","path":"/v1/dataset/{dataset_id}/fetch"},{"method":"post","path":"/v1/dataset/{dataset_id}/fetch"},{"method":"post","path":"/v1/dataset/{dataset_id}/feedback"},{"method":"get","path":"/v1/dataset/{dataset_id}/summarize"}]} hasHead={true} />

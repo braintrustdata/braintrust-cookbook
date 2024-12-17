@@ -1,0 +1,29 @@
+---
+title: Users
+full: true
+_openapi:
+  toc:
+    - depth: 2
+      title: List users
+      url: '#list-users'
+    - depth: 2
+      title: Get user
+      url: '#get-user'
+  structuredData:
+    headings:
+      - content: List users
+        id: list-users
+      - content: Get user
+        id: get-user
+    contents:
+      - content: >-
+          List out all users. The users are sorted by creation date, with the
+          most recently-created users coming first
+        heading: list-users
+      - content: Get a user object by its id
+        heading: get-user
+---
+
+import jsonSpec from "@braintrust/openapi/spec.json";
+
+<APIPage document={jsonSpec} operations={[{"method":"get","path":"/v1/user"},{"method":"get","path":"/v1/user/{user_id}"}]} hasHead={true} />

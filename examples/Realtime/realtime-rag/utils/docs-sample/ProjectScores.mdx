@@ -1,0 +1,67 @@
+---
+title: Project Scores
+full: true
+_openapi:
+  toc:
+    - depth: 2
+      title: List project_scores
+      url: '#list-project_scores'
+    - depth: 2
+      title: Create project_score
+      url: '#create-project_score'
+    - depth: 2
+      title: Create or replace project_score
+      url: '#create-or-replace-project_score'
+    - depth: 2
+      title: Get project_score
+      url: '#get-project_score'
+    - depth: 2
+      title: Partially update project_score
+      url: '#partially-update-project_score'
+    - depth: 2
+      title: Delete project_score
+      url: '#delete-project_score'
+  structuredData:
+    headings:
+      - content: List project_scores
+        id: list-project_scores
+      - content: Create project_score
+        id: create-project_score
+      - content: Create or replace project_score
+        id: create-or-replace-project_score
+      - content: Get project_score
+        id: get-project_score
+      - content: Partially update project_score
+        id: partially-update-project_score
+      - content: Delete project_score
+        id: delete-project_score
+    contents:
+      - content: >-
+          List out all project_scores. The project_scores are sorted by creation
+          date, with the most recently-created project_scores coming first
+        heading: list-project_scores
+      - content: >-
+          Create a new project_score. If there is an existing project_score in
+          the project with the same name as the one specified in the request,
+          will return the existing project_score unmodified
+        heading: create-project_score
+      - content: >-
+          Create or replace project_score. If there is an existing project_score
+          in the project with the same name as the one specified in the request,
+          will replace the existing project_score with the provided fields
+        heading: create-or-replace-project_score
+      - content: Get a project_score object by its id
+        heading: get-project_score
+      - content: >-
+          Partially update a project_score object. Specify the fields to update
+          in the payload. Any object-type fields will be deep-merged with
+          existing content. Currently we do not support removing fields or
+          setting them to null.
+        heading: partially-update-project_score
+      - content: Delete a project_score object by its id
+        heading: delete-project_score
+---
+
+import jsonSpec from "@braintrust/openapi/spec.json";
+
+<APIPage document={jsonSpec} operations={[{"method":"get","path":"/v1/project_score"},{"method":"post","path":"/v1/project_score"},{"method":"put","path":"/v1/project_score"},{"method":"get","path":"/v1/project_score/{project_score_id}"},{"method":"patch","path":"/v1/project_score/{project_score_id}"},{"method":"delete","path":"/v1/project_score/{project_score_id}"}]} hasHead={true} />

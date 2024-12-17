@@ -1,0 +1,174 @@
+---
+title: "Eval via SDK"
+---
+import { CodeTabs, TSTab, PYTab } from "#/ui/docs/code-tabs";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import { Callout } from "fumadocs-ui/components/callout";
+import Link from "fumadocs-core/link";
+
+# Evaluate via SDK
+
+When you arrive in a new organization, you will see these steps. They tell you how to run your first experiment:
+
+<Steps>
+<Step>
+### Install Braintrust libraries
+
+First, install the Braintrust SDK (TypeScript, Python and API wrappers in [other languages](/docs/reference/api#api-wrappers)).
+
+<CodeTabs>
+<TSTab>
+```bash
+npm install braintrust autoevals
+```
+
+or
+
+```bash
+yarn add braintrust autoevals
+```
+
+<Callout type="warn">Node version >= 18 is required</Callout>
+</TSTab>
+
+<PYTab>
+```bash
+pip install braintrust autoevals
+```
+</PYTab>
+</CodeTabs>
+</Step>
+
+<Step>
+### Create a simple evaluation script
+
+The eval framework allows you to declaratively define evaluations in your code. Inspired by tools like Jest, you can define a set of evaluations in files named _.eval.ts or _.eval.js (Node.js) or eval\_\*.py (Python).
+
+Create a file named `tutorial.eval.ts` or `eval_tutorial.py` with the following code.
+
+<CodeTabs>
+<TSTab>
+```typescript
+import { Eval } from "braintrust";
+import { Levenshtein } from "autoevals";
+
+Eval(
+  "Say Hi Bot", // Replace with your project name
+  {
+    data: () => {
+      return [
+        {
+          input: "Foo",
+          expected: "Hi Foo",
+        },
+        {
+          input: "Bar",
+          expected: "Hello Bar",
+        },
+      ]; // Replace with your eval dataset
+    },
+    task: async (input) => {
+      return "Hi " + input; // Replace with your LLM call
+    },
+    scores: [Levenshtein],
+  },
+);
+```
+</TSTab>
+<PYTab>
+```python
+from braintrust import Eval
+
+from autoevals import Levenshtein
+
+Eval(
+    "Say Hi Bot",  # Replace with your project name
+    data=lambda: [
+        {
+            "input": "Foo",
+            "expected": "Hi Foo",
+        },
+        {
+            "input": "Bar",
+            "expected": "Hello Bar",
+        },
+    ],  # Replace with your eval dataset
+    task=lambda input: "Hi " + input,  # Replace with your LLM call
+    scores=[Levenshtein],
+)
+```
+</PYTab>
+</CodeTabs>
+
+This script sets up the basic scaffolding of an evaluation:
+
+- `data` is an array or iterator of data you'll evaluate
+- `task` is a function that takes in an input and returns an output
+- `scores` is an array of scoring functions that will be used to score the tasks's output
+
+(You can also write your own code. Make sure to follow the naming conventions for your language. TypeScript
+files should be named `*.eval.ts` and Python files should be named `eval_*.py`.)
+
+</Step>
+
+<Step>
+### Create an API key
+
+Next, create an API key to authenticate your evaluation script. You can create an API key in the [settings page](/app/settings?subroute=api-keys).
+
+</Step>
+
+<Step>
+### Run your evaluation script
+
+Run your evaluation script with the following command:
+
+<CodeTabs>
+<TSTab>
+```bash
+BRAINTRUST_API_KEY="YOUR_API_KEY"
+npx braintrust eval tutorial.eval.ts
+```
+</TSTab>
+<PYTab>
+```bash
+BRAINTRUST_API_KEY=<YOUR_API_KEY>
+braintrust eval eval_tutorial.py
+```
+</PYTab>
+</CodeTabs>
+
+This will create an experiment in Braintrust. Once the command runs, you'll see a link to your experiment.
+
+</Step>
+
+<Step>
+### View your results
+
+Congrats, you just ran an eval! You should see a dashboard like this when you load your experiment.
+This view is called the _experiment view_, and as you use Braintrust, we hope it becomes your trusty companion
+each time you change your code and want to run an eval.
+
+The experiment view allows you to look at high level metrics for performance, dig
+into individual examples, and compare your LLM app's performance over time.
+
+![First eval](./first.webp)
+
+</Step>
+
+<Step>
+### Run another experiment
+
+After running your first evaluation, you’ll see that we achieved a 77.8% score. Can you adjust the evaluation to improve this score? Make your changes and re-run the evaluation to track your progress.
+
+![Second eval](./second.webp)
+
+</Step>
+</Steps>
+
+## Next steps
+
+- Dig into our [Evals guide](/docs/guides/evals) to learn more about how to run evals.
+- Look at our [cookbook](/docs/cookbook) to learn how to evaluate RAG, summarization, text-to-sql, and other popular use cases.
+- Learn how to [log traces](/docs/guides/logging) to Braintrust.
+- Read about Braintrust's [platform and architecture](/docs/platform/architecture).

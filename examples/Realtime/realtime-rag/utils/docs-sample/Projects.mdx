@@ -1,0 +1,57 @@
+---
+title: Projects
+full: true
+_openapi:
+  toc:
+    - depth: 2
+      title: List projects
+      url: '#list-projects'
+    - depth: 2
+      title: Create project
+      url: '#create-project'
+    - depth: 2
+      title: Get project
+      url: '#get-project'
+    - depth: 2
+      title: Partially update project
+      url: '#partially-update-project'
+    - depth: 2
+      title: Delete project
+      url: '#delete-project'
+  structuredData:
+    headings:
+      - content: List projects
+        id: list-projects
+      - content: Create project
+        id: create-project
+      - content: Get project
+        id: get-project
+      - content: Partially update project
+        id: partially-update-project
+      - content: Delete project
+        id: delete-project
+    contents:
+      - content: >-
+          List out all projects. The projects are sorted by creation date, with
+          the most recently-created projects coming first
+        heading: list-projects
+      - content: >-
+          Create a new project. If there is an existing project with the same
+          name as the one specified in the request, will return the existing
+          project unmodified
+        heading: create-project
+      - content: Get a project object by its id
+        heading: get-project
+      - content: >-
+          Partially update a project object. Specify the fields to update in the
+          payload. Any object-type fields will be deep-merged with existing
+          content. Currently we do not support removing fields or setting them
+          to null.
+        heading: partially-update-project
+      - content: Delete a project object by its id
+        heading: delete-project
+---
+
+import jsonSpec from "@braintrust/openapi/spec.json";
+
+<APIPage document={jsonSpec} operations={[{"method":"get","path":"/v1/project"},{"method":"post","path":"/v1/project"},{"method":"get","path":"/v1/project/{project_id}"},{"method":"patch","path":"/v1/project/{project_id}"},{"method":"delete","path":"/v1/project/{project_id}"}]} hasHead={true} />

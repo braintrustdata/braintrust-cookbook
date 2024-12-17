@@ -1,0 +1,27 @@
+---
+title: Evals
+full: true
+_openapi:
+  toc:
+    - depth: 2
+      title: Launch an eval
+      url: '#launch-an-eval'
+  structuredData:
+    headings:
+      - content: Launch an eval
+        id: launch-an-eval
+    contents:
+      - content: >-
+          Launch an evaluation. This is the API-equivalent of the `Eval`
+          function that is built into the Braintrust SDK. In the Eval API, you
+          provide pointers to a dataset, task function, and scoring functions.
+          The API will then run the evaluation, create an experiment, and return
+          the results along with a link to the experiment. To learn more about
+          evals, see the [Evals
+          guide](https://www.braintrust.dev/docs/guides/evals).
+        heading: launch-an-eval
+---
+
+import jsonSpec from "@braintrust/openapi/spec.json";
+
+<APIPage document={jsonSpec} operations={[{"method":"post","path":"/v1/eval"}]} hasHead={true} />

@@ -1,0 +1,63 @@
+---
+title: Acls
+full: true
+_openapi:
+  toc:
+    - depth: 2
+      title: List acls
+      url: '#list-acls'
+    - depth: 2
+      title: Create acl
+      url: '#create-acl'
+    - depth: 2
+      title: Delete single acl
+      url: '#delete-single-acl'
+    - depth: 2
+      title: Get acl
+      url: '#get-acl'
+    - depth: 2
+      title: Delete acl
+      url: '#delete-acl'
+    - depth: 2
+      title: Batch update acls
+      url: '#batch-update-acls'
+  structuredData:
+    headings:
+      - content: List acls
+        id: list-acls
+      - content: Create acl
+        id: create-acl
+      - content: Delete single acl
+        id: delete-single-acl
+      - content: Get acl
+        id: get-acl
+      - content: Delete acl
+        id: delete-acl
+      - content: Batch update acls
+        id: batch-update-acls
+    contents:
+      - content: >-
+          List out all acls. The acls are sorted by creation date, with the most
+          recently-created acls coming first
+        heading: list-acls
+      - content: >-
+          Create a new acl. If there is an existing acl with the same contents
+          as the one specified in the request, will return the existing acl
+          unmodified
+        heading: create-acl
+      - content: Delete a single acl
+        heading: delete-single-acl
+      - content: Get an acl object by its id
+        heading: get-acl
+      - content: Delete an acl object by its id
+        heading: delete-acl
+      - content: >-
+          Batch update acls. This operation is idempotent, so adding acls which
+          already exist will have no effect, and removing acls which do not
+          exist will have no effect.
+        heading: batch-update-acls
+---
+
+import jsonSpec from "@braintrust/openapi/spec.json";
+
+<APIPage document={jsonSpec} operations={[{"method":"get","path":"/v1/acl"},{"method":"post","path":"/v1/acl"},{"method":"delete","path":"/v1/acl"},{"method":"get","path":"/v1/acl/{acl_id}"},{"method":"delete","path":"/v1/acl/{acl_id}"},{"method":"post","path":"/v1/acl/batch-update"}]} hasHead={true} />

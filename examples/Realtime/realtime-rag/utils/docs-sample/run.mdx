@@ -1,0 +1,365 @@
+---
+title: "Run evals"
+metaTitle: "Run evaluations"
+description: "Create evaluations directly in your code, and run them in your development workflow or CI/CD pipeline"
+---
+
+import { CodeTabs, TSTab, PYTab } from "#/ui/docs/code-tabs";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import { Callout } from "fumadocs-ui/components/callout";
+
+# Run evals
+
+Braintrust allows you to create evaluations directly in your code, and run them in your development workflow
+or CI/CD pipeline. Once you have defined one or more evaluations, you can run them using the `braintrust eval` command. This command will run all evaluations in the specified files and directories. As they run, they will automatically
+log results to Braintrust and display a summary in your terminal.
+
+<CodeTabs>
+
+<TSTab>
+```bash
+npx braintrust eval basic.eval.ts
+```
+
+```bash
+npx braintrust eval [file or directory] [file or directory] ...
+```
+
+The `braintrust eval` command uses the Next.js convention to load environment variables from:
+
+- `env.development.local`
+- `.env.local`
+- `env.development`
+- `.env`
+
+</TSTab>
+
+<PYTab>
+```bash
+braintrust eval eval_basic.py
+```
+
+```bash
+braintrust eval [file or directory] [file or directory] ...
+```
+
+</PYTab>
+</CodeTabs>
+
+## Watch mode
+
+You can run evaluations in watch-mode by passing the `--watch` flag. This will re-run evaluations whenever any of
+the files they depend on change.
+
+## Github action
+
+Once you get the hang of running evaluations, you can integrate them into your CI/CD pipeline to automatically
+run them on every pull request or commit. This workflow allows you to catch eval regressions early and often.
+
+The [`braintrustdata/eval-action`](https://github.com/braintrustdata/eval-action) action allows you to run
+evaluations directly in your Github workflow. Each time you run an evaluation, the action automatically posts
+a comment:
+
+![action comment](./github-actions-comment.png)
+
+To use the action, simply include it in a workflow yaml file (`.github/workflows`):
+
+<CodeTabs>
+
+<TSTab>
+
+```yaml
+- name: Run Evals
+  uses: braintrustdata/eval-action@v1
+  with:
+    api_key: ${{ secrets.BRAINTRUST_API_KEY }}
+    runtime: node
+```
+
+### Full example
+
+```yaml
+name: Run pnpm evals
+
+on:
+  push:
+    # Uncomment to run only when files in the 'evals' directory change
+    # - paths:
+    #     - "evals/**"
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  eval:
+    name: Run evals
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        id: setup-node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Install Dependencies
+        id: install
+        run: pnpm install
+
+      - name: Run Evals
+        uses: braintrustdata/eval-action@v1
+        with:
+          api_key: ${{ secrets.BRAINTRUST_API_KEY }}
+          runtime: node
+          root: my_eval_dir
+```
+
+</TSTab>
+
+<PYTab>
+
+```yaml
+- name: Run Evals
+  uses: braintrustdata/eval-action@v1
+  with:
+    api_key: ${{ secrets.BRAINTRUST_API_KEY }}
+    runtime: python
+```
+
+### Full example
+
+```yaml
+name: Run Python evals
+
+on:
+  push:
+    # Uncomment to run only when files in the 'evals' directory change
+    # - paths:
+    #     - "evals/**"
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  eval:
+    name: Run evals
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12" # Replace with your Python version
+
+      # Tweak this to a dependency manager of your choice
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r test-eval-py/requirements.txt
+
+      - name: Run Evals
+        uses: braintrustdata/eval-action@v1
+        with:
+          api_key: ${{ secrets.BRAINTRUST_API_KEY }}
+          runtime: python
+          root: my_eval_dir
+```
+
+</PYTab>
+</CodeTabs>
+
+<Callout type="warn">
+You must specify `permissions` for the action to leave comments on your PR.
+Without these permissions, you'll see Github API errors.
+</Callout>
+
+For more information, see the [`braintrustdata/eval-action` README](https://github.com/braintrustdata/eval-action), or check
+out full workflow files in the [examples](https://github.com/braintrustdata/eval-action/tree/main/examples) directory.
+
+<Callout type="warn">
+  The `braintrustdata/eval-action` GitHub action does not currently support
+  custom reporters. If you use custom reporters, you'll need to run the
+  `braintrust eval` command directly in your CI/CD pipeline.
+</Callout>
+
+## Run code directly
+
+Although you can invoke `Eval()` functions via the `braintrust eval` command, you can also call them directly in your code.
+
+<CodeTabs>
+
+<TSTab>
+
+```typescript
+import { Factuality } from "autoevals";
+import { Eval } from "braintrust";
+
+async function main() {
+  const result = await Eval("Say Hi Bot", {
+    data: () => [
+      {
+        input: "David",
+        expected: "Hi David",
+      },
+    ],
+    task: (input) => {
+      return "Hi " + input;
+    },
+    scores: [Factuality],
+  });
+  console.log(result);
+}
+
+main();
+```
+
+In TypeScript, `Eval()` is an async function that returns a `Promise`. You can run `Eval()`s concurrently
+and wait for all of them to finish using `Promise.all()`.
+
+</TSTab>
+
+<PYTab>
+
+```python
+from braintrust import Eval
+
+from autoevals import Factuality
+
+
+def main():
+    result = Eval(
+        "Say Hi Bot",
+        data=lambda: [
+            {
+                "input": "David",
+                "expected": "Hi David",
+            },
+        ],
+        task=lambda input: "Hi " + input,
+        scores=[Factuality],
+    )
+    print(result)
+
+
+async def main():
+    result = await Eval(
+        "Say Hi Bot",
+        data=lambda: [
+            {
+                "input": "David",
+                "expected": "Hi David",
+            },
+        ],
+        task=lambda input: "Hi " + input,
+        scores=[Factuality],
+    )
+    print(result)
+```
+
+In Python, `Eval()` returns a `Future` if it is called in an async context, and a `Result` if it is called in a
+synchronous context. It is safe to run `Eval()`s concurrently in both async and sync contexts.
+
+Generally speaking, Jupyter notebooks are async, so you should use `await Eval(...)`.
+
+</PYTab>
+</CodeTabs>
+
+## Limiting concurrency
+
+Sometimes, due to rate limits or other constraints, you may want to limit the number of concurrent evaluations in an
+`Eval()` call. Each `Eval()` lets you define `maxConcurrency`/`max_concurrency` to limit the number of concurrent
+test cases that run.
+
+<CodeTabs>
+
+<TSTab>
+```typescript
+import { Factuality, Levenshtein } from "autoevals";
+import { Eval } from "braintrust";
+
+Eval("Say Hi Bot", {
+  data: () =>
+    Array.from({ length: 100 }, (_, i) => ({
+      input: `${i}`,
+      expected: `${i + 1}`,
+    })),
+  task: (input) => {
+    return input + 1;
+  },
+  scores: [Factuality, Levenshtein],
+  maxConcurrency: 5, // Run 5 tests concurrently
+});
+```
+</TSTab>
+
+<PYTab>
+```python
+from braintrust import Eval
+
+from autoevals import Factuality, Levenstein
+
+result = Eval(
+    "Test",
+    data=lambda: [{"input": f"{i}", "expected": f"{i + 1}"} for i in range(100)],
+    task=lambda input: str(int(input) + 1),
+    scores=[Factuality, Levenstein],
+    max_concurrency=5,  # Run 5 tests concurrently
+)
+```
+</PYTab>
+</CodeTabs>
+
+## Troubleshooting
+
+### Stack traces
+
+By default, the evaluation framework swallows errors in individual tasks, reports them to Braintrust,
+and prints a single line per error to the console. If you want to see the full stack trace for each
+error, you can pass the `--verbose` flag.
+
+### Why are my scores getting averaged?
+
+Braintrust organizes your data into traces, each of which is a row in the experiments table. Within a trace,
+if you log the same score multiple times, it will be averaged in the table. This is a useful way to collect an overall
+measurement, e.g. if you compute the relevance of each retrieved document in a RAG use case, and want to see the overall
+relevance. However, if you want to see each score individually, you have a few options:
+
+- Split the input into multiple independent traces, and log each score in a separate trace. The [trials](#trials) feature
+  will naturally average the results at the top-level, but allow you to view each individual output as a separate test case.
+- Compute a separate score for each instance. For example, if you have exactly 3 documents you retrieve every time, you may want
+  to compute a separate score for the 1st, 2nd, and 3rd position.
+- Create separate experiments for each thing you're trying to score. For example, you may want to try out two different models and
+  compute a score for each. In this case, if you split into separate experiments, you'll be able to diff across experiments and compare
+  outputs side-by-side.
+
+### Node bundling errors (e.g. "cannot be marked as external")
+
+The `.eval.ts` files are bundled in a somewhat limiting way, via `esbuild` and a special set of
+build options that work in most cases, but not all. For example, if you have any `export` statements
+in them, you may see errors like "cannot be marked as external".
+
+You can usually fix this specific error by removing `export` statements. However, if that does not work,
+or you want more control over how the files are bundled, you can also just run the files directly.
+`Eval` is an async function, so you can just call it directly in a script:
+
+```bash
+npx tsx my-app.eval.ts
+```

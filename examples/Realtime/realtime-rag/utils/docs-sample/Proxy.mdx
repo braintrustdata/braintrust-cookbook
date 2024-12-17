@@ -1,0 +1,72 @@
+---
+title: Proxy
+full: true
+_openapi:
+  toc:
+    - depth: 2
+      title: Proxy chat/completions
+      url: '#proxy-chatcompletions'
+    - depth: 2
+      title: Proxy completions
+      url: '#proxy-completions'
+    - depth: 2
+      title: Proxy a model to chat/completions or completions automatically
+      url: '#proxy-a-model-to-chatcompletions-or-completions-automatically'
+    - depth: 2
+      title: Proxy embeddings
+      url: '#proxy-embeddings'
+    - depth: 2
+      title: Create temporary credential
+      url: '#create-temporary-credential'
+    - depth: 2
+      title: Proxy any OpenAI request (fallback)
+      url: '#proxy-any-openai-request-fallback'
+  structuredData:
+    headings:
+      - content: Proxy chat/completions
+        id: proxy-chatcompletions
+      - content: Proxy completions
+        id: proxy-completions
+      - content: Proxy a model to chat/completions or completions automatically
+        id: proxy-a-model-to-chatcompletions-or-completions-automatically
+      - content: Proxy embeddings
+        id: proxy-embeddings
+      - content: Create temporary credential
+        id: create-temporary-credential
+      - content: Proxy any OpenAI request (fallback)
+        id: proxy-any-openai-request-fallback
+    contents:
+      - content: >-
+          Proxy a chat/completions request to the specified model, converting
+          its format as needed. Will cache if temperature=0 or seed is set.
+        heading: proxy-chatcompletions
+      - content: >-
+          Proxy a completions request to the specified model, converting its
+          format as needed. Will cache if temperature=0 or seed is set.
+        heading: proxy-completions
+      - content: >-
+          Proxy a request to either chat/completions or completions
+          automatically based on the model. Will cache if temperature=0 or seed
+          is set.
+        heading: proxy-a-model-to-chatcompletions-or-completions-automatically
+      - content: >-
+          Proxy an embeddings request to the specified model, converting its
+          format as needed. Will cache automatically.
+        heading: proxy-embeddings
+      - content: >-
+          Create a temporary credential which can access the proxy for a limited
+          time. The temporary credential will be allowed to make requests on
+          behalf of the Braintrust API key (or model provider API key) provided
+          in the `Authorization` header. See
+          [docs](/docs/guides/proxy#temporary-credentials-for-end-user-access)
+          for code examples.
+        heading: create-temporary-credential
+      - content: >-
+          Any requests which do not match the above paths will be proxied
+          directly to the OpenAI API.
+        heading: proxy-any-openai-request-fallback
+---
+
+import jsonSpec from "@braintrust/openapi/spec.json";
+
+<APIPage document={jsonSpec} operations={[{"method":"post","path":"/v1/proxy/chat/completions"},{"method":"post","path":"/v1/proxy/completions"},{"method":"post","path":"/v1/proxy/auto"},{"method":"post","path":"/v1/proxy/embeddings"},{"method":"post","path":"/v1/proxy/credentials"},{"method":"post","path":"/v1/proxy/{path+}"}]} hasHead={true} />

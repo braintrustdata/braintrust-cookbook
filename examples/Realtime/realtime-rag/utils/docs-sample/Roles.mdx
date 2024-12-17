@@ -1,0 +1,67 @@
+---
+title: Roles
+full: true
+_openapi:
+  toc:
+    - depth: 2
+      title: List roles
+      url: '#list-roles'
+    - depth: 2
+      title: Create role
+      url: '#create-role'
+    - depth: 2
+      title: Create or replace role
+      url: '#create-or-replace-role'
+    - depth: 2
+      title: Get role
+      url: '#get-role'
+    - depth: 2
+      title: Partially update role
+      url: '#partially-update-role'
+    - depth: 2
+      title: Delete role
+      url: '#delete-role'
+  structuredData:
+    headings:
+      - content: List roles
+        id: list-roles
+      - content: Create role
+        id: create-role
+      - content: Create or replace role
+        id: create-or-replace-role
+      - content: Get role
+        id: get-role
+      - content: Partially update role
+        id: partially-update-role
+      - content: Delete role
+        id: delete-role
+    contents:
+      - content: >-
+          List out all roles. The roles are sorted by creation date, with the
+          most recently-created roles coming first
+        heading: list-roles
+      - content: >-
+          Create a new role. If there is an existing role with the same name as
+          the one specified in the request, will return the existing role
+          unmodified
+        heading: create-role
+      - content: >-
+          Create or replace role. If there is an existing role with the same
+          name as the one specified in the request, will replace the existing
+          role with the provided fields
+        heading: create-or-replace-role
+      - content: Get a role object by its id
+        heading: get-role
+      - content: >-
+          Partially update a role object. Specify the fields to update in the
+          payload. Any object-type fields will be deep-merged with existing
+          content. Currently we do not support removing fields or setting them
+          to null.
+        heading: partially-update-role
+      - content: Delete a role object by its id
+        heading: delete-role
+---
+
+import jsonSpec from "@braintrust/openapi/spec.json";
+
+<APIPage document={jsonSpec} operations={[{"method":"get","path":"/v1/role"},{"method":"post","path":"/v1/role"},{"method":"put","path":"/v1/role"},{"method":"get","path":"/v1/role/{role_id}"},{"method":"patch","path":"/v1/role/{role_id}"},{"method":"delete","path":"/v1/role/{role_id}"}]} hasHead={true} />
