@@ -15,7 +15,7 @@ export default async function Home() {
   if (!API_KEY) {
     return (
       <div>
-        No API key configured server-side. Please set BRAINTRUST_API_KEY
+        Missing BRAINTRUST_API_KEY
       </div>
     );
   }

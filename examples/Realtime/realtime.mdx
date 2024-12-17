@@ -78,7 +78,7 @@ export default async function Home() {
   if (!API_KEY) {
     return (
       <div>
-        No API key configured server-side. Please set BRAINTRUST_API_KEY
+        Missing BRAINTRUST_API_KEY
       </div>
     );
   }
@@ -153,7 +153,7 @@ client.addTool(
 ```
 
 <Callout type="info">
-Because of the way the Realtime API works, we have to use OpenAI tool calling here instead of Braintrust tool functions. 
+Currently, because of the way the Realtime API works, we have to use OpenAI tool calling here instead of Braintrust tool functions. 
 </Callout>
 
 ## Setting up the system prompt
@@ -201,7 +201,7 @@ In addition to client-side authentication, you’ll also get the other benefits 
 
 In Braintrust, you can run server-side online evaluations that are automatically run asynchronously as you upload logs. This makes it easier to evaluate your app in situations like this, where the prompt and tool might not be synced to Braintrust. 
 
-Audio evals are complex, because there are multiple aspects of your application you can focus on. In this cookbook, we'll use the call to Pinecone as a proxy for the quality of the Realtime API's interpretation of the user's input. 
+Audio evals are complex, because there are multiple aspects of your application you can focus on. In this cookbook, we'll use the vector search query as a proxy for the quality of the Realtime API's interpretation of the user's input. 
 
 ### Setting up your scorer
 
