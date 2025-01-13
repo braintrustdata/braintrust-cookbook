@@ -203,3 +203,11 @@
   - evals
   - tools
   - audio
+- title: Building an emotion classifier with OpenAI and Braintrust
+  path: examples/Recall/precision-recall.ipynb
+  date: 2025-01-13
+  authors:
+  - abarbir12
+  tags:
+  - recall
+  - python
