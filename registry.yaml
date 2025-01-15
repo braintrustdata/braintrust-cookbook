@@ -189,25 +189,25 @@
   path: examples/SimpleQA/SimpleQA.ipynb
   date: 2024-12-06
   authors:
-  - ankrgyl
-  - ornellaaltunyan
+    - ankrgyl
+    - ornellaaltunyan
   tags:
-  - datasets
-  - evals
+    - datasets
+    - evals
 - title: Evaluating audio with the OpenAI Realtime API
   path: examples/Realtime/Realtime.mdx
   date: 2024-12-14
   authors:
-  - ornellaaltunyan
+    - ornellaaltunyan
   tags:
-  - evals
-  - tools
-  - audio
+    - evals
+    - tools
+    - audio
 - title: Building an emotion classifier with OpenAI and Braintrust
-  path: examples/Recall/precision-recall.ipynb
+  path: examples/PrecisionRecall/PrecisionRecall.ipynb
   date: 2025-01-13
   authors:
-  - abarbir12
+    - abarbir12
   tags:
-  - recall
-  - python
+    - recall
+    - python
