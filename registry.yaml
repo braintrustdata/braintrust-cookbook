@@ -214,9 +214,9 @@
     - evals
     - classifier
     - python
-- title: Effectively evaluating a prompt chain
-  path: examples/promptChain/chainingprompts.ipynb
-  date: 2025-01-28
+- title: Evaluating a prompt chaining agent
+  path: examples/PromptChaining/prompt-chaining.ipynb
+  date: 2025-01-30
   authors:
     - abarbir12
   tags:
