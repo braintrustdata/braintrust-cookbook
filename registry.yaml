@@ -223,3 +223,12 @@
     - agent
     - evals
     - python
+- title: Classifying spam using structured outputs and Anthropic models
+  path: examples/SpamClassifier/SpamClassifier.mdx
+  date: 2025-02-05
+  authors:
+    - ornellaaltunyan
+  tags:
+    - classifier
+    - structured outputs
+    - playground
