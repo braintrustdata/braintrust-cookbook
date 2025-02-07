@@ -225,7 +225,7 @@
     - python
 - title: Classifying spam using structured outputs and Anthropic models
   path: examples/SpamClassifier/SpamClassifier.mdx
-  date: 2025-02-05
+  date: 2025-02-08
   authors:
     - ornellaaltunyan
   tags:
