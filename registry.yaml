@@ -232,3 +232,12 @@
     - classifier
     - structured outputs
     - playground
+- title: Evaluating voice translation
+  path: examples/VoiceTranslation/VoiceTranslation.mdx
+  date: 2025-02-10
+  authors:
+    - ornellaaltunyan
+  tags:
+    - evals
+    - voice
+    - python
