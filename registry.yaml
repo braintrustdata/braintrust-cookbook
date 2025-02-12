@@ -223,6 +223,15 @@
     - agent
     - evals
     - python
+- title: Classifying spam using structured outputs
+  path: examples/SpamClassifier/SpamClassifier.mdx
+  date: 2025-02-08
+  authors:
+    - ornellaaltunyan
+  tags:
+    - classifier
+    - structured outputs
+    - playground
 - title: Evaluating a voice agent
   path: examples/VoiceAgent/voiceagent.ipynb
   date: 2025-02-13
