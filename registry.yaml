@@ -223,3 +223,12 @@
     - agent
     - evals
     - python
+- title: Evaluating a voice agent
+  path: examples/VoiceAgent/voiceagent.ipynb
+  date: 2025-02-13
+  authors:
+    - abarbir12
+  tags:
+    - agent
+    - evals
+    - voice
