@@ -241,3 +241,12 @@
     - agent
     - evals
     - voice
+- title: Evaluating video QA
+  path: examples/VideoQA/VideoQA.ipynb
+  date: 2025-02-18
+  authors:
+    - abarbir12
+  tags:
+    - evals
+    - video
+    - datasets
