@@ -250,3 +250,11 @@
     - evals
     - video
     - datasets
+- title: Comparing models in the playground
+  path: examples/Playground/Playground.ipynb
+  date: 2025-02-20
+  authors:
+    - abarbir12
+  tags:
+    - evals
+    - playground
