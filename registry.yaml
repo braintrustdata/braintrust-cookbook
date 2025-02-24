@@ -250,8 +250,8 @@
     - evals
     - video
     - datasets
-- title: Prompt versioning
-  path: examples/Safety/Safety.ipynb
+- title: Prompt versioning and deployment
+  path: examples/PromptVersioning/PromptVersioning.ipynb
   date: 2025-02-24
   authors:
     - abarbir12
