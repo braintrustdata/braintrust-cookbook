@@ -250,3 +250,12 @@
     - evals
     - video
     - datasets
+- title: Prompt versioning and deployment
+  path: examples/PromptVersioning/PromptVersioning.ipynb
+  date: 2025-02-24
+  authors:
+    - abarbir12
+  tags:
+    - evals
+    - prompting
+    - functions
