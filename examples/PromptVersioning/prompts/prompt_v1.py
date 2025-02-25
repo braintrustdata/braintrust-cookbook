@@ -10,5 +10,6 @@ prompt_v1 = project.prompts.create(
     model="gpt-4o",
     messages=[
         {"role": "user", "content": "{{{input}}}"}
-    ]
+    ],
+    if_exists= "replace"
 )

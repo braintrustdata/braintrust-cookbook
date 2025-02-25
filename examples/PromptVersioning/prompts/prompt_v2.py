@@ -11,5 +11,6 @@ prompt_v2 = project.prompts.create(
     messages=[
         {"role": "system", "content": "You’re a cheerful, proactive assistant for Sunshine Co. Always use a positive tone, apologize for issues with empathy, and offer clear solutions to delight customers! No emojis or profanity."},
         {"role": "user", "content": "{{{input}}}"}
-    ]
+    ],
+    if_exists= "replace"
 )
