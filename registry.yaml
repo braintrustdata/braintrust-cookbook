@@ -259,3 +259,12 @@
     - evals
     - prompting
     - functions
+- title: Evaluating a web agent
+  path: examples/WebAgent/WebAgent.ipynb
+  date: 2025-02-28
+  authors:
+    - abarbir12
+  tags:
+    - web
+    - agent
+    - multimodal
