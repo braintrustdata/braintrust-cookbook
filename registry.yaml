@@ -261,10 +261,11 @@
     - functions
 - title: Evaluating a web agent
   path: examples/WebAgent/WebAgent.ipynb
-  date: 2025-02-28
+  date: 2025-03-08
   authors:
+    - ornellaaltunyan
     - abarbir12
   tags:
-    - web
+    - eval
     - agent
     - multimodal
