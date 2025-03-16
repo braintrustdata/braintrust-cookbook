@@ -72,20 +72,21 @@ You can also add images to your prompts by selecting the image icon in the input
 
 ![Multimodal prompt](/docs/guides/playground/multimodal-prompt.png)
 
-### Referencing outputs
+### Prompt code snippets
 
-Each prompt can reference the output of other prompts in the session (e.g. `output_a`). This is useful for
-validating outputs or chaining prompts together. For example, we can add a grading prompt to the previous example
-to verify that the output matches an expected value:
+The playground makes it easy to copy code snippets that you can run through the [AI proxy](/docs/guides/proxy). Select the code icon (<Code className="inline size-3" />) next to any chat-based prompt to get code snippets in TypeScript, Python, or cURL.
 
-![Prompt with output](/docs/guides/playground/prompt-with-output.webp)
-
-### Exporting prompt code
-
-The playground makes it easy to export your prompts as code that you can run through the [AI proxy](/docs/guides/proxy). Select the code icon (<Code className="inline size-3" />) next to any chat-based prompt to get code snippets in TypeScript, Python, or cURL.
-
-<video className="border rounded-md" loop autoPlay muted poster="/docs/guides/playground/generate-code-snippet-poster.png">
-  <source src="/docs/guides/playground/generate-code-snippet.mp4" type="video/mp4" />
+<video
+  className="border rounded-md"
+  loop
+  autoPlay
+  muted
+  poster="/docs/guides/playground/generate-code-snippet-poster.png"
+>
+  <source
+    src="/docs/guides/playground/generate-code-snippet.mp4"
+    type="video/mp4"
+  />
 </video>
 
 The generated code includes all the prompt configuration, including the model, messages, and any additional parameters you've set.
