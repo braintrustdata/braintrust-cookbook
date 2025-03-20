@@ -1532,7 +1532,7 @@ def run_evaluation():
             factualityScore = factuality(output, expected, input=input)
 
             span.log(
-                input=dataset,
+                input=input,
                 output=output,
                 expected=expected,
                 scores={
