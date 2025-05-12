@@ -269,3 +269,12 @@
     - eval
     - agent
     - multimodal
+- title: Evaluating video QA with Twelve Labs
+  path: examples/VideoQATwelveLabs/VideoQATwelveLabs.ipynb
+  date: 2025-05-13
+  authors:
+    - ornellaaltunyan
+  tags:
+    - eval
+    - video
+    - multimodal
