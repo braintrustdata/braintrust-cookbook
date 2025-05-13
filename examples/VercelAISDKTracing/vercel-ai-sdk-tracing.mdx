@@ -1,6 +1,6 @@
 # Tracing Vercel AI SDK applications with Braintrust
 
-The open-source [Vercel AI SDK](https://ai-sdk.dev/) is a popular choice for building generative AI applications due to its ease of use and integrations with popular frameworks, such as Next.js. However, builders know that to get to production, they also need to develop observability into their applications. This cookbook will show how to use [Braintrust](braintrust.dev)'s native integration with the Vercel AI SDK for logging and tracing a generative AI application.
+The open-source [Vercel AI SDK](https://ai-sdk.dev/) is a popular choice for building generative AI applications due to its ease of use and integrations with popular frameworks, such as Next.js. However, builders recognize that to reach production, they also need to incorporate observability into their applications. This cookbook will show how to use [Braintrust](braintrust.dev)'s native integration with the Vercel AI SDK for logging and tracing a generative AI application.
 
 ## Prerequisites
 
@@ -59,7 +59,7 @@ You should be able to see the application running at `http://localhost:3000`. Fe
 ## Tracing the application
 
 ### Initializing a logger
-To send logs to Braintrust, you'll need to initialize a logger by calling the `initLogger` function. This function takes an `apiKey` and a `projectName` as arguments. The `apiKey` is your Braintrust API key, and the `projectName` is the name of your project in Braintrust. For the lines 1-11, in the `app/api/(preview)chat/route.ts` file, uncomment the lines where instructed to load the necessary Braintrust functions and initialize the logger. Lines 1-11 should look like this:
+To send logs to Braintrust, you'll need to initialize a logger by calling the `initLogger` function. This function takes an `apiKey` and a `projectName` as arguments. The `apiKey` is your Braintrust API key, and the `projectName` is the name of your project in Braintrust. For lines 1-11, in the `app/api/(preview)chat/route.ts` file, uncomment the lines where instructed to load the necessary Braintrust functions and initialize the logger. Lines 1-11 should look like this:
 
 <h6 a><strong><code>app/(preview)api/chat/route.ts</code></strong></h6>
 
@@ -81,7 +81,7 @@ The Braintrust SDK provides functions to "wrap" models, automatically logging in
 
 > **Important**: The `wrapAISDKModel` function only traces the inputs and outputs of the model. It does not trace intermediary steps such as tool calls that may be invoked during the model's execution. We will go over how to use `wrapTraced` to perform tracing on tool cools and nested functions.
 
-> **Important**: The `wrapAISDKModel` must be used with a Vercel interface (not a model interface directly from the OpenAI, Anthropic, or other first-party libraries from model providers). If you are not using Vercel model inferfaces (such as `@ai-sdk/openai`) and using a model provider's first-party library, you can wrap your model clients with [`wrapOpenAI` or `wrapAnthropic`](https://www.braintrust.dev/docs/guides/traces/customize#wrapping-llm-clients).
+> **Important**: The `wrapAISDKModel` must be used with a Vercel interface (not a model interface directly from the OpenAI, Anthropic, or other first-party libraries from model providers). If you are not using Vercel model interfaces (such as `@ai-sdk/openai`) and using a model provider's first-party library, you can wrap your model clients with [`wrapOpenAI` or `wrapAnthropic`](https://www.braintrust.dev/docs/guides/traces/customize#wrapping-llm-clients).
 
 To correctly wrap the model client in our weather app example, your model client instantiation code should look like this after uncommenting the proper lines: 
 
@@ -95,12 +95,12 @@ const model = wrapAISDKModel(
 );
 ```
 
-When we use the chatbot again, we see three logs arrive in Braintrust; one log for the `getWeather` tool call, one log for the `getFahrenheit` tool call, and one call to form the final response. Wouldn't it be useful to place all of these logs into the same log record?
+When we use the chatbot again, we see three logs arrive in Braintrust: one log for the `getWeather` tool call, one log for the `getFahrenheit` tool call, and one call to form the final response. Wouldn't it be useful to place all of these logs into the same log record?
 
 ### Creating spans (and sub-spans)
-When performing tracing, builders want to place child events into one parent event. For example, we would want to group the three logs that we produced above into the same log record. We can do this with the `traced` function.
+When performing tracing, builders want to place child events within a single parent event. For example, we would like to group the three logs that we produced above into the same log record. We can do this with the `traced` function.
 
-To create a parent span in our weather app, uncomment the `traced` function (don't forget to uncomment the final line of code that closes the `traced` function). You can also uncomment the `onFinish` argument that will log the input and output of the `streamText` function to the parent span. Your POST route should look like this when finished:
+To create a parent span in our weather app, uncomment the `traced` function (don't forget to uncomment the final line of code that closes the `traced` function). You can also uncomment the `onFinish` argument, which will log the input and output of the `streamText` function to the parent span. Your POST route should look like this when finished:
 
 <h6 a><strong><code>app/(preview)api/chat/route.ts</code></strong></h6>
 
