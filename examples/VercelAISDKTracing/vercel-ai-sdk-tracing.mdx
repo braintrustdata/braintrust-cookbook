@@ -235,7 +235,7 @@ After we finish uncommenting the correct lines, we see how the `wrapTraced` func
 
 ![using wrapTraced](./assets/wrapTraced.gif)
 
-Take note of how the `type` argument in both `traced` and `wrapTraced` change the icon within the trace tree. Also, since `checkFreezing` was called by `weatherFunction`, the traces preserves the hiearchy.
+Take note of how the `type` argument in both `traced` and `wrapTraced` change the icon within the trace tree. Also, since `checkFreezing` was called by `weatherFunction`, the trace preserves the hiearchy.
 
 ## Wrapping up
 This was a short example of how to integrate the Vercel AI SDK with Braintrust observability. Braintrust offers the ability to [customize](https://www.braintrust.dev/docs/guides/traces/customize) and [extend](https://www.braintrust.dev/docs/guides/traces/extend) traces to better optimize for your use case. If you are interested in the technology that allows Braintrust to perform observability at scale, take a look at how the engineering team developed our purpose-built logging backend, [Brainstore](https://www.braintrust.dev/blog/brainstore).
