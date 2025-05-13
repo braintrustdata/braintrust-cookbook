@@ -271,8 +271,9 @@
     - multimodal
 - title: Evaluating video QA with Twelve Labs
   path: examples/VideoQATwelveLabs/VideoQATwelveLabs.ipynb
-  date: 2025-05-13
+  date: 2025-05-14
   authors:
+    - jamesle
     - ornellaaltunyan
   tags:
     - eval
