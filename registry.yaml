@@ -269,3 +269,11 @@
     - eval
     - agent
     - multimodal
+- title: Tracing Vercel AI SDK applications with Braintrust
+  path: examples/VercelAISDKTracing/vercel-ai-sdk-tracing.md
+  date: 2025-05-14
+  authors:
+    - philhetzel
+  tags:
+    - logging
+    - Next.js
