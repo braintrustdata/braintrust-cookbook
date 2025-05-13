@@ -270,7 +270,7 @@
     - agent
     - multimodal
 - title: Tracing Vercel AI SDK applications with Braintrust
-  path: examples/VercelAISDKTracing/vercel-ai-sdk-tracing.md
+  path: examples/VercelAISDKTracing/vercel-ai-sdk-tracing.mdx
   date: 2025-05-14
   authors:
     - philhetzel
