@@ -1,0 +1,235 @@
+# Tracing Vercel AI SDK applications with Braintrust
+
+The open-source [Vercel AI SDK](https://ai-sdk.dev/) is a popular choice for building generative AI applications due to its ease of use and integrations with popular frameworks, such as Next.js. However, builders know that to get to production, they also need to develop observability into their applications. This cookbook will show how to use [Braintrust](braintrust.dev)'s native integration with the Vercel AI SDK for logging and tracing a generative AI application.
+
+## Prerequisites
+
+- A Braintrust API key
+- A project in Braintrust
+- An OpenAI API key
+- `npm` installed
+
+
+## Getting started
+
+We have an example of a simple chat application that delivers the temperature when asked about the weather in a given city. The chatbot uses an OpenAI model, which calls one tool that gets the weather from the [open-meteo](https://open-meteo.com/) and another tool that converts the weather from Celsius to Fahrenheit. 
+
+Use `npx` to download the application locally. 
+
+<h6 a><strong><code>bash</code></strong></h6>
+
+```bash
+npx create-next-app@latest --example https://github.com/braintrustdata/braintrust-cookbook/tree/main/examples/VercelAISDKTracing/complete-weather-app vercel-ai-sdk-tracing && cd vercel-ai-sdk-tracing
+```
+
+We'll only edit a few files in this example application:
+
+```
+complete-weather-app/
+  |_ app/(preview)/api/chat/route.ts
+  |_ components/tools.ts
+  |_ .env.local
+```
+
+For the application to run successfully, you'll need to rename the `.env.local.example` file to `.env.local` in the root of the project and add the following environment variables:
+
+<h6 a><strong><code>bash</code></strong></h6>
+
+```bash
+BRAINTRUST_API_KEY="<Your Braintrust API Key>"
+OPENAI_API_KEY="<Your OpenAI API Key>"
+OTEL_EXPORTER_OTLP_ENDPOINT=https://api.braintrust.dev/otel
+OTEL_EXPORTER_OTLP_HEADERS=""Authorization=Bearer <Your Braintrust API Key>, x-bt-parent=project_id:<Your Project Name>""
+```
+
+Ensure the application can run locally.
+
+<h6 a><strong><code>bash</code></strong></h6>
+
+```bash
+npm install
+npm run dev
+```
+
+You should be able to see the application running at `http://localhost:3000`. Feel free to test the application by asking it about the weather in Philadelphia. Here's a screenshot of the application:
+
+![Screenshot of the application](./assets/home-page.png)
+
+
+## Tracing the application
+
+### Initializing a logger
+To send logs to Braintrust, you'll need to initialize a logger by calling the `initLogger` function. This function takes an `apiKey` and a `projectName` as arguments. The `apiKey` is your Braintrust API key, and the `projectName` is the name of your project in Braintrust. In the `app/api/(preview)chat/route.ts` file, uncomment lines where noted to load the necessary Braintrust assets and initialize the logger.
+
+<h6 a><strong><code>app/(preview)api/chat/route.ts</code></strong></h6>
+
+```typescript
+//Uncomment below to use Braintrust's tracing features
+import { initLogger, wrapAISDKModel, traced } from "braintrust";
+
+//Initialize Braintrust as the logging backend. Uncomment below
+const logger = initLogger({
+  apiKey: process.env.BRAINTRUST_API_KEY,
+  projectName: "Weather Tracing,
+});
+```
+### Automatic tracing of models
+The Braintrust SDK provides functions to "wrap" models, automatically logging inputs and outputs. When working with the Vercel AI SDK, you can use the `wrapAISDKModel` function, which provides a common interface for models initiated by the Vercel AI SDK (i.e., `@ai-sdk/openai`).
+
+> **Important**: The `wrapAISDKModel` function only traces the inputs and outputs of the model. It does not trace intermediary steps such as tool calls that may be invoked during the model's execution. We will go over how to use `wrapTrace` to perform tracing on tool cools and nested functions.
+
+> **Important**: The `wrapAISDKModel` must be used with a Vercel interface (not a model interface directly from the OpenAI, Anthropic, or other first-party libraries from model providers).
+
+
+<h6 a><strong><code>app/(preview)api/chat/route.ts</code></strong></h6>
+
+```typescript
+//any time this model is called, the input and output will be logged to braintrust. Uncomment below
+const model = wrapAISDKModel(
+  openai("gpt-4o")
+//Uncomment below
+);
+```
+
+
+When we use the chatbot again, we see three logs arrive in Braintrust; one log for the `getWeather` tool call, one log for the `getFahrenheit` tool call, and one too call for the final response. Wouldn't it be useful to place all of these logs into the same log record?
+
+### Creating spans (and sub-spans)
+When performing tracing, builders want to place child events into one parent event. For example, we would want to group the three logs that we produced above into the same log record. We can do this with the `traced` function.
+
+<h6 a><strong><code>app/(preview)api/chat/route.ts</code></strong></h6>
+
+```typescript
+export async function POST(request: Request) {
+  //traced starts a trace span when the POST endpoint is used
+  //Unlike wrapTraced, traced does not natively log inputs and outputs. Uncomment below
+  return traced(async (span) => {
+      const { messages }: { messages: Message[] } = await request.json();
+
+      const stream = await streamText({
+        //Our wrapped OpenAI model
+        model: model,
+        system: `\
+        - you are an AI assistant who gives the weather. If the user gives you a location, give them the current weather in that location in Fahrenheit.
+      `,
+        messages: messages,
+        //important: maxSteps prevents infinite tool call loops but will stop your LLM's logic prematurely if set too low
+        maxSteps: 5,
+        //Register the exported tools to the LLM from @/components/tools
+        tools: {
+          getWeather: getWeather,
+          getFahrenheit: getFahrenheit,
+        },
+        //Enable experimental telemetry
+        experimental_telemetry: {
+          isEnabled: true,
+        },
+      //When streamText is finished, log the input and output of the stream for the "root" span. Uncomment below
+      onFinish: (result) => {
+        currentSpan().log({
+          input: messages,
+          output: result.text,
+        });
+      },
+        });
+
+      return stream.toDataStreamResponse();
+    }
+    //Show this span as a function and name the span POST /api/chat. Uncomment below
+    ,{ type: "function", name: "POST /api/chat" });}
+```
+By uncommenting the suggested lines of code, you should see the following:
+![using trace to create spans](./assets/traced.gif)
+
+A couple of things happened in this step:
+- We created a root span called "Post /api/chat" to group any subsequent logs into.
+- We continued to create spans via the `wrapAISDKModel` function
+- We used the `onFinish` argument of the `streamText` function to gather the input and output of the LLM and return it to the root span
+
+Great progress! Something is missing, though - we want to know about the different tool calls that the LLM is making as it works to form its response.
+
+### Tracing tool calls
+The last thing that we need to adjust is adding our tool calls and functions to the trace. Braintrust makes this simple with the `wrapTraced` function. By encapsulating existing functions with `wrapTraced`, we automatically capture the inputs and outputs of the functions. When using `wrapTraced`, the hierarchy of nested functions is preserved.
+
+The following code has two main components:
+1. A `getFahrenheit` tool, which converts a Celsius temperature into Fahrenheit. Also nests the `checkFreezing` function inside the `convertToFahrenheit` function
+2. A `getWeather` tool which takes a latitude and longitude as input and returns a Celsius temperature as output.
+
+<h6 a><strong><code>components/tools.ts</code></strong></h6>
+
+```typescript
+import { tool } from "ai";
+import { z } from "zod";
+//Uncomment below to use Braintrust's tracing features
+import { wrapTraced, currentSpan } from "braintrust";
+
+interface LocationInput {
+  latitude: number;
+  longitude: number;
+}
+
+//Create a simple function to note whether or not a Fahrenheit temperature is freezing
+//Wrap the function with the wrapTraced function to note inputs and outputs. Uncomment wrapTraced below
+const checkFreezing = wrapTraced(
+    async function checkFreezing({ fahrenheit }: {fahrenheit: number}) {
+      return fahrenheit < 32;
+    }
+  //Uncomment below
+    ,{ type: "function" });
+
+//Create a function that takes a temperature in Celsius and returns the temperature in Fahrenheit
+//Wrap the function with the wrapTraced function to note inputs and outputs. Uncomment wrapTraced
+const convertToFahrenheit = wrapTraced(
+  async function convertToFahrenheit({ celsius }: {celsius: number}) {
+    const fahrenheit = (celsius * 9) / 5 + 32;
+    const isFreezing = checkFreezing({ fahrenheit });
+    return fahrenheit;
+  }
+//Uncomment below
+  ,{ type: "tool" });
+
+//Construct a tool using the tool() function in the ai package to place in the LLM call
+export const getFahrenheit = tool({
+  description: "Convert Celsius to Fahrenheit",
+  parameters: z.object({ celsius: z.number() }),
+  execute: convertToFahrenheit,
+});
+
+//Create a function that fetches a temperature in Celsius from open-meteo
+//Wrap the function with the wrapTraced function to note inputs and outputs. Note that the function should be logged as a tool in the trace. Uncomment wrapTraced below
+const weatherFunction = wrapTraced(
+  async function weatherFunction({ latitude, longitude }: LocationInput) {
+    const response = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&hourly=temperature_2m&daily=sunrise,sunset&timezone=auto`
+    );
+    const weatherData = await response.json();
+    //Uncomment below to add metadata to the span
+    currentSpan().log({
+      metadata: { foo: "bar" },
+    });
+    return weatherData;
+  }
+  //Uncomment below
+  ,{ type: "tool", name: "weatherFunction" });
+
+//Construct a tool using the tool() function in the ai package to place in the LLM call
+export const getWeather = tool({
+  description: "Get the current weather at a location",
+  parameters: z.object({
+    latitude: z.number(),
+    longitude: z.number(),
+  }),
+  execute: weatherFunction,
+});
+
+```
+
+After we finish uncommenting the correct lines, we see how the `wrapTraced` function enriches our trace with tool calls.
+
+![using wrapTraced](./assets/wrapTraced.gif)
+
+Take note of how the `type` argument in both `traced` and `wrapTrace` change the icon within the trace tree. Also, since `checkFreezing` was called by `weatherFunction`, the traces preserves the hiearchy.
+
+## Wrapping up
+This was a short example of how to integrate the Vercel AI SDK with Braintrust observability. Braintrust offers the ability to [customize](https://www.braintrust.dev/docs/guides/traces/customize) and [extend](https://www.braintrust.dev/docs/guides/traces/extend) traces to better optimize for your use case. If you are interested in the technology that allows Braintrust to perform observability at scale, take a look at how the engineering team developed our purpose-built logging backend, [Brainstore](https://www.braintrust.dev/blog/brainstore).
+
