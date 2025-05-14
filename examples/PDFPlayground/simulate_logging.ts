@@ -19,7 +19,6 @@ const client = wrapOpenAI(
 // ── PDF list with URLs ────────────────────────────────────────────────
 const pdfFiles = [
     { filename: "META-Q4-2024-Earnings-Call-Transcript.pdf", url: "https://s21.q4cdn.com/399680738/files/doc_financials/2024/q4/META-Q4-2024-Earnings-Call-Transcript.pdf" },
-    { filename: "walmart-q4-fy25-earnings-call-transcript.pdf", url: "https://corporate.walmart.com/content/dam/corporate/documents/newsroom/2025/02/20/walmart-releases-q4-fy25-earnings/q4-fy25-earnings-call-transcript.pdf" },
     { filename: "Citi-4Q24-Earnings-Transcript.pdf", url: "https://www.citigroup.com/rcs/citigpa/storage/public/Earnings/Q42024/4Q24-Earnings-Transcript.pdf" },
     { filename: "jpmc-4q24-earnings-transcript.pdf", url: "https://www.jpmorganchase.com/content/dam/jpmc/jpmorgan-chase-and-co/investor-relations/documents/quarterly-earnings/2024/4th-quarter/4q24-earnings-transcript.pdf" },
     { filename: "att-4q24-transcript.pdf", url: "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2024/4Q24/t-usq-transcript-2025-01-27.pdf" },
