@@ -34,9 +34,10 @@ For the application to run successfully, you'll need to rename the `.env.local.e
 
 ```bash
 BRAINTRUST_API_KEY="<Your Braintrust API Key>"
+BRAINTRUST_PROJECT_NAME="<Your Braintrust Project Name>"
 OPENAI_API_KEY="<Your OpenAI API Key>"
 OTEL_EXPORTER_OTLP_ENDPOINT=https://api.braintrust.dev/otel
-OTEL_EXPORTER_OTLP_HEADERS=""Authorization=Bearer <Your Braintrust API Key>, x-bt-parent=project_id:<Your Project Name>""
+OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer <Your Braintrust API Key>, x-bt-parent=project_id:<Your Braintrust Project Name>"
 ```
 
 Run the application, and make sure you can access it at at `http://localhost:3000`. Feel free to test the application by asking it about the weather in Philadelphia.
@@ -54,9 +55,9 @@ It should look like this:
 
 ### Initializing a logger
 
-To send logs to Braintrust, you'll need to initialize a logger by calling the `initLogger` function. This function takes an `apiKey` and a `projectName` as arguments. The `apiKey` is your Braintrust API key, and the `projectName` is the name of your project in Braintrust. For lines 1-11 in the `app/api/(preview)chat/route.ts` file, uncomment the lines where instructed to load the necessary Braintrust functions and initialize the logger. Lines 1-11 should look like this:
+To send logs to Braintrust, you'll need to initialize a logger by calling the `initLogger` function. This function takes an `apiKey` and a `projectName` as arguments. The `apiKey` is your Braintrust API key, and the `projectName` is the name of your project in Braintrust. For lines 1-11 in the `app/(preview)/api/chat/route.ts` file, uncomment the lines where instructed to load the necessary Braintrust functions and initialize the logger. Lines 1-11 should look like this:
 
-```typescript title="app/(preview)api/chat/route.ts"
+```typescript title="app/(preview)/api/chat/route.ts"
 import { openai } from "@ai-sdk/openai";
 import { streamText, ToolInvocation } from "ai";
 import { getWeather, getFahrenheit } from "@/components/tools";
@@ -66,7 +67,7 @@ import { initLogger, wrapAISDKModel, traced, currentSpan } from "braintrust";
 // Initialize Braintrust as the logging backend. Uncomment below
 const logger = initLogger({
   apiKey: process.env.BRAINTRUST_API_KEY,
-  projectName: "Weather Tracing",
+  projectName: process.env.BRAINTRUST_PROJECT_NAME,
 });
 ```
 
@@ -88,7 +89,7 @@ The `wrapAISDKModel` function only traces the inputs and outputs of the model. I
 
 To correctly wrap the model client in our weather app example, your model client instantiation code should look like this after uncommenting the proper lines:
 
-```typescript title="app/(preview)api/chat/route.ts"
+```typescript title="app/(preview)/api/chat/route.ts"
 // Any time this model is called, the input and output will be logged to Braintrust.
 const model = wrapAISDKModel(openai("gpt-4o"));
 ```
@@ -103,7 +104,7 @@ When tracing events, it's common practice to place child events within a single 
 
 To create a parent span in our weather app, uncomment the `traced` function (don't forget to uncomment the final line of code that closes the function). You can also uncomment the `onFinish` argument, which will log the input and output of the `streamText` function to the parent span. Your POST route should look like this when finished:
 
-```typescript title="app/(preview)api/chat/route.ts"
+```typescript title="app/(preview)/api/chat/route.ts"
 export async function POST(request: Request) {
   // traced starts a trace span when the POST endpoint is used
   // Unlike wrapTraced, traced does not natively log inputs and outputs. Uncomment below

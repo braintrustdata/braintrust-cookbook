@@ -7,7 +7,7 @@ import { getWeather, getFahrenheit } from "@/components/tools";
 // Initialize Braintrust as the logging backend. Uncomment below
 // const logger = initLogger({
 //  apiKey: process.env.BRAINTRUST_API_KEY,
-//  projectName: "Weather Tracing",
+//  projectName: process.env.BRAINTRUST_PROJECT_NAME,
 // });
 
 // Any time this model is called, the input and output will be logged to Braintrust. Uncomment below
