@@ -92,9 +92,10 @@ To correctly wrap the model client in our weather app example, your model client
 // Any time this model is called, the input and output will be logged to Braintrust.
 const model = wrapAISDKModel(openai("gpt-4o"));
 ```
-![using wrapAISDKModel](./assets/wrapAISDKModel.gif)
 
 When we use the chatbot again, we see three logs appear in Braintrust: one log for the `getWeather` tool call, one log for the `getFahrenheit` tool call, and one call to form the final response. However, it'd probably be more useful to have all of these operations in the same log.
+
+![using wrapAISDKModel](./assets/wrapAISDKModel.gif)
 
 ### Creating spans (and sub-spans)
 
