@@ -82,7 +82,7 @@ The `wrapAISDKModel` function only traces the inputs and outputs of the model. I
   from model providers). If you are not using Vercel model interfaces (such as
   `@ai-sdk/openai`) and using a model provider's first-party library, you can
   [wrap your model
-  clients]((https://www.braintrust.dev/docs/guides/traces/customize#wrapping-llm-clients))
+  clients](https://www.braintrust.dev/docs/guides/traces/customize#wrapping-llm-clients)
   with `wrapOpenAI` or `wrapAnthropic`.
 </Callout>
 
@@ -154,7 +154,7 @@ A couple of things happened in this step:
 - We continued to create spans via the `wrapAISDKModel` function.
 - We used the `onFinish` argument of the `streamText` function to gather the input and output of the LLM and return it to the root span.
 
-This ooks good so far, but we also want to know about the different tool calls that the LLM is making as it works to form its response.
+This looks good so far, but we also want to know about the different tool calls that the LLM is making as it works to form its response.
 
 ### Tracing tool calls
 
