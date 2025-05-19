@@ -1,116 +1,121 @@
-# Using PDF Files in the Playground 
-Attachments in Braintrust logs enable you to capture files, such as images, PDFs, or other documents, provided by your users. However, you may also want to include these attachments in datasets to test prompts within the Braintrust Playground. This cookbook provides step-by-step instructions for running prompts in the Playground using file attachments in two different ways.
+# Using PDF attachments in playgrounds
 
-## Attachment Methods
+[Logging with attachments](/blog/attachments) allows you to capture user-provided files like images, PDFs, and other documents, but you might also want to leverage these attachments directly within datasets for testing prompts in playgrounds. This cookbook guides you step-by-step through two primary methods—using the paperclip UI button or public URLs—to attach PDFs and quickly iterate on prompts in playgrounds. By the end of this guide, you'll know how to emit spans containing embedded attachments, log prompts into organized spans within a single trace, save these spans into datasets, and seamlessly move them into playgrounds. We'll demonstrate these techniques using earnings report transcripts as illustrative PDF files.
 
-There are two primary ways to include PDF files in the Playground:
+## Getting started
 
-- Attach files using the paperclip UI button
-- Use Public URLs
+To get started, you'll need [Braintrust](https://www.braintrust.dev/signup) and [OpenAI](https://platform.openai.com/) accounts, along with their corresponding API keys. Plug your OpenAI API key into your Braintrust account's [AI providers](https://www.braintrust.dev/app/settings?subroute=secrets) configuration. You can also add an API key for any other AI provider you'd like, but be sure to change the code to use that model. Lastly, add your `BRAINTRUST_API_KEY` to your `.env.local` file:
 
-## Learning Objectives
-
-After completing this guide, you will be able to:
-
-- Emit spans containing embedded file attachments
-
-- Log system and user prompts into separate spans within the same trace
-
-- Save spans into datasets
-
-- Utilize the “Try Prompt” feature to transfer spans to the Playground
-
-- Rapidly iterate prompts using file attachments in the Playground
-
-We will illustrate these concepts using earnings report transcripts as PDF files.
-
-## Prerequisites
-
-### Setting Up API Keys
-
-Follow these steps to configure your environment:
-
-1. Create a Braintrust account and generate an API key.
-
-2. Create a .env.local file containing your API key:
     ```
-    BRAINTRUST_API_KEY=your-api-key
+    BRAINTRUST_API_KEY=<your-api-key>
     ```
-3. Enter your OpenAI API key in the AI Providers settings page in your Braintrust organization.
 
-### Installing Typescript Dependencies
-Install [pnpm](https://pnpm.io/installation) or a package manager of your choice. 
+To install the necessary dependencies, start by downloading [pnpm](https://pnpm.io/installation) or a package manager of your choice. Then, use the following `package.json` file:
 
-Use the following `package.json`:
 ```json
 {
-	"name": "pdf-attachment-demo",
-	"version": "1.0.0",
-	"description": "PDF Attachment Demo",
-	"scripts": {
-		"logging": "ts-node simulate_logging.ts"
-	},
-	"devDependencies": {
-		"@types/node": "^22.15.14",
-		"@types/dotenv": "^8.2.0",
-		"ts-node": "^10.9.2",
-		"typescript": "^5.4.2"
-	},
-	"dependencies": {
-		"dotenv": "^16.1.4",
-		"braintrust": "^0.0.201",
-		"openai": "^4.97.0"
-	}
+  "name": "pdf-attachment-demo",
+  "version": "1.0.0",
+  "description": "PDF Attachment Demo",
+  "scripts": {
+    "logging": "ts-node simulate_logging.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.14",
+    "@types/dotenv": "^8.2.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.2"
+  },
+  "dependencies": {
+    "dotenv": "^16.1.4",
+    "braintrust": "^0.0.201",
+    "openai": "^4.97.0"
+  }
 }
 ```
 
-Install dependencies by running:
+And install dependencies by running:
+
 ```bash
 pnpm install
 ```
 
-## Implementation Guide
-### Setting Up Braintrust and OpenAI clients
-Use the following configuration for client initialization:
+To follow along with this cookbook, create a file called `log_pdfs.ts` and add each of the code snippets below to the file as we go through each step. Alternatively, you can download the complete file [on GitHub](https://github.com/braintrustdata/braintrust-cookbook/tree/main/examples/PDFPlayground/log_pdfs.ts).
+
+## Initializing the logger and OpenAI client
+
+The first thing we'll do is import the modules we need and initialize our OpenAI client. We're wrapping the client so that we have access to Braintrust features.
+
 ```typescript
-import { initLogger, wrapOpenAI, wrapTraced, currentSpan, Attachment } from "braintrust";
+import {
+  initLogger,
+  wrapOpenAI,
+  wrapTraced,
+  currentSpan,
+  Attachment,
+} from "braintrust";
 import { OpenAI } from "openai";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config();
 
-// ── Braintrust + OpenAI setup ────────────────────────────────────────────────
+// Braintrust + OpenAI setup
 const logger = initLogger({
-    projectName: "pdf-attachment-demo",
-    apiKey: process.env.BRAINTRUST_API_KEY,
+  projectName: "pdf-attachment-demo",
+  apiKey: process.env.BRAINTRUST_API_KEY,
 });
 
 const client = wrapOpenAI(
-    new OpenAI({
-        baseURL: "https://braintrustproxy.com/v1",
-        apiKey: process.env.BRAINTRUST_API_KEY,
-    }),
+  new OpenAI({
+    baseURL: "https://braintrustproxy.com/v1",
+    apiKey: process.env.BRAINTRUST_API_KEY,
+  }),
 );
 ```
 
-### Defining PDF Resources
-Set the PDF files and their URLs:
+## Defining the PDFs
+
+In this cookbook, we'll use PDFs of various earning calls from public companies. We'll create a list of objects that contain the filenames and their corresponding URLs:
+
 ```typescript
-// ── PDF list with URLs ────────────────────────────────────────────────
+// PDF list with URLs
 const pdfFiles = [
-    { filename: "META-Q4-2024-Earnings-Call-Transcript.pdf", url: "https://s21.q4cdn.com/399680738/files/doc_financials/2024/q4/META-Q4-2024-Earnings-Call-Transcript.pdf" },
-    { filename: "Citi-4Q24-Earnings-Transcript.pdf", url: "https://www.citigroup.com/rcs/citigpa/storage/public/Earnings/Q42024/4Q24-Earnings-Transcript.pdf" },
-    { filename: "jpmc-4q24-earnings-transcript.pdf", url: "https://www.jpmorganchase.com/content/dam/jpmc/jpmorgan-chase-and-co/investor-relations/documents/quarterly-earnings/2024/4th-quarter/4q24-earnings-transcript.pdf" },
-    { filename: "att-4q24-transcript.pdf", url: "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2024/4Q24/t-usq-transcript-2025-01-27.pdf" },
-    { filename: "Qualcomm_Q1FY25EC_Transcript_2-5-24.pdf", url: "https://s204.q4cdn.com/645488518/files/doc_events/2025/Feb/05/QCOM_Q1FY25EC_Transcript_2-5-24.pdf" },
-    { filename: "host-hotels-4q24-transcript.pdf", url: "https://www.hosthotels.com/-/media/HostHotels/Files/DownloadLinksAssets/Earnings-Call-Transcript/Host_Hotels_Resorts_Inc_Earnings_Call_Transcript.pdf" },
-    { filename: "homedepot-4q24-transcript.pdf", url: "https://ir.homedepot.com/~/media/Files/H/HomeDepot-IR/documents/hd-4q24-transcript.pdf" },
+  {
+    filename: "META-Q4-2024-Earnings-Call-Transcript.pdf",
+    url: "https://s21.q4cdn.com/399680738/files/doc_financials/2024/q4/META-Q4-2024-Earnings-Call-Transcript.pdf",
+  },
+  {
+    filename: "Citi-4Q24-Earnings-Transcript.pdf",
+    url: "https://www.citigroup.com/rcs/citigpa/storage/public/Earnings/Q42024/4Q24-Earnings-Transcript.pdf",
+  },
+  {
+    filename: "jpmc-4q24-earnings-transcript.pdf",
+    url: "https://www.jpmorganchase.com/content/dam/jpmc/jpmorgan-chase-and-co/investor-relations/documents/quarterly-earnings/2024/4th-quarter/4q24-earnings-transcript.pdf",
+  },
+  {
+    filename: "att-4q24-transcript.pdf",
+    url: "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2024/4Q24/t-usq-transcript-2025-01-27.pdf",
+  },
+  {
+    filename: "Qualcomm_Q1FY25EC_Transcript_2-5-24.pdf",
+    url: "https://s204.q4cdn.com/645488518/files/doc_events/2025/Feb/05/QCOM_Q1FY25EC_Transcript_2-5-24.pdf",
+  },
+  {
+    filename: "host-hotels-4q24-transcript.pdf",
+    url: "https://www.hosthotels.com/-/media/HostHotels/Files/DownloadLinksAssets/Earnings-Call-Transcript/Host_Hotels_Resorts_Inc_Earnings_Call_Transcript.pdf",
+  },
+  {
+    filename: "homedepot-4q24-transcript.pdf",
+    url: "https://ir.homedepot.com/~/media/Files/H/HomeDepot-IR/documents/hd-4q24-transcript.pdf",
+  },
 ];
 ```
 
-### Defining the System Prompt
-Establish the guidelines for the analysis:
+## Defining the system prompt
+
+Next, we'll define the system prompt that instructs the LLM on how to analyze the PDFs. We want to use specific analysis criteria to make sure we get the desired output:
+
 ```typescript
-// ── System prompt for the assistant ─────────────────────────────────────────────
+// System prompt for the assistant
 const SYSTEM_PROMPT = `
 You are a financial analyst specializing in earnings call analysis. Your task is to provide a quick, bullet-point summary of the key points from earnings call transcripts.
 
@@ -124,223 +129,257 @@ Only output the key points, no other text.
 `;
 ```
 
-### Processing PDFs
-Implement a function to handle PDF processing:
+## Processing the PDF files
+
+Now, we need to implement a function to handle the PDF processing. This function fetches the PDF file from the URL, converts it to a base64 string, and passes it to the LLM for processing:
+
 ```typescript
-// ── Helper function to process a single PDF ────────────────────────────────
-const processPdf = wrapTraced(async (pdfFile: { filename: string; url: string }) => {
+// Helper function to process a single PDF
+const processPdf = wrapTraced(
+  async (pdfFile: { filename: string; url: string }) => {
     console.log(`Processing ${pdfFile.filename}...`);
 
     // Fetch and encode the PDF file from URL (with error handling)
     let pdfData: Buffer;
     let base64String: string;
     try {
-        const response = await fetch(pdfFile.url);
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status} ${response.statusText}`);
-        }
-        const arrayBuffer = await response.arrayBuffer();
-        pdfData = Buffer.from(arrayBuffer);
-        base64String = pdfData.toString('base64');
+      const response = await fetch(pdfFile.url);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status} ${response.statusText}`);
+      }
+      const arrayBuffer = await response.arrayBuffer();
+      pdfData = Buffer.from(arrayBuffer);
+      base64String = pdfData.toString("base64");
     } catch (err: any) {
-        console.error(`Failed to download ${pdfFile.url}:`, err);
-        return; // Skip this PDF and continue with the next
+      console.error(`Failed to download ${pdfFile.url}:`, err);
+      return; // Skip this PDF and continue with the next
     }
 
     const userPrompt = "Please analyze this earnings call transcript";
     const rootSpan = currentSpan();
     rootSpan.setAttributes({ name: pdfFile.filename });
     const rootSpanSlug = currentSpan().export();
-    
+
     // Create chat completion with file data
     const completion = await client.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: SYSTEM_PROMPT,
+        },
+        {
+          role: "user",
+          content: [
             {
-                role: "system",
-                content: SYSTEM_PROMPT
+              type: "file",
+              file: {
+                filename: pdfFile.filename,
+                file_data: `data:application/pdf;base64,${base64String}`,
+              },
             },
             {
-                role: "user",
-                content: [
-                    {
-                        type: "file",
-                        file: {
-                            filename: pdfFile.filename,
-                            file_data: `data:application/pdf;base64,${base64String}`
-                        }
-                    },
-                    {
-                        type: "text",
-                        text: userPrompt
-                    }
-                ]
-            }
-        ],
-        max_tokens: 500
+              type: "text",
+              text: userPrompt,
+            },
+          ],
+        },
+      ],
+      max_tokens: 500,
     });
 
     const summary = completion.choices[0]?.message?.content;
 
     // if no summary is generated, log an error and return
     if (!summary) {
-        console.warn("No summary generated");
-        return;
+      console.warn("No summary generated");
+      return;
     }
     // Console log that the summary was created
-    console.log(`\nEarnings Summary for ${pdfFile.filename}: Summary Created! View in the Braintrust UI!\n`);
+    console.log(
+      `\nEarnings Summary for ${pdfFile.filename}: Summary Created! View in the Braintrust UI!\n`,
+    );
 
     // log the output of the LLM call to the root span
     rootSpan.log({
-        output: summary
+      output: summary,
     });
 
     // Log system prompt span
     await logSystemPrompt(pdfFile.filename, pdfFile.url, summary, rootSpanSlug);
 
     // Log user prompt span
-    await logUserPrompt(pdfFile.filename, pdfFile.url, userPrompt, summary, rootSpanSlug, base64String);
-    
-}, logger);
+    await logUserPrompt(
+      pdfFile.filename,
+      pdfFile.url,
+      userPrompt,
+      summary,
+      rootSpanSlug,
+      base64String,
+    );
+  },
+  logger,
+);
 ```
 
-### Logging Spans
-Separate functions handle logging system and user spans:
-#### System Span Logging:
-```typescript
-// ── Helper function to log system prompt span ──────────────────────────────
-async function logSystemPrompt(filename: string, url: string, summary: string, rootSpan: Promise<string>) {
-    const systemSpan = wrapTraced(async () => {
-        const span = currentSpan();
-        span.setAttributes({ 
-            name: "system_prompt", 
-            type: "llm", 
-            parent: (await rootSpan).toString()
-        });
-        
-        span.log({
-            input: [{
-                role: "system",
-                content: SYSTEM_PROMPT
-            }],
-            output: summary
-        });
-    }, logger);
-    await systemSpan();
-}
-```
-#### User Span Logging:
-```typescript
-// ── Helper function to log user prompt span ───────────────────────────
-async function logUserPrompt(filename: string, url: string, userPrompt: string, summary: string, rootSpan: Promise<string>, base64String: string) {
-    const userPromptSpan = wrapTraced(async () => {
-        const span = currentSpan();
-        span.setAttributes({ 
-            name: "user_prompt", 
-            type: "llm", 
-            parent: (await rootSpan).toString()
-        });
-        
-        // Reconstruct PDF data from base64
-        const pdfData = Buffer.from(base64String, 'base64');
+## Logging spans
 
-        const attachment = new Attachment({
-            data: pdfData,                       
-            filename,
-            contentType: "application/pdf",
-          });
-        
-        span.log({
-            input: [
-                { role: "user", content: userPrompt },
-            ],
-            output: summary,
-            metadata: {
-                filename,
-                url,
-                base64String,
-                attachment
-            }
-        });
-    }, logger);
-    await userPromptSpan();
+We'll create separate functions to log the system and user spans.
+
+The system prompt span contains the instructions given to the LLM. This function creates a child span related to the root span and captures the system prompt along with the resulting summary:
+
+```typescript
+// Helper function to log system prompt span
+async function logSystemPrompt(
+  filename: string,
+  url: string,
+  summary: string,
+  rootSpan: Promise<string>,
+) {
+  const systemSpan = wrapTraced(async () => {
+    const span = currentSpan();
+    span.setAttributes({
+      name: "system_prompt",
+      type: "llm",
+      parent: (await rootSpan).toString(),
+    });
+
+    span.log({
+      input: [
+        {
+          role: "system",
+          content: SYSTEM_PROMPT,
+        },
+      ],
+      output: summary,
+    });
+  }, logger);
+  await systemSpan();
 }
 ```
 
-### Executing the Main Process
-Invoke the main processing function:
+We want to create and log the user prompt span as well, since it includes the actual PDF attachment. We'll reconstruct the PDF data from the base64 string and attach it to the span, which will make it available for use in the playground:
+
 ```typescript
-// ── Main function to process all PDFs ─────────────────────────────────────
+// Helper function to log user prompt span
+async function logUserPrompt(
+  filename: string,
+  url: string,
+  userPrompt: string,
+  summary: string,
+  rootSpan: Promise<string>,
+  base64String: string,
+) {
+  const userPromptSpan = wrapTraced(async () => {
+    const span = currentSpan();
+    span.setAttributes({
+      name: "user_prompt",
+      type: "llm",
+      parent: (await rootSpan).toString(),
+    });
+
+    // Reconstruct PDF data from base64
+    const pdfData = Buffer.from(base64String, "base64");
+
+    const attachment = new Attachment({
+      data: pdfData,
+      filename,
+      contentType: "application/pdf",
+    });
+
+    span.log({
+      input: [{ role: "user", content: userPrompt }],
+      output: summary,
+      metadata: {
+        filename,
+        url,
+        base64String,
+        attachment,
+      },
+    });
+  }, logger);
+  await userPromptSpan();
+}
+```
+
+## Executing the main process
+
+Finally, we create and execute the main function that processes all the PDFs in our list. This function loops through each PDF file, processes it individually, and handles any errors that may occur:
+
+```typescript
+// Main function to process all PDFs
 const generateSummary = async () => {
-    console.log(`Found ${pdfFiles.length} PDFs to process`);
+  console.log(`Found ${pdfFiles.length} PDFs to process`);
 
-    try {
-        for (const pdfFile of pdfFiles) {
-            await processPdf(pdfFile);
-        }
-    } catch (err: any) {
-        console.error("Error in main:", err);
-        if (err?.response?.data) {
-            console.error("Response data:", err.response.data);
-        }
+  try {
+    for (const pdfFile of pdfFiles) {
+      await processPdf(pdfFile);
     }
+  } catch (err: any) {
+    console.error("Error in main:", err);
+    if (err?.response?.data) {
+      console.error("Response data:", err.response.data);
+    }
+  }
 };
 
 generateSummary();
 ```
-#### Run your file
-This will work if you used the package.json above and named the file "simulate_logging.ts"
+
+## Running your file
+
+To execute the sceript, you can run one of the following commands, depending on how you've set up your environment. If you used the provided `package.json` file and named your file `log_pdfs.ts`, you can run:
+
 ```bash
 pnpm logging
 ```
-or use this command with your file name
+
+You can also use this command with your file name:
+
 ```bash
 pnpm ts-node {file_name}
 ```
 
 ## Using the Braintrust UI
 
-### Saving User Prompt Spans to a Dataset
-Store the user spans from your PDF traces into a dataset (e.g., "example")
+Once your traces have been logged, you can use the Braintrust UI to manage your spans and experiment with different prompts.
+
+### Creating a dataset
+
+You can store the user spans from your PDF traces into a dataset. Select the span, and then select **Add span to dataset**, or use the hotkey `D` to speed this up.
 
 ![add span to dataset](./assets/add-span-to-dataset.gif)
 
-You can use the hotkey D (add span to dataset) to speed this up
+### Trying system prompts in a playground
 
-### Saving System Prompt Span and Opening Playground
-Select a system prompt span and click "Try prompt" to:
+Select a system prompt span, and then select **Try prompt** to:
 
-1. Save the prompt (e.g., "system1") to your Library
-2. Launch the Playground using the saved prompt.
+1. Save the prompt (for example, "system1") to your library by selecting **Save as custom prompt**
+2. Launch a playground using the saved prompt by selecting **Create playground with prompt**
 
 ![try prompt from span](./assets/try-prompt.gif)
 
-### Testing File Attachment Methods
+### File attachment methods
 
-Before we set up the public URL method, I want to first show you how to manually attach a file using the paperclip icon.
+There are two ways to attach PDF files in playgrounds: using the paperclip button in the UI, or specifying a public URL. Let's walk through each method:
 
-Start by clicking **+ Message** to add a user prompt. Then select **+ Message Part** > **File**.
-
-This will display a paperclip icon on the right side. Click it to upload a file from your local machine.
-
-**Paperclip UI method**: Add file manually by clicking the paperclip icon
+- To upload files directly from your local machine, start by selecting **+ Message** to add a user prompt. Then, select **+ Message Part** > **File**. This will display a paperclip icon on the right side. Select it to upload a file from your local machine.
 
 ![paperclip UI method](./assets/paperclip.gif)
 
-Now that you’re familiar with the manual attachment option, let’s go over how to use the public URL method.
+This method is particularly useful when you're working with local files that aren't accessible via public URL.
 
-**Public URL method**: Paste the URL directly into the file message part.
+- To use the public URL method, paste the URL directly into the file message input field.
 
 ![public url method](./assets/url.gif)
 
-## Next Steps
+This method streamlines the process when you're working with publicly available PDFs, like the earnings call transcripts we're using in this cookbook.
+
+Both methods result in the PDF being attached to your prompt, allowing the LLM to analyze its contents. Choose the approach that best fits your workflow based on where your files are stored.
+
+## Next steps
+
 Now that you understand the process of converting spans with PDF attachments into a dataset and executing the PDFs in the playground, you can:
 
-Learn more about [Multimodal prompts in the Playground](https://www.braintrust.dev/docs/guides/playground#multimodal-prompts)
-
-Check out the blog [Logging with Attachments](https://www.braintrust.dev/blog/attachments)
-
-Read about [Brainstore](https://www.braintrust.dev/blog/brainstore), the custom database that is the engine of Braintrust
-
-
-
+- Learn more about [multimodal prompts in playgrounds](/docs/guides/playground#multimodal-prompts)
+- Read more about [logging with attachments](/blog/attachments)

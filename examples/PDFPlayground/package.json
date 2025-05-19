@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"description": "PDF Attachment Demo",
 	"scripts": {
-		"logging": "ts-node simulate_logging.ts"
+		"logging": "ts-node log_pdfs.ts"
 	},
 	"devDependencies": {
 		"@types/node": "^22.15.14",
