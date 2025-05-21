@@ -287,3 +287,14 @@
     - eval
     - video
     - multimodal
+- title: Using PDF attachments in playgrounds
+  path: examples/PDFPlayground/PDFPlayground.mdx
+  date: 2025-05-22
+  authors:
+    - carlosesteban
+    - ornellaaltunyan
+  tags:
+    - logging
+    - multimodal
+    - playground
+    - typescript
