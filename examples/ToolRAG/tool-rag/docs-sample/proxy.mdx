@@ -2,13 +2,12 @@
 title: "AI proxy"
 ---
 
-import Script from "next/script";
-
 import SupportedModels from "#/ui/docs/supported-models";
 import { CodeTabs, TSTab, PYTab, CurlTab } from "#/ui/docs/code-tabs";
 import { Step, Steps } from "fumadocs-ui/components/steps";
 import { Callout } from "fumadocs-ui/components/callout";
 import Link from "fumadocs-core/link";
+import { StarGithubButton } from "#/ui/github-button";
 
 # AI proxy
 
@@ -365,16 +364,4 @@ self-hosting.
 
 The AI proxy is open source, and you can find the code on [Github](https://github.com/braintrustdata/braintrust-proxy).
 
-<div className="nx-mt-2">
-  <a
-    className="github-button"
-    href="https://github.com/braintrustdata/braintrust-proxy"
-    data-icon="octicon-star"
-    data-size="large"
-    aria-label="Star braintrustdata/braintrust-proxy on GitHub"
-  >
-    Give us a star!
-  </a>
-</div>
-
-<Script async defer src="https://buttons.github.io/buttons.js"></Script>
+<StarGithubButton repo="braintrustdata/braintrust-proxy" />
