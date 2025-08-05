@@ -1,0 +1,28 @@
+{
+  "name": "agent-while-loop",
+  "version": "1.0.0",
+  "description": "Simple while-loop agent implementation with tools",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "tsx index.ts",
+    "eval": "braintrust eval agent.eval.ts",
+    "eval:tools": "braintrust eval tool-comparison.eval.ts",
+    "examples": "tsx examples.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["agent", "ai", "tools"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "openai": "^4.47.0",
+    "braintrust": "^0.2.1",
+    "zod": "^3.23.8",
+    "zod-to-json-schema": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.2",
+    "tsx": "^4.15.2",
+    "typescript": "^5.4.5"
+  }
+}
