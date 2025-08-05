@@ -298,3 +298,14 @@
     - multimodal
     - playground
     - typescript
+- title: Building reliable AI agents
+  path: examples/AgentWhileLoop/AgentWhileLoop.mdx
+  date: 2025-08-05
+  authors:
+    - ornellaaltunyan
+  tags:
+    - agent
+    - tools
+    - evals
+    - typescript
+    - logging
