@@ -14,6 +14,10 @@ By the end of this guide, you'll learn how to:
 
 The core pattern we'll follow is straightforward:
 
+![agent while loop](./assets/agent-while-loop.png)
+
+In code, that roughly translates to:
+
 ```typescript
 while (!done) {
   const response = await callLLM();
@@ -254,13 +258,11 @@ Writing agents this way makes it straightfoward to trace every iteration, tool c
 
 Additionally, if you run `npm run eval:tools`, you can clearly see the difference between using generic and specific tools:
 
-## Key takeaways
-
-The while-loop agent pattern provides a great foundation for production AI agents because it keeps the core logic simple (~50 lines), enables comprehensive tracing and evaluation, scales naturally to complex workflows, and fails gracefully with clear error handling. Design tools for the agent's mental model rather than as generic API wrappers, return human-readable outputs that guide next actions, and add comprehensive tracing to understand agent behavior.
+![specific vs generic](./assets/specific-vs-generic.png)
 
 ## Next steps
 
-Start building your own while-loop agent by picking a specific use case and 2-3 tools, then gradually add complexity.
+Start building your own while loop agent by picking a specific use case and 2-3 tools, then gradually add complexity.
 
 - [Log](/docs/guides/logs) all interactions and build [evaluation datasets](/docs/guides/datasets) from real usage patterns
 - Use [Loop](/docs/guides/loop) to improve prompts, scorers, and datasets
