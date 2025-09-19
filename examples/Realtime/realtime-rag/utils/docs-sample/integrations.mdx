@@ -22,7 +22,37 @@ convert LLM calls into Braintrust `LLM` spans, which
 can be saved as [prompts](/docs/guides/functions/prompts)
 and evaluated in the [playground](/docs/guides/playground).
 
-For collectors that use the [OpenTelemetry SDK](https://opentelemetry.io/docs/languages/) to export traces, set the
+For JavaScript/TypeScript applications, you can use the `BraintrustSpanProcessor` which handles all the configuration automatically:
+
+```bash
+npm install braintrust @opentelemetry/sdk-node
+```
+
+```typescript
+import { NodeSDK } from "@opentelemetry/sdk-node";
+import { BraintrustSpanProcessor } from "braintrust";
+
+const sdk = new NodeSDK({
+  spanProcessors: [
+    new BraintrustSpanProcessor({
+      apiKey: "<Your API Key>",
+      parent: "project_id:<Your Project ID>",
+      filterAISpans: true, // Optional: filter to only AI-related spans
+    }),
+  ],
+});
+
+sdk.start();
+```
+
+Alternatively, you can set environment variables and the processor will use them automatically:
+
+```
+BRAINTRUST_API_KEY=<Your API Key>
+BRAINTRUST_PARENT=project_id:<Your Project ID>
+```
+
+For other collectors that use the [OpenTelemetry SDK](https://opentelemetry.io/docs/languages/) to export traces manually, set the
 following environment variables:
 
 ```
@@ -31,13 +61,15 @@ OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer <Your API Key>, x-bt-parent=pro
 ```
 
 <Callout type="info">
-  The trace endpoint URL is `https://api.braintrust.dev/otel/v1/traces`. If your exporter
-  uses signal-specific environment variables, you'll need to set the full path:
+  The trace endpoint URL is `https://api.braintrust.dev/otel/v1/traces`. If your
+  exporter uses signal-specific environment variables, you'll need to set the
+  full path:
   `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=https://api.braintrust.dev/otel/v1/traces`
 </Callout>
 
 <Callout type="info">
-  If you're self-hosting Braintrust, substitute your stack's Universal API URL. For example:
+  If you're self-hosting Braintrust, substitute your stack's Universal API URL.
+  For example:
   `OTEL_EXPORTER_OTLP_ENDPOINT=https://dfwhllz61x709.cloudfront.net/otel`
 </Callout>
 
