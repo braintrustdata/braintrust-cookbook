@@ -36,6 +36,8 @@ For the application to run successfully, you'll need to rename the `.env.local.e
 BRAINTRUST_API_KEY="<Your Braintrust API Key>"
 BRAINTRUST_PROJECT_NAME="<Your Braintrust Project Name>"
 OPENAI_API_KEY="<Your OpenAI API Key>"
+OTEL_EXPORTER_OTLP_ENDPOINT=https://api.braintrust.dev/otel
+OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer <Your Braintrust API Key>, x-bt-parent=project_id:<Your Braintrust Project Name>"
 ```
 
 Run the application, and make sure you can access it at `http://localhost:3000`. Feel free to test the application by asking it about the weather in Philadelphia.
