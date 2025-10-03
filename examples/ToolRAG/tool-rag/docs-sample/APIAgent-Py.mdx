@@ -545,7 +545,7 @@ Question: How do I purchase GPUs through Braintrust?
 
 Awesome! The logs now have a `no_hallucination` score which we can use to filter down hallucinations.
 
-![Hallucination logs](./../assets/APIAgent-Py/logs-with-score.gif)
+![Hallucination logs](./../assets/APIAgent-Py/logs-with-score.mp4)
 
 ### Creating datasets
 
@@ -553,7 +553,7 @@ Let's create two datasets: one for good answers and the other for hallucinations
 non-hallucinations are correct, but in a real-world scenario, you could [collect user feedback](https://www.braintrust.dev/docs/guides/logging#user-feedback)
 and treat positively rated feedback as ground truth.
 
-![Dataset setup](./../assets/APIAgent-Py/dataset-setup.gif)
+![Dataset setup](./../assets/APIAgent-Py/dataset-setup.mp4)
 
 ## Running evals
 
@@ -680,7 +680,7 @@ Awesome! Looks like we were able to solve the hallucinations, although we may ha
 
 To understand why, we can filter down to this regression, and take a look at a side-by-side diff.
 
-![Regression diff](./../assets/APIAgent-Py/regression-diff.gif)
+![Regression diff](./../assets/APIAgent-Py/regression-diff.mp4)
 
 Does it matter whether or not the model generates these fields? That's a good question and something you can work on as a next step.
 Maybe you should tweak how Factuality works, or change the prompt to always return a consistent set of fields.

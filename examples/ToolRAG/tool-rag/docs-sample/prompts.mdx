@@ -19,7 +19,7 @@ To create a prompt, visit the prompts tab in a project, and click the "+ Prompt"
 for your prompt. The slug is an immutable identifier that you can use to reference it in your code. As you change
 the prompt's name, description, or contents, its slug stays constant.
 
-![Create a prompt](./prompts/create.gif)
+![Create a prompt](./prompts/create.mp4)
 
 Prompts can use [mustache](https://mustache.github.io/mustache.5.html) templating syntax to refer to variables. These variables are substituted
 automatically in the API, playground, and using the `.build()` function in your code. More on that below.
@@ -29,7 +29,7 @@ automatically in the API, playground, and using the `.build()` function in your 
 Each prompt change is versioned, e.g. `5878bd218351fb8e`. You can use this identifier to pin a specific
 version of the prompt in your code.
 
-![Update a prompt](./prompts/update.gif)
+![Update a prompt](./prompts/update.mp4)
 
 You can use this identifier to refer to a specific version of the prompt in your code.
 
@@ -38,7 +38,7 @@ You can use this identifier to refer to a specific version of the prompt in your
 While developing a prompt, it can be useful to test it out on real-world data in the [Playground](/docs/guides/playground).
 You can open a prompt in the playground, tweak it, and save a new version once you're ready.
 
-![Playground](./prompts/playground.gif)
+![Playground](./prompts/playground.mp4)
 
 ## Using tools
 
@@ -115,19 +115,19 @@ To use a tool, simply select it in the "Tools" dropdown. Braintrust will automat
 - Call the model again with the tool's result as context
 - Continue for up to (default) 5 iterations or until the model produces a non-tool result
 
-![Invoke github tool](./prompts/invoke-github-tool.gif)
+![Invoke github tool](./prompts/invoke-github-tool.mp4)
 
 ### Coercing a model's output schema
 
 To define a set of tools available to a model, expand the "Tools" dropdown and select the Raw tab. You can enter an array of tool definitions,
 following the [OpenAI tool format](https://platform.openai.com/docs/guides/function-calling).
 
-![Raw tools](./prompts/raw-tools.gif)
+![Raw tools](./prompts/raw-tools.mp4)
 
 By default, if a tool is called, Braintrust will return the arguments of the first tool call as a JSON object. If you use the [`invoke` API](#executing-directly),
 you'll receive a JSON object as the result.
 
-![Invoke raw tool](./prompts/invoke-raw-tools.gif)
+![Invoke raw tool](./prompts/invoke-raw-tools.mp4)
 
 <Callout type="info">
   If you specify `parallel` as the mode, then instead of the first tool call's
@@ -641,7 +641,7 @@ When you use a prompt in your code, Braintrust automatically links spans to the 
 you to click to open a span in the playground, and see the prompt that generated it alongside the input variables. You can
 even test and save a new version of the prompt directly from the playground.
 
-![Open from traces](./prompts/debug.gif)
+![Open from traces](./prompts/debug.mp4)
 
 This workflow is very powerful. It effectively allows you to debug, iterate, and publish changes to your prompts directly
 within Braintrust. And because Braintrust flexibly allows you to load the latest prompt, a specific version, or even a version
