@@ -7,7 +7,7 @@ to compare multiple versions side-by-side, you'd have to deploy each version sep
 Using Braintrust, you can experiment with different
 prompts together with retrieval logic, side-by-side, all within the playground UI. In this cookbook, we'll walk through exactly how.
 
-![Side-by-side](./assets/Side-by-side.gif)
+![Side-by-side](./assets/Side-by-side.mp4)
 
 ## Architecture
 
@@ -117,7 +117,7 @@ The output should be:
 
 To try out the tool, visit the project in Braintrust, and navigate to **Tools**.
 
-![Test tool](./assets/Test-tool.gif)
+![Test tool](./assets/Test-tool.mp4)
 
 Here, you can test different searches and refine the logic. For example, you could try playing with various
 `top_k` values, or adding a prefix to the query to guide the results. If you change the code, run
@@ -150,7 +150,7 @@ npx braintrust push prompt.ts
 
 Once the prompt uploads, you can run it in the UI and even try it out on some examples:
 
-![Test prompt](./assets/Test-prompt.gif)
+![Test prompt](./assets/Test-prompt.mp4)
 
 If you visit the **Logs** tab, you can check out detailed logs for each call:
 
@@ -181,12 +181,12 @@ Once you create it, if you visit the **Datasets** tab, you'll be able to explore
 
 To try out the prompt together with the dataset, we'll create a playground.
 
-![Create playground](./assets/Create-playground.gif)
+![Create playground](./assets/Create-playground.mp4)
 
 Once you create the playground, hit **Run** to run the prompt and tool on the questions
 in the dataset.
 
-![Run playground](./assets/Run-playground.gif)
+![Run playground](./assets/Run-playground.mp4)
 
 ### Define a scorer
 
@@ -228,7 +228,7 @@ Once you define the scorer, hit **Run** to run it on the questions in the datase
 Now, let's tweak the prompt to see if we can improve the results. Hit the copy icon to duplicate your prompt and start tweaking. You can also tweak the original prompt and save your changes there if you'd like. For example, you can try instructing the model to always include a Python and
 TypeScript code snippet.
 
-![Tweak prompt](./assets/Tweak-prompt.gif)
+![Tweak prompt](./assets/Tweak-prompt.mp4)
 
 Once you're satisfied with the prompt, hit **Update** to save the changes. Each time you save the prompt, you
 create a new version. To learn more about how to use a prompt in your code, check out the

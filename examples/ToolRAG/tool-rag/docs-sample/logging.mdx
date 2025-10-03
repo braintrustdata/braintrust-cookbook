@@ -439,7 +439,7 @@ def my_feedback_handler(req):
 Braintrust supports curating logs by adding tags, and then filtering on them in the UI. Tags naturally flow between logs, to datasets, and even
 to experiments, so you can use them to track various kinds of data across your application, and track how they change over time.
 
-![Add tags](./logging/Add-Tag.gif)
+![Add tags](./logging/Add-Tag.mp4)
 
 ### Configuring tags
 
@@ -575,7 +575,7 @@ def my_feedback_handler(req):
 
 To filter by tags, simply select the tags you want to filter by in the UI.
 
-![Filter by tags](./logging/Filter-Tag.gif)
+![Filter by tags](./logging/Filter-Tag.mp4)
 
 ### Using tags to create queues
 
@@ -586,7 +586,7 @@ and one to indicate that the event is no longer in the queue. For example, you m
 As you're reviewing logs, simply add the `triage` tag to the logs you want to review later. To see the logs in the queue, filter by the
 `triage` tag. You can add an additional label, like `NOT (tags includes 'triaged')` to exclude logs that have been marked as done.
 
-![Triaged](./logging/Triage.gif)
+![Triaged](./logging/Triage.mp4)
 
 ## Online evaluation
 
@@ -599,7 +599,7 @@ a sampling rate along with more granular filters to control which logs get evalu
 
 To create an online evaluation, navigate to the "Configuration" tab in a project and create an online scoring rule.
 
-![Create online evaluation](./logging/Online-Scoring-Setup.gif)
+![Create online evaluation](./logging/Online-Scoring-Setup.mp4)
 
 The score will now automatically run at the specified sampling rate for all logs in the project.
 

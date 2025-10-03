@@ -96,7 +96,7 @@ const model = wrapAISDKModel(openai("gpt-4o"));
 
 When we use the chatbot again, we see three logs appear in Braintrust: one log for the `getWeather` tool call, one log for the `getFahrenheit` tool call, and one call to form the final response. However, it'd probably be more useful to have all of these operations in the same log.
 
-![using wrapAISDKModel](./assets/wrapAISDKModel.gif)
+![using wrapAISDKModel](./assets/wrapAISDKModel.mp4)
 
 ### Creating spans (and sub-spans)
 
@@ -149,7 +149,7 @@ export async function POST(request: Request) {
 
 After you uncomment those lines of code, you should see the following:
 
-![using trace to create spans](./assets/traced.gif)
+![using trace to create spans](./assets/traced.mp4)
 
 A couple of things happened in this step:
 
@@ -241,7 +241,7 @@ export const getWeather = tool({
 
 After we finish uncommenting the correct lines, we see how the `wrapTraced` function enriches our trace with tool calls.
 
-![using wrapTraced](./assets/wrapTraced.gif)
+![using wrapTraced](./assets/wrapTraced.mp4)
 
 Take note of how the `type` argument in both `traced` and `wrapTraced` change the icon within the trace tree. Also, since `checkFreezing` was called by `weatherFunction`, the trace preserves the hierarchy.
 

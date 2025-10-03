@@ -95,7 +95,7 @@ braintrust push ocr.py --requirements requirements.txt
 
 To try out the tool, visit the **toolOCR** project in Braintrust, and navigate **Tools**. Here, you can test different images and see what kinds of outputs you're getting from the tool.
 
-![Try gif](assets/try-tool.gif)
+![Try gif](assets/try-tool.mp4)
 
 This is helpful information for deciding if you'd like to do any additional post processing to the text output. For example, you may notice that your output contains `/n` to indicate new lines in the parsed text. You could include additional processing in your tool to do this. If you change your code, just run `braintrust push ocr.py --requirements requirements.txt` again to sync the tool with Braintrust.
 
@@ -117,7 +117,7 @@ prompt = project.prompts.create(
 
 Just like the tool, you can run it in the UI and even try it out on some examples:
 
-![Try prompt](assets/try-prompt.gif)
+![Try prompt](assets/try-prompt.mp4)
 
 If you visit the **Logs** tab, you can check out detailed logs for each call:
 
@@ -142,7 +142,7 @@ Then, navigate to **Dataset** in your playground and select the **Recipes** data
 
 Your playground is now set up with a prompt, model choice, dataset, and the tool we created. Hit **Run** to run the prompt and tool on the images in the dataset.
 
-![Run playground](assets/run-playground.gif)
+![Run playground](assets/run-playground.mp4)
 
 ## Iterating on the prompt
 
@@ -150,7 +150,7 @@ Now that we have an interactive environment to test out our prompt and tool call
 
 Hit the copy icon to duplicate your prompt and start tweaking. You can also tweak the original prompt and save your changes there if you'd like. For example, you can try instructing the model to always list the quantity of each ingredient you need to purchase.
 
-![Tweak prompt](assets/tweak-prompt.gif)
+![Tweak prompt](assets/tweak-prompt.mp4)
 
 Once you're satisfied with the prompt, hit **Update** to save the changes. Each time you save the prompt, you
 create a new version. To learn more about how to use a prompt in your code, check out the
