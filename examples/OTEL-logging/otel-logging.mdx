@@ -31,32 +31,48 @@ OPENAI_API_KEY=<your-api-key>
 
 ## Setting up OTel
 
-To set up Braintrust as an [**OpenTelemetry**](https://opentelemetry.io/docs/) backend, you'll need to route the traces to Braintrust's OpenTelemetry endpoint, set your API key, and specify a parent project or experiment. We’ll start by adding a couple more environment variables to your `.env` file:
+To set up Braintrust as an [**OpenTelemetry**](https://opentelemetry.io/docs/) backend, you'll use the `BraintrustSpanProcessor` which handles all the configuration automatically. First, install the required dependencies:
+
+```bash
+npm install braintrust @opentelemetry/sdk-node
+```
+
+Then add your Braintrust configuration to your `.env` file:
 
 ```
-OTEL_EXPORTER_OTLP_ENDPOINT=https://api.braintrust.dev/otel
-OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer <Your API Key>, x-bt-parent=project_name:<Your Project Name>"
+BRAINTRUST_API_KEY=<Your API Key>
+BRAINTRUST_PARENT=project_name:<Your Project Name>
 ```
 
-Replace `<Your API Key>` with your Braintrust API key, and `<Your Project Name>` with the name of the project in Braintrust where you’d like to store your logs.
+Replace `<Your API Key>` with your Braintrust API key, and `<Your Project Name>` with the name of the project in Braintrust where you'd like to store your logs.
 
 <Callout type="info">
-  The `x-bt-parent` header sets the trace's parent project or experiment. You
-  can use a prefix like `project_id:`, `project_name:`,
-  or `experiment_id:` here, or pass in a [**span
-  slug**](/docs/guides/tracing#distributed-tracing) (`span.export()`) to nest
+  The `BRAINTRUST_PARENT` environment variable sets the trace's parent project
+  or experiment. You can use a prefix like `project_id:`, `project_name:`, or
+  `experiment_id:` here, or pass in a [**span
+  slug**](/docs/guides/tracing#distributed-tracing) (`span.export()`) to nest
   the trace under a span within the parent object.
 </Callout>
 
-You’ll also need to set up an [**OpenTelemetry Protocol Exporter**](https://opentelemetry.io/docs/languages/js/exporters/) (OTLP) to send traces to Braintrust. Create a new file called `instrumentation.ts` to register OTel:
+Create a new file called `instrumentation.ts` to set up the Braintrust span processor:
 
 ```tsx
-import { registerOTel } from "@vercel/otel";
+import { NodeSDK } from "@opentelemetry/sdk-node";
+import { BraintrustSpanProcessor } from "braintrust";
+
+const sdk = new NodeSDK({
+  serviceName: "multi-step-tool-calls-demo",
+  spanProcessors: [
+    new BraintrustSpanProcessor({
+      // The processor will automatically use BRAINTRUST_API_KEY and BRAINTRUST_PARENT
+      // environment variables if not specified here
+      filterAISpans: true, // Optional: filter to only AI-related spans
+    }),
+  ],
+});
 
 export function register() {
-  registerOTel({
-    serviceName: "multi-step-tool-calls-demo",
-  });
+  sdk.start();
 }
 ```
 
