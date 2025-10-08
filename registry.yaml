@@ -307,3 +307,12 @@
     - evals
     - typescript
     - logging
+- title: Observability for Strands Agents on Amazon Bedrock
+  path: examples/AmazonBedrockStrands/AmazonBedrockStrands.ipynb
+  date: 2025-10-09
+  authors:
+    - ornellaaltunyan
+  tags:
+    - observability
+    - agent
+    - aws

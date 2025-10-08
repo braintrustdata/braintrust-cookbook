@@ -1,0 +1,5 @@
+bedrock-agentcore-runtime
+bedrock-agentcore-starter-toolkit
+boto3
+strands-framework
+duckduckgo-search
