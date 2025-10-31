@@ -1,8 +1,8 @@
 # Using Python functions to extract text from images
 
-From digitizing and archiving images of your handwritten notes, to automating invoice processing, there are a multitude of reasons you’d want to extract text from an image. You could use an LLM for image processing, but doing so can sometimes be inaccurate, expensive, and slow. Optical character recognition, or OCR, is a great pre-processing step that allows you to convert raw image data into text that can then be processed or summarized by an LLM. 
+From digitizing and archiving images of your handwritten notes, to automating invoice processing, there are a multitude of reasons you’d want to extract text from an image. You could use an LLM for image processing, but doing so can sometimes be inaccurate, expensive, and slow. Optical character recognition, or OCR, is a great pre-processing step that allows you to convert raw image data into text that can then be processed or summarized by an LLM.
 
-Maybe you find the perfect recipe on the internet, but it’s surrounded by ads and people’s life stories, or you want to digitize an old recipe written by your grandmother. 
+Maybe you find the perfect recipe on the internet, but it’s surrounded by ads and people’s life stories, or you want to digitize an old recipe written by your grandmother.
 
 ![100 good cookies](assets/recipe.png)
 
@@ -43,10 +43,12 @@ of your account.
 Optical character recognition, or OCR, is any type of technology that converts images of typed, handwritten or printed text into machine-encoded text. There are many well known libraries for OCR — in this cookbook, we’ll use [OCR.Space](https://ocr.space/), a free API you can use for testing without creating an account.
 
 <Callout type="info">
-For this cookbook, we're using the free version of OCR.Space that limits the number of requests. You may exceed rate limits and need to upgrade your account to experiment further with this application.
+  For this cookbook, we're using the free version of OCR.Space that limits the
+  number of requests. You may exceed rate limits and need to upgrade your
+  account to experiment further with this application.
 </Callout>
 
-In Braintrust, you can create tools and then run them in the UI, API, and, of course, via prompts. This will make it easier to iterate on your prompt without having to worry about the OCR logic. 
+In Braintrust, you can create tools and then run them in the UI, API, and, of course, via prompts. This will make it easier to iterate on your prompt without having to worry about the OCR logic.
 
 The OCR tool is defined in `ocr.py`:
 
@@ -81,7 +83,7 @@ def ocr_image(**kwargs) -> str:
         raise ValueError(f"Failed to perform OCR: {e}")
 ```
 
-In just a few lines of code, it takes an image URL, parses and extracts the text, and returns the text contained in the image. 
+In just a few lines of code, it takes an image URL, parses and extracts the text, and returns the text contained in the image.
 
 To push the tool to Braintrust along with all its dependencies, run:
 
@@ -91,15 +93,15 @@ braintrust push ocr.py --requirements requirements.txt
 
 ### Try out the tool
 
-To try out the tool, visit the **toolOCR** project in Braintrust, and navigate to the **Tools** section of your **Library**. Here, you can test different images and see what kinds of outputs you're getting from the tool.
+To try out the tool, visit the **toolOCR** project in Braintrust, and navigate **Tools**. Here, you can test different images and see what kinds of outputs you're getting from the tool.
 
 ![Try gif](assets/try-tool.gif)
 
-This is helpful information for deciding if you'd like to do any additional post processing to the text output. For example, you may notice that your output contains `/n` to indicate new lines in the parsed text. You could include additional processing in your tool to do this. If you change your code, just run `braintrust push ocr.py --requirements requirements.txt` again to sync the tool with Braintrust. 
+This is helpful information for deciding if you'd like to do any additional post processing to the text output. For example, you may notice that your output contains `/n` to indicate new lines in the parsed text. You could include additional processing in your tool to do this. If you change your code, just run `braintrust push ocr.py --requirements requirements.txt` again to sync the tool with Braintrust.
 
-## Try out the prompt 
+## Try out the prompt
 
-When we pushed the tool to Braintrust, we also included an initial definition of the prompt: 
+When we pushed the tool to Braintrust, we also included an initial definition of the prompt:
 
 ```python #skip-compile
 prompt = project.prompts.create(
@@ -144,7 +146,7 @@ Your playground is now set up with a prompt, model choice, dataset, and the tool
 
 ## Iterating on the prompt
 
-Now that we have an interactive environment to test out our prompt and tool call, we can tweak the prompt and model until we get the desired results. 
+Now that we have an interactive environment to test out our prompt and tool call, we can tweak the prompt and model until we get the desired results.
 
 Hit the copy icon to duplicate your prompt and start tweaking. You can also tweak the original prompt and save your changes there if you'd like. For example, you can try instructing the model to always list the quantity of each ingredient you need to purchase.
 
