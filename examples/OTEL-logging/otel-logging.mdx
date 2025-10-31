@@ -37,16 +37,6 @@ To set up Braintrust as an [**OpenTelemetry**](https://opentelemetry.io/docs/) b
 npm install braintrust @opentelemetry/sdk-node
 ```
 
-<<<<<<< HEAD
-Replace `<Your API Key>` with your Braintrust API key, and `<Your Project Name>` with the name of the project in Braintrust where you’d like to store your logs.
-
-<Callout type="info">
-  The `x-bt-parent` header sets the trace's parent project or experiment. You
-  can use a prefix like `project_id:`, `project_name:`,
-  or `experiment_id:` here, or pass in a [**span
-  slug**](/docs/core/traces#distributed-tracing) (`span.export()`) to nest the
-  trace under a span within the parent object.
-=======
 Then add your Braintrust configuration to your `.env` file:
 
 ```
@@ -60,8 +50,8 @@ Replace `<Your API Key>` with your Braintrust API key, and `<Your Project Name>`
   The `BRAINTRUST_PARENT` environment variable sets the trace's parent project
   or experiment. You can use a prefix like `project_id:`, `project_name:`, or
   `experiment_id:` here, or pass in a [**span
-  slug**](/docs/guides/tracing#distributed-tracing) (`span.export()`) to nest
-  the trace under a span within the parent object. >>>>>>> main
+  slug**](/docs/core/traces#distributed-tracing) (`span.export()`) to nest the
+  trace under a span within the parent object.
 </Callout>
 
 Create a new file called `instrumentation.ts` to set up the Braintrust span processor:
