@@ -31,13 +31,13 @@ OPENAI_API_KEY=<your-api-key>
 
 ## Setting up OTel
 
-To set up Braintrust as an [**OpenTelemetry**](https://opentelemetry.io/docs/) backend, you'll need to route the traces to Braintrust's OpenTelemetry endpoint, set your API key, and specify a parent project or experiment. We’ll start by adding a couple more environment variables to your `.env` file:
+To set up Braintrust as an [**OpenTelemetry**](https://opentelemetry.io/docs/) backend, you'll use the `BraintrustSpanProcessor` which handles all the configuration automatically. First, install the required dependencies:
 
-```
-OTEL_EXPORTER_OTLP_ENDPOINT=https://api.braintrust.dev/otel
-OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer <Your API Key>, x-bt-parent=project_name:<Your Project Name>"
+```bash
+npm install braintrust @opentelemetry/sdk-node
 ```
 
+<<<<<<< HEAD
 Replace `<Your API Key>` with your Braintrust API key, and `<Your Project Name>` with the name of the project in Braintrust where you’d like to store your logs.
 
 <Callout type="info">
@@ -46,17 +46,43 @@ Replace `<Your API Key>` with your Braintrust API key, and `<Your Project Name>`
   or `experiment_id:` here, or pass in a [**span
   slug**](/docs/core/traces#distributed-tracing) (`span.export()`) to nest the
   trace under a span within the parent object.
+=======
+Then add your Braintrust configuration to your `.env` file:
+
+```
+BRAINTRUST_API_KEY=<Your API Key>
+BRAINTRUST_PARENT=project_name:<Your Project Name>
+```
+
+Replace `<Your API Key>` with your Braintrust API key, and `<Your Project Name>` with the name of the project in Braintrust where you'd like to store your logs.
+
+<Callout type="info">
+  The `BRAINTRUST_PARENT` environment variable sets the trace's parent project
+  or experiment. You can use a prefix like `project_id:`, `project_name:`, or
+  `experiment_id:` here, or pass in a [**span
+  slug**](/docs/guides/tracing#distributed-tracing) (`span.export()`) to nest
+  the trace under a span within the parent object. >>>>>>> main
 </Callout>
 
-You’ll also need to set up an [**OpenTelemetry Protocol Exporter**](https://opentelemetry.io/docs/languages/js/exporters/) (OTLP) to send traces to Braintrust. Create a new file called `instrumentation.ts` to register OTel:
+Create a new file called `instrumentation.ts` to set up the Braintrust span processor:
 
 ```tsx
-import { registerOTel } from "@vercel/otel";
+import { NodeSDK } from "@opentelemetry/sdk-node";
+import { BraintrustSpanProcessor } from "braintrust";
+
+const sdk = new NodeSDK({
+  serviceName: "multi-step-tool-calls-demo",
+  spanProcessors: [
+    new BraintrustSpanProcessor({
+      // The processor will automatically use BRAINTRUST_API_KEY and BRAINTRUST_PARENT
+      // environment variables if not specified here
+      filterAISpans: true, // Optional: filter to only AI-related spans
+    }),
+  ],
+});
 
 export function register() {
-  registerOTel({
-    serviceName: "multi-step-tool-calls-demo",
-  });
+  sdk.start();
 }
 ```
 
@@ -145,6 +171,12 @@ This is valuable data that can be used to evaluate the quality of accuracy of yo
 
 Now that you’re able to log your application in Braintrust, you can explore other workflows like:
 
+<<<<<<< HEAD
+
 - Adding your [tools](/docs/core/functions/tools) to your library and using them in [experiments](/docs/core/evals) and the [playground](/docs/core/playground)
 - Creating [custom scorers](/docs/core/functions/scorers) to assess the quality of your LLM calls
-- Adding your logs to a [dataset](/docs/core/datasets) and running evaluations comparing models and prompts
+- # Adding your logs to a [dataset](/docs/core/datasets) and running evaluations comparing models and prompts
+- Adding your [tools](/docs/guides/functions/tools) to your library and using them in [experiments](/docs/guides/evals) and the [playground](/docs/guides/playground)
+- Creating [custom scorers](/docs/guides/functions/scorers) to assess the quality of your LLM calls
+- Adding your logs to a [dataset](/docs/guides/datasets) and running evaluations comparing models and prompts
+  > > > > > > > main
