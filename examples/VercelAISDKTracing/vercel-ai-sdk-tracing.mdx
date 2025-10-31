@@ -1,15 +1,13 @@
 # Tracing Vercel AI SDK applications
 
-import { CodeTabs, TSTab, PYTab } from "#/ui/docs/code-tabs";
-
 The open-source [Vercel AI SDK](https://ai-sdk.dev/) is a popular choice for building generative AI applications due to its ease of use and integrations with popular frameworks, such as Next.js. However, builders recognize that to reach production, they also need to incorporate observability into their applications. This cookbook will show you how to use Braintrust's native integration with the Vercel AI SDK for logging and tracing a generative AI application.
 
 ## Getting started
 
 To get started, make sure you have the following ready to go:
 
-- A [Braintrust account](/signup) and API key
-- A [project](/docs/guides/projects) in Braintrust
+- A [Braintrust account](https://www.braintrust.dev/signup) and API key
+- A [project](/docs/core/projects) in Braintrust
 - An [OpenAI API key](https://platform.openai.com/)
 - [`npm`](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) installed
 
@@ -247,5 +245,5 @@ Take note of how the `type` argument in both `traced` and `wrapTraced` change th
 
 ## Next steps
 
-- [Customize](/docs/guides/traces/customize) and [extend](/docs/guides/traces/extend) traces to better optimize for your use case
-- Read more about [Brainstore](/blog/brainstore), the database that powers the logging backend in Braintrust
+- [Customize](/docs/core/traces/customize) and [extend](/docs/core/traces/extend) traces to better optimize for your use case
+- Read more about [Brainstore](https://www.braintrust.dev/blog/brainstore), the database that powers the logging backend in Braintrust

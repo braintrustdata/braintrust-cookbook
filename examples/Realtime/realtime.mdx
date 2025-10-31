@@ -2,8 +2,9 @@
 
 The OpenAI [Realtime API](https://platform.openai.com/docs/guides/realtime), designed for building advanced multimodal conversational experiences, unlocks even more use cases in AI applications. However, evaluating this and other audio models' outputs in practice is an unsolved problem. In this cookbook, we'll build a robust application with the Realtime API, incorporating tool-calling and user input. Then, we'll evaluate the results. Let's get started!
 
-## Getting started 
-In this cookbook, we're going to build a speech-to-speech RAG agent that answers questions about the Braintrust documentation. 
+## Getting started
+
+In this cookbook, we're going to build a speech-to-speech RAG agent that answers questions about the Braintrust documentation.
 
 To get started, you'll need a few accounts:
 
@@ -37,7 +38,7 @@ of your account, and set the `PINECONE_API_KEY` environment variable in the [Env
 
 <Callout type="info">
   We'll use the local environment variables to embed and upload the vectors, and
-  the Braintrust variables to run the RAG tool and LLM calls remotely. 
+  the Braintrust variables to run the RAG tool and LLM calls remotely.
 </Callout>
 
 ## Upload the vectors
@@ -50,7 +51,7 @@ npx tsx upload-vectors.ts
 
 This script reads all the files from the `docs-sample` directory, breaks them into sections based on headings, and creates vector embeddings for each section using OpenAI's API. It then stores those embeddings along with the section's title and content in Pinecone.
 
-That's it for setup! Now let's dig into the code. 
+That's it for setup! Now let's dig into the code.
 
 ## Accessing the Realtime API
 
@@ -114,7 +115,8 @@ export default async function Home() {
 ```
 
 <Callout>
-  You can also use our proxy with an AI provider’s API key, but you will not have access to other Braintrust features, like logging.
+  You can also use our proxy with an AI provider’s API key, but you will not
+  have access to other Braintrust features, like logging.
 </Callout>
 
 ## Creating a RAG tool
@@ -123,37 +125,44 @@ The retrieval logic also happens on the server side. We set up the helper functi
 
 ```typescript
 client.addTool(
-      {
-        name: 'pinecone_retrieval',
-        description: 'Retrieves relevant information from Braintrust documentation.',
-        parameters: {
-          type: 'object',
-          properties: {
-            query: {
-              type: 'string',
-              description: 'The search query to find relevant documentation.'
-            }
-          },
-          required: ['query']
+  {
+    name: "pinecone_retrieval",
+    description:
+      "Retrieves relevant information from Braintrust documentation.",
+    parameters: {
+      type: "object",
+      properties: {
+        query: {
+          type: "string",
+          description: "The search query to find relevant documentation.",
         },
       },
-      async ({ query }: { query: string }) => {
-        try {
-          setLastQuery(query);
-          const results = await fetchFromPinecone(query);
-          setRetrievalResults(results);
-          return results
-            .map(result => `[Score: ${result.score.toFixed(2)}] ${result.metadata.title}\n${result.metadata.content}`)
-            .join('\n\n');
-        } catch (error) {
-          throw error;
-        }
-      }
-    );
+      required: ["query"],
+    },
+  },
+  async ({ query }: { query: string }) => {
+    try {
+      setLastQuery(query);
+      const results = await fetchFromPinecone(query);
+      setRetrievalResults(results);
+      return results
+        .map(
+          (result) =>
+            `[Score: ${result.score.toFixed(2)}] ${result.metadata.title}\n${
+              result.metadata.content
+            }`,
+        )
+        .join("\n\n");
+    } catch (error) {
+      throw error;
+    }
+  },
+);
 ```
 
 <Callout type="info">
-Currently, because of the way the Realtime API works, we have to use OpenAI tool calling here instead of Braintrust tool functions. 
+  Currently, because of the way the Realtime API works, we have to use OpenAI
+  tool calling here instead of Braintrust tool functions.
 </Callout>
 
 ## Setting up the system prompt
@@ -183,13 +192,13 @@ Personality:
 `;
 ```
 
-Feel free to play around with the system prompt at any point, and see how it impacts the LLM's responses in the app. 
+Feel free to play around with the system prompt at any point, and see how it impacts the LLM's responses in the app.
 
 ## Running the app
 
 To run the app, navigate to `/web` and run `npm run dev`. You should have the app load on `localhost:3000`.
 
-Start a new conversation, and ask a few questions about Braintrust. Feel free to interrupt the bot, or ask unrelated questions, and see what happens. When you're finished, end the conversation. Have a couple of conversations to get a feel for some of the limitations and nuances of the bot - each conversation will come in handy in the next step. 
+Start a new conversation, and ask a few questions about Braintrust. Feel free to interrupt the bot, or ask unrelated questions, and see what happens. When you're finished, end the conversation. Have a couple of conversations to get a feel for some of the limitations and nuances of the bot - each conversation will come in handy in the next step.
 
 ## Logging in Braintrust
 
@@ -199,24 +208,24 @@ In addition to client-side authentication, you’ll also get the other benefits 
 
 ## Online evaluations
 
-In Braintrust, you can run server-side online evaluations that are automatically run asynchronously as you upload logs. This makes it easier to evaluate your app in situations like this, where the prompt and tool might not be synced to Braintrust. 
+In Braintrust, you can run server-side online evaluations that are automatically run asynchronously as you upload logs. This makes it easier to evaluate your app in situations like this, where the prompt and tool might not be synced to Braintrust.
 
-Audio evals are complex, because there are multiple aspects of your application you can focus on. In this cookbook, we'll use the vector search query as a proxy for the quality of the Realtime API's interpretation of the user's input. 
+Audio evals are complex, because there are multiple aspects of your application you can focus on. In this cookbook, we'll use the vector search query as a proxy for the quality of the Realtime API's interpretation of the user's input.
 
 ### Setting up your scorer
 
-We'll need to create a scorer that captures the criteria we want to evaluate. Since we're dealing with complex RAG outputs, we'll use a custom LLM-as-a-judge scorer. 
-For an LLM-as-a-judge scorer, you define a prompt that evaluates the output and maps its choices to specific scores. 
+We'll need to create a scorer that captures the criteria we want to evaluate. Since we're dealing with complex RAG outputs, we'll use a custom LLM-as-a-judge scorer.
+For an LLM-as-a-judge scorer, you define a prompt that evaluates the output and maps its choices to specific scores.
 
-Navigate to **Library** > **Scorers** and create a new scorer. Call your scorer **BraintrustRAG** and add the following prompt: 
+Navigate to **Scorers** and create a new scorer. Call your scorer **BraintrustRAG** and add the following prompt:
 
 ```javascript
 Consider the following question:
- 
+
 {{input.arguments.query}}
- 
+
 and answer:
- 
+
 {{output}}
 
 How well does the answer answer the question?
@@ -225,13 +234,13 @@ b) Reasonably well
 c) Not well
 ```
 
-The prompt uses mustache syntax to map the input to the query that gets sent to Pinecone, and get the output. We'll also assign choice score to the options we included in the prompt. 
+The prompt uses mustache syntax to map the input to the query that gets sent to Pinecone, and get the output. We'll also assign choice score to the options we included in the prompt.
 
 ![RAG scorer](./assets/rag-scorer.png)
 
 ### Configuring your online eval
 
-Navigate to **Configuration** and scroll down to **Online scoring**. Select **Add rule** to configure your online scoring rule. Select the scorer we just created from the menu, and deselect **Apply to root span**. We'll filter to the **function** span since that's where our tool is called. 
+Navigate to **Configuration** and scroll down to **Online scoring**. Select **Add rule** to configure your online scoring rule. Select the scorer we just created from the menu, and deselect **Apply to root span**. We'll filter to the **function** span since that's where our tool is called.
 
 ![Configure score](./assets/configure-score.png)
 
@@ -239,35 +248,36 @@ The score will now automatically run at the specified sampling rate for all logs
 
 ### Viewing your evaluations
 
-Now that you've set up your online evaluations, you can view the scores from within your logs. Underneath each function span that was included in the sampling rate, you'll have an additional span with the score. 
+Now that you've set up your online evaluations, you can view the scores from within your logs. Underneath each function span that was included in the sampling rate, you'll have an additional span with the score.
 
 ![Scoring span](./assets/scoring-span.png)
 
-This particular function call was scored a 0. But if we take a closer look at the logs, we can see that the question was actually answered pretty well. 
+This particular function call was scored a 0. But if we take a closer look at the logs, we can see that the question was actually answered pretty well.
 You may notice this pattern for other logs as well - so is our function actually not performing well?
 
-## Improving your evals 
+## Improving your evals
 
 There are three main ways to improve your evals:
+
 - Refine the scoring function to ensure it accurately reflects the success criteria.
 - Add new scoring functions to capture different performance aspects (for example, correctness or efficiency).
 - Expand your dataset with more diverse or challenging test cases.
 
-In this case, we need to be more precise about what we're testing for in our scoring function. In our application, we're asking for answers within the specific context of Braintrust, but our current scoring function is attempting to judge the responses to our questions objectively. 
+In this case, we need to be more precise about what we're testing for in our scoring function. In our application, we're asking for answers within the specific context of Braintrust, but our current scoring function is attempting to judge the responses to our questions objectively.
 
-Let's edit our scoring function to test for that as precisely as possible. 
+Let's edit our scoring function to test for that as precisely as possible.
 
 ### Improving our existing scorer
 
-Let's change the prompt for our scoring function to: 
+Let's change the prompt for our scoring function to:
 
 ```javascript
 Consider the following question from an existing Braintrust user:
- 
+
 {{input.arguments.query}}
- 
+
 and answer:
- 
+
 {{output}}
 
 How helpful is the answer, assuming the question is always in the context of Braintrust?
@@ -276,7 +286,7 @@ b) Reasonably helpful
 c) Not helpful
 ```
 
-As you continue to iterate on your scoring function and generate more logs, you should aim to see your scores go up. 
+As you continue to iterate on your scoring function and generate more logs, you should aim to see your scores go up.
 
 ![Logs over time](./assets/logs-over-time.png)
 
@@ -286,7 +296,3 @@ As you continue to build more AI applications with complex function calls and ne
 
 - [I ran an eval. Now what?](/blog/after-evals)
 - [What to do when a new AI model comes out](/blog/new-model)
-
-
-
-
