@@ -60,7 +60,7 @@
     - assertions
     - tools
   logo: https://cdn.zapier.com/zapier/images/favicon.ico
-  banner: /docs/cookbook-banners/Zapier.png
+  banner: /images/cookbook-banners/Zapier.png
 - title: AI Search Bar
   path: examples/AISearch/ai_search_evals.ipynb
   date: 2024-03-04
@@ -143,7 +143,7 @@
   date: 2024-08-28
   authors:
     - ornellaaltunyan
-  banner: /docs/cookbook-banners/AI-app.png
+  banner: /images/cookbook-banners/AI-app.png
   tags:
     - evals
     - logging
