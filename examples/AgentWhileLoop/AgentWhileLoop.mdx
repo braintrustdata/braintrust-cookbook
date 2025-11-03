@@ -254,7 +254,7 @@ main().catch(console.error);
 
 ## Tracing and evaluation
 
-Writing agents this way makes it straightfoward to trace every iteration, tool call, and decision. In Braintrust, you'll be able to see the full conversation history, tool execution details, performance metrics, and error tracking. The complete evaluation setup is available in [`agent.eval.ts`](https://github.com/braintrustdata/braintrust-cookbook/blob/main/examples/AgentWhileLoop/agent.eval.ts).
+Writing agents this way makes it straightforward to trace every iteration, tool call, and decision. In Braintrust, you'll be able to see the full conversation history, tool execution details, performance metrics, and error tracking. The complete evaluation setup is available in [`agent.eval.ts`](https://github.com/braintrustdata/braintrust-cookbook/blob/main/examples/AgentWhileLoop/agent.eval.ts).
 
 Additionally, if you run `npm run eval:tools`, you can clearly see the difference between using generic and specific tools:
 
@@ -264,6 +264,6 @@ Additionally, if you run `npm run eval:tools`, you can clearly see the differenc
 
 Start building your own while loop agent by picking a specific use case and 2-3 tools, then gradually add complexity.
 
-- [Log](/docs/guides/logs) all interactions and build [evaluation datasets](/docs/guides/datasets) from real usage patterns
+- [Log](/docs/core/logs) all interactions and build [evaluation datasets](/docs/core/datasets) from real usage patterns
 - Use [Loop](/docs/guides/loop) to improve prompts, scorers, and datasets
 - Explore more agent patterns in the [cookbook](/docs/cookbook)
