@@ -3,9 +3,7 @@ title: "Integrations"
 ---
 
 import { CodeTabs, TSTab, PYTab } from "#/ui/docs/code-tabs";
-import { Step, Steps } from "fumadocs-ui/components/steps";
-import { Callout } from "fumadocs-ui/components/callout";
-import Link from "fumadocs-core/link";
+import { Callout } from "#/ui/callout";
 
 # Tracing integrations
 
@@ -31,13 +29,15 @@ OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer <Your API Key>, x-bt-parent=pro
 ```
 
 <Callout type="info">
-  The trace endpoint URL is `https://api.braintrust.dev/otel/v1/traces`. If your exporter
-  uses signal-specific environment variables, you'll need to set the full path:
+  The trace endpoint URL is `https://api.braintrust.dev/otel/v1/traces`. If your
+  exporter uses signal-specific environment variables, you'll need to set the
+  full path:
   `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=https://api.braintrust.dev/otel/v1/traces`
 </Callout>
 
 <Callout type="info">
-  If you're self-hosting Braintrust, substitute your stack's Universal API URL. For example:
+  If you're self-hosting Braintrust, substitute your stack's Universal API URL.
+  For example:
   `OTEL_EXPORTER_OTLP_ENDPOINT=https://dfwhllz61x709.cloudfront.net/otel`
 </Callout>
 

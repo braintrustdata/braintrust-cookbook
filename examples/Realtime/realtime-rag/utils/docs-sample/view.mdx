@@ -3,9 +3,7 @@ title: "View traces"
 ---
 
 import { CodeTabs, TSTab, PYTab } from "#/ui/docs/code-tabs";
-import { Step, Steps } from "fumadocs-ui/components/steps";
-import { Callout } from "fumadocs-ui/components/callout";
-import Link from "fumadocs-core/link";
+import { Callout } from "#/ui/callout";
 
 # View traces
 
@@ -27,7 +25,13 @@ You can select an individual span to see the metrics, input, output, expected, m
 
 Often, you'll have a large number of spans inside of a given trace. To make it easier to locate a specific span or set of spans, you can search through your trace by selecting the magnifying glass icon.
 
-<video className="w-full rounded-md aspect-auto" controls autoPlay muted poster="/docs/guides/traces/find-in-trace-poster.png">
+<video
+  className="w-full rounded-md aspect-auto"
+  controls
+  autoPlay
+  muted
+  poster="/docs/guides/traces/find-in-trace-poster.png"
+>
   <source src="/docs/guides/traces/find-in-trace.mp4" type="video/mp4" />
   <a href="/docs/guides/traces/find-in-trace.mp4">Video</a>
 </video>
@@ -36,7 +40,13 @@ Often, you'll have a large number of spans inside of a given trace. To make it e
 
 Once you've entered a search query, you can also filter the results of your search by span type or span field.
 
-<video className="w-full rounded-md aspect-auto" controls autoPlay muted poster="/docs/guides/traces/filter-span-poster.png">
+<video
+  className="w-full rounded-md aspect-auto"
+  controls
+  autoPlay
+  muted
+  poster="/docs/guides/traces/filter-span-poster.png"
+>
   <source src="/docs/guides/traces/filter-span.mp4" type="video/mp4" />
   <a href="/docs/guides/traces/filter-span.mp4">Video</a>
 </video>
@@ -45,7 +55,13 @@ Once you've entered a search query, you can also filter the results of your sear
 
 When you're ready to add specific spans to a dataset, you can bulk select them to add them to a new or existing dataset in your project.
 
-<video className="w-full rounded-md aspect-auto" controls autoPlay muted poster="/docs/guides/traces/multiselect-poster.png">
+<video
+  className="w-full rounded-md aspect-auto"
+  controls
+  autoPlay
+  muted
+  poster="/docs/guides/traces/multiselect-poster.png"
+>
   <source src="/docs/guides/traces/multiselect.mp4" type="video/mp4" />
   <a href="/docs/guides/traces/multiselect.mp4">Video</a>
 </video>
@@ -54,7 +70,13 @@ When you're ready to add specific spans to a dataset, you can bulk select them t
 
 When you're digging into traces in an experiment, you can toggle **Diff** view to compare across experiments, as well as output vs expected values.
 
-<video className="w-full rounded-md aspect-auto" controls autoPlay muted poster="/docs/guides/traces/diff-trace-poster.png">
+<video
+  className="w-full rounded-md aspect-auto"
+  controls
+  autoPlay
+  muted
+  poster="/docs/guides/traces/diff-trace-poster.png"
+>
   <source src="/docs/guides/traces/diff-trace.mp4" type="video/mp4" />
   <a href="/docs/guides/traces/diff-trace.mp4">Video</a>
 </video>

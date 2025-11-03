@@ -3,7 +3,7 @@ title: "Human review"
 ---
 
 import { Maximize2 } from "lucide-react";
-import { Callout } from "fumadocs-ui/components/callout";
+import { Callout } from "#/ui/callout";
 
 # Human review
 
@@ -32,7 +32,6 @@ options and their scores.
 Once you create a score, it will automatically appear in the "Scores" section in each experiment
 and log event throughout the project.
 
-
 ### Writing to expected fields
 
 You may choose to write categorical scores to the `expected` field of a span instead of a score.
@@ -40,9 +39,9 @@ To enable this, simply check the "Write to expected field instead of score" opti
 an option to select multiple values when writing to the expected field.
 
 <Callout type="info">
-  A numeric score will not be assigned to the categorical options when writing to the expected
-  field. If there is an existing object in the expected field, the categorical value will be
-  appended to the object.
+  A numeric score will not be assigned to the categorical options when writing
+  to the expected field. If there is an existing object in the expected field,
+  the categorical value will be appended to the object.
 </Callout>
 
 ![Write to expected](./human-review/write-to-expected.webp)

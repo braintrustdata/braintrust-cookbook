@@ -3,9 +3,7 @@ title: "Customize traces"
 ---
 
 import { CodeTabs, TSTab, PYTab } from "#/ui/docs/code-tabs";
-import { Step, Steps } from "fumadocs-ui/components/steps";
-import { Callout } from "fumadocs-ui/components/callout";
-import Link from "fumadocs-core/link";
+import { Callout } from "#/ui/callout";
 
 # Customize traces
 
@@ -23,44 +21,45 @@ import OpenAI from "openai";
 import { ChatCompletionMessageParam } from "openai/resources";
 
 const logger = initLogger({
-  projectName: "My Project",
-  apiKey: process.env.BRAINTRUST_API_KEY,
+projectName: "My Project",
+apiKey: process.env.BRAINTRUST_API_KEY,
 });
 
 const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+apiKey: process.env.OPENAI_API_KEY,
 });
 
 // wrapTraced() automatically logs the input (args) and output (return value)
 // of this function to a span. To ensure the span is named `answerQuestion`,
 // you should name the inline function definition (inside of wrapTraced).
 const answerQuestion = wrapTraced(async function answerQuestion(
-  body: string,
+body: string,
 ): Promise<string> {
-  const prompt: ChatCompletionMessageParam[] = [
-    { role: "system", content: "You are a helpful assistant." },
-    { role: "user", content: body },
-  ];
+const prompt: ChatCompletionMessageParam[] = [
+{ role: "system", content: "You are a helpful assistant." },
+{ role: "user", content: body },
+];
 
-  const result = await client.chat.completions.create({
-    model: "gpt-4o",
-    messages: prompt,
-  });
+const result = await client.chat.completions.create({
+model: "gpt-4o",
+messages: prompt,
+});
 
-  const content = result.choices[0].message.content;
-  if (!content) {
-    throw new Error("The LLM response content is empty or undefined.");
-  }
+const content = result.choices[0].message.content;
+if (!content) {
+throw new Error("The LLM response content is empty or undefined.");
+}
 
-  return content;
+return content;
 });
 
 async function main() {
-  const input = "How can I improve my productivity?";
-  const result = await answerQuestion(input);
-  console.log(result);
+const input = "How can I improve my productivity?";
+const result = await answerQuestion(input);
+console.log(result);
 }
-```
+
+````
 </TSTab>
 
 <PYTab>
@@ -99,16 +98,18 @@ def main():
 
 if __name__ == "__main__":
     main()
-```
+````
+
 </PYTab>
 </CodeTabs>
 
 ## Wrapping LLM clients
 
 ### Wrapping OpenAI
-  When using `wrapOpenAI`/`wrap_openai`, you technically do not need to use `traced` or `start_span`. In fact, just
-  initializing a logger is enough to start logging LLM calls. If you use `traced` or `start_span`, you will create more
-  detailed traces that include the functions surrounding the LLM calls and can group multiple LLM calls together.
+
+When using `wrapOpenAI`/`wrap_openai`, you technically do not need to use `traced` or `start_span`. In fact, just
+initializing a logger is enough to start logging LLM calls. If you use `traced` or `start_span`, you will create more
+detailed traces that include the functions surrounding the LLM calls and can group multiple LLM calls together.
 
 #### Streaming metrics
 
@@ -124,27 +125,28 @@ import { initLogger, traced, wrapOpenAI, wrapTraced } from "braintrust";
 
 const client = wrapOpenAI(new OpenAI());
 const logger = initLogger({
-  projectName: "My Project",
-  apiKey: process.env.BRAINTRUST_API_KEY,
+projectName: "My Project",
+apiKey: process.env.BRAINTRUST_API_KEY,
 });
 
 async function main() {
-  const result = await client.chat.completions.create({
-    model: "gpt-4o",
-    messages: [{ role: "user", content: "What is 1+1?" }],
-    stream: true,
-    stream_options: {
-      include_usage: true,
-    },
-  });
+const result = await client.chat.completions.create({
+model: "gpt-4o",
+messages: [{ role: "user", content: "What is 1+1?" }],
+stream: true,
+stream_options: {
+include_usage: true,
+},
+});
 
-  for await (const chunk of result) {
-    console.log(chunk);
-  }
+for await (const chunk of result) {
+console.log(chunk);
+}
 }
 
 main().catch(console.error);
-```
+
+````
 </TSTab>
 
 <PYTab>
@@ -164,7 +166,8 @@ result = client.chat.completions.create(
 
 for chunk in result:
     print(chunk)
-```
+````
+
 </PYTab>
 
 </CodeTabs>
@@ -177,9 +180,9 @@ and [TypeScript](https://github.com/braintrustdata/braintrust-sdk/blob/main/js/s
 
 To track the span as an LLM, you must:
 
-* Specify the `type` as `llm`. You can specify any `name` you'd like. This enables LLM duration metrics.
-* Add `prompt_tokens`, `completion_tokens`, and `total_tokens` to the `metrics` field. This enables LLM token usage metrics.
-* Format the `input` as a list of messages (using the OpenAI format), and put other parameters (like `model`) in `metadata`. This enables the "Try prompt" button in the UI.
+- Specify the `type` as `llm`. You can specify any `name` you'd like. This enables LLM duration metrics.
+- Add `prompt_tokens`, `completion_tokens`, and `total_tokens` to the `metrics` field. This enables LLM token usage metrics.
+- Format the `input` as a list of messages (using the OpenAI format), and put other parameters (like `model`) in `metadata`. This enables the "Try prompt" button in the UI.
 
 <CodeTabs>
 <TSTab>
@@ -187,30 +190,30 @@ To track the span as an LLM, you must:
 import { initLogger, traced, wrapTraced } from "braintrust";
 
 const logger = initLogger({
-  projectName: "My Project",
-  apiKey: process.env.BRAINTRUST_API_KEY,
+projectName: "My Project",
+apiKey: process.env.BRAINTRUST_API_KEY,
 });
 
 interface LLMCompletion {
-  completion: string;
-  metrics: {
-    prompt_tokens: number;
-    completion_tokens: number;
-  };
+completion: string;
+metrics: {
+prompt_tokens: number;
+completion_tokens: number;
+};
 }
 
 async function callMyLLM(
-  input: string,
-  params: { temperature: number },
+input: string,
+params: { temperature: number },
 ): Promise<LLMCompletion> {
-  // Replace with your custom LLM implementation
-  return {
-    completion: "Hello, world!",
-    metrics: {
-      prompt_tokens: input.length,
-      completion_tokens: 10,
-    },
-  };
+// Replace with your custom LLM implementation
+return {
+completion: "Hello, world!",
+metrics: {
+prompt_tokens: input.length,
+completion_tokens: 10,
+},
+};
 }
 
 export const invokeCustomLLM = wrapTraced(
@@ -335,17 +338,18 @@ import { Attachment, initLogger } from "braintrust";
 const logger = initLogger({ projectName: "Attachment Example" });
 
 logger.log({
-  input: {
-    question: "What is this?",
-    context: new Attachment({
-      data: "path/to/input_image.jpg",
-      filename: "user_input.jpg",
-      contentType: "image/jpeg",
-    }),
-  },
-  output: "Example response.",
+input: {
+question: "What is this?",
+context: new Attachment({
+data: "path/to/input_image.jpg",
+filename: "user_input.jpg",
+contentType: "image/jpeg",
+}),
+},
+output: "Example response.",
 });
-```
+
+````
 </TSTab>
 <PYTab>
 ```python
@@ -364,14 +368,21 @@ logger.log(
     },
     output="Example response.",
 )
-```
+````
+
 </PYTab>
 </CodeTabs>
 
 The SDK uploads the attachments separately from other parts of the log, so the
 presence of attachments doesn't affect non-attachment logging latency.
 
-<img src="/docs/guides/traces/attachment-list-one-image.png" className="box-content" alt="Screenshot of attachment list in Braintrust" width="625" height="313" />
+<img
+  src="/docs/guides/traces/attachment-list-one-image.png"
+  className="box-content"
+  alt="Screenshot of attachment list in Braintrust"
+  width="625"
+  height="313"
+/>
 
 Image, audio, video, and PDF attachments can be previewed in Braintrust. All
 attachments can be downloaded for viewing locally.
@@ -405,8 +416,8 @@ data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICA
 
 When you run:
 
-* Python code inside of the `@traced` decorator or within a `start_span()` context
-* TypeScript code inside of `traced` (or a `wrappedTraced` function)
+- Python code inside of the `@traced` decorator or within a `start_span()` context
+- TypeScript code inside of `traced` (or a `wrappedTraced` function)
 
 Braintrust will automatically log any exceptions that occur within the span.
 
@@ -420,22 +431,23 @@ Under the hood, every span has an `error` field which you can also log to direct
 import { wrapTraced, currentSpan } from "braintrust";
 
 async function processRequest(input: string) {
-  return input.length > 10
-    ? { error: "Input too long" }
-    : { data: "Hello, world!" };
+return input.length > 10
+? { error: "Input too long" }
+: { data: "Hello, world!" };
 }
 
 const requestHandler = wrapTraced(async function requestHandler(req: Request) {
-  const body = await req.text();
-  const result = await processRequest(body);
-  if (result.error) {
-    currentSpan().log({ error: result.error });
-  } else {
-    currentSpan().log({ input: req.body, output: result.data });
-  }
-  return result;
+const body = await req.text();
+const result = await processRequest(body);
+if (result.error) {
+currentSpan().log({ error: result.error });
+} else {
+currentSpan().log({ input: req.body, output: result.data });
+}
+return result;
 });
-```
+
+````
 </TSTab>
 <PYTab>
 ```python
@@ -457,7 +469,8 @@ def request_handler(req):
     else:
         current_span().log(input=req.body, output=result["data"])
     return result
-```
+````
+
 </PYTab>
 </CodeTabs>
 
@@ -585,36 +598,37 @@ import { ChatCompletionMessageParam } from "openai/resources";
 const logger = initLogger({ projectName: "my-project" });
 
 async function remoteChatCompletion(args: {
-  model: string;
-  messages: ChatCompletionMessageParam[];
-  extraHeaders?: Record<string, string>;
+model: string;
+messages: ChatCompletionMessageParam[];
+extraHeaders?: Record<string, string>;
 }) {
-  // This is a placeholder for code that would call a remote service
+// This is a placeholder for code that would call a remote service
 }
 
 const bedTimeStory = wrapTraced(async function bedtimeStory(input: {
-  summary: string;
-  length: number;
+summary: string;
+length: number;
 }) {
-  return await remoteChatCompletion({
-    model: "gpt-3.5-turbo",
-    messages: [
-      {
-        role: "system",
-        content:
-          "Come up with a bedtime story with the following summary and approximate length (in words)",
-      },
-      {
-        role: "user",
-        content: `summary: ${input.summary}\nlength: ${input.length}`,
-      },
-    ],
-    extraHeaders: {
-      request_id: await currentSpan().export(),
-    },
-  });
+return await remoteChatCompletion({
+model: "gpt-3.5-turbo",
+messages: [
+{
+role: "system",
+content:
+"Come up with a bedtime story with the following summary and approximate length (in words)",
+},
+{
+role: "user",
+content: `summary: ${input.summary}\nlength: ${input.length}`,
+},
+],
+extraHeaders: {
+request_id: await currentSpan().export(),
+},
 });
-```
+});
+
+````
 </TSTab>
 <PYTab>
 
@@ -647,7 +661,7 @@ def bedtime_story(summary, length):
             "request_id": current_span().export(),
         },
     )
-```
+````
 
 </PYTab>
 
@@ -730,27 +744,28 @@ the span's id to perform an update:
 import { initLogger, wrapTraced, currentSpan } from "braintrust";
 
 const logger = initLogger({
-  projectName: "my-project", // Replace with your project name
-  apiKey: process.env.BRAINTRUST_API_KEY, // Replace with your API key
+projectName: "my-project", // Replace with your project name
+apiKey: process.env.BRAINTRUST_API_KEY, // Replace with your API key
 });
 
 const startRequest = wrapTraced(async function startRequest(request) {
-  const handle = startSomething(request.body);
-  return {
-    result: handle,
-    spanId: currentSpan().id,
-  };
+const handle = startSomething(request.body);
+return {
+result: handle,
+spanId: currentSpan().id,
+};
 });
 
 const finishRequest = wrapTraced(async function finishRequest(handle, spanId) {
-  const result = await finishSomething(handle);
-  logger.updateSpan({
-    id: spanId,
-    output: result,
-  });
-  return result;
+const result = await finishSomething(handle);
+logger.updateSpan({
+id: spanId,
+output: result,
 });
-```
+return result;
+});
+
+````
 </TSTab>
 <PYTab>
 ```python
@@ -775,7 +790,8 @@ def finish_request(handle, span_id):
         output=result,
     )
     return result
-```
+````
+
 </PYTab>
 </CodeTabs>
 
@@ -788,29 +804,30 @@ have multiple loggers or perform the update from a different service.
 import { initLogger, wrapTraced, currentSpan, updateSpan } from "braintrust";
 
 const logger = initLogger({
-  projectName: "my-project", // Replace with your project name
-  apiKey: process.env.BRAINTRUST_API_KEY, // Replace with your API key
+projectName: "my-project", // Replace with your project name
+apiKey: process.env.BRAINTRUST_API_KEY, // Replace with your API key
 });
 
 const startRequest = wrapTraced(async function startRequest(request) {
-  const handle = startSomething(request.body);
-  return {
-    result: handle,
-    exported: currentSpan().export(),
-  };
+const handle = startSomething(request.body);
+return {
+result: handle,
+exported: currentSpan().export(),
+};
 });
 
 const finishRequest = wrapTraced(
-  async function finishRequest(handle, exported) {
-    const result = await finishSomething(handle);
-    updateSpan({
-      exported,
-      output: result,
-    });
-    return result;
-  },
+async function finishRequest(handle, exported) {
+const result = await finishSomething(handle);
+updateSpan({
+exported,
+output: result,
+});
+return result;
+},
 );
-```
+
+````
 
 </TSTab>
 
@@ -836,7 +853,8 @@ def finish_request(handle, exported):
         output=result,
     )
     return result
-```
+````
+
 </PYTab>
 </CodeTabs>
 
@@ -846,6 +864,7 @@ they can trample on each other.
 
 Distributed tracing is designed specifically to prevent this edge case, and instead works by logging
 a new (sub) span.
+
 </Callout>
 
 ## Deep-linking to spans
@@ -980,15 +999,14 @@ want to further customize the display of your span data. For example, you could 
 and want to fetch and display its contents in the span viewer. Or, you may want to reformat the data in the span in a way
 that's more useful for your use case than the built-in options.
 
-
 To support these use cases, Braintrust supports custom span iframe viewers. To enable a span iframe, visit the **Configuration**
 tab of a project, and create one. You can define the URL, and then customize its behavior:
 
-* Provide a title, which is displayed at the top of the section.
-* Provide, via [mustache](https://mustache.github.io/mustache.5.html), template parameters to the URL. These parameters are
+- Provide a title, which is displayed at the top of the section.
+- Provide, via [mustache](https://mustache.github.io/mustache.5.html), template parameters to the URL. These parameters are
   in terms of the top-level span fields, e.g. `{{input}}`, `{{output}}`, `{{expected}}`, etc. or their subfields, e.g.
   `{{input.question}}`.
-* Allow Braintrust to send a message to the iframe with the span data, which is useful when the data may be very large and
+- Allow Braintrust to send a message to the iframe with the span data, which is useful when the data may be very large and
   not fit in a URL.
 
 ![Span iframe](./span-iframe.png)

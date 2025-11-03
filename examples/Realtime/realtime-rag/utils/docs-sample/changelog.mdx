@@ -4,10 +4,9 @@ title: "Changelog"
 
 import { CodeTabs, PYTab, TSTab } from "#/ui/docs/code-tabs";
 import { LoomVideo } from "#/ui/docs/loom";
-import Link from "fumadocs-core/link";
-import { Callout } from "fumadocs-ui/components/callout";
-import { Step, Steps } from "fumadocs-ui/components/steps";
-import Image from 'next/image';
+
+import { Callout } from "#/ui/callout";
+import Image from "next/image";
 
 # Changelog
 
@@ -52,18 +51,18 @@ import Image from 'next/image';
 - The Traceloop OTEL integration now uses the input and output attributes to populate the corresponding fields in Braintrust.
 - The monitor page now supports querying experiment metrics.
 - Removed the `filters` param from the REST API fetch endpoint. For complex
-queries, we recommend using the `/btql` endpoint ([docs](/docs/reference/btql)).
+  queries, we recommend using the `/btql` endpoint ([docs](/docs/reference/btql)).
 - New experiment summary layout option, a url-friendly view for experiment summaries that respects all filters.
 - Add a default limit of 10 to all fetch and `/btql` requests for project_logs.
 - You can now export your prompts from the playground as code snippets and run them through the [AI proxy](/docs/guides/proxy).
 - Add a fallback for the "add prompt" dropdown button in the playground, which
-will search for prompts within the current project if the cross-org prompts
-query fails.
+  will search for prompts within the current project if the cross-org prompts
+  query fails.
 
 ### SDK (version 0.0.171)
 
 - Add a `.data` method to the `Attachment` class, which lets you inspect the
-loaded attachment data.
+  loaded attachment data.
 
 ## Week of 2024-11-12
 
@@ -99,6 +98,7 @@ loaded attachment data.
 - Create custom columns on dataset, experiment and logs tables from `JSON` values in `input`, `output`, `expected`, or `metadata` fields.
 
 ### API (version 0.0.59)
+
 - Fix permissions bug with updating org-scoped env vars
 
 ## Week of 2024-10-28
@@ -151,7 +151,7 @@ loaded attachment data.
 ### SDK (version 0.0.164)
 
 - Add `braintrust.permalink` function to create deep links pointing to
-particular spans in the Braintrust UI.
+  particular spans in the Braintrust UI.
 
 ## Week of 2024-10-07
 
@@ -170,7 +170,7 @@ particular spans in the Braintrust UI.
 ### SDK (version 0.0.161)
 
 - Add utility function `spanComponentsToObjectId` for resolving the object ID
-from an exported span slug.
+  from an exported span slug.
 
 ## Week of 2024-09-30
 
@@ -178,19 +178,21 @@ from an exported span slug.
 - Add support for [Cerebras](https://cerebras.ai/) models in the proxy, playground, and saved prompts.
 - You can now create [span iframe viewers](/docs/guides/tracing#custom-span-iframes) to visualize span data in a custom iframe.
   In this example, the "Table" section is a custom span iframe.
-![Span iframe](./guides/traces/span-iframe.png)
+  ![Span iframe](./guides/traces/span-iframe.png)
 - `NOT LIKE`, `NOT ILIKE`, `NOT INCLUDES`, and `NOT CONTAINS` supported in BTQL.
 - Add "Upload Rows" button to insert rows into an existing dataset from CSV or JSON.
 - Add "Maximum" aggregate score type.
 - The experiment table now supports grouping by input (for trials) or by a metadata field.
-    - The Name and Input columns are now pinned
+  - The Name and Input columns are now pinned
 - Gemini models now support multimodal inputs.
 
 ## Week of 2024-09-23
 
 - Basic monitor page that shows aggregate values for latency, token count, time to first token, and cost for logs.
 - Create custom tools to use in your prompts and in the playground. See the [docs](/docs/guides/prompts#calling-external-tools) for more details.
-- <Link href="/app/settings?subroute=env-vars" target="_blank">Set org-wide environment variables</Link> to use in these tools
+- <a href="/app/settings?subroute=env-vars" target="_blank">
+    Set org-wide environment variables
+  </a> to use in these tools
 - Pull your prompts to your codebase using the `braintrust pull` command.
 - Select and compare multiple experiments in the experiment view using the `compared with` dropdown.
 - The playground now displays aggregate scores (avg/max/min) for each prompt and supports sorting rows by a score.
@@ -220,7 +222,6 @@ from an exported span slug.
 - The tag picker now includes tags that were added dynamically via API, in addition to the tags configured for your project.
 - Added a REST API for managing AI secrets. See [docs](/docs/reference/api/AiSecrets).
 
-
 ### SDK (version 0.0.158)
 
 - A dedicated `update` method is now available for datasets.
@@ -233,11 +234,11 @@ from an exported span slug.
 - You can now create server-side online evaluations for your logs. Online evals support both [autoevals](/docs/reference/autoevals) and
   [custom scorers](/docs/guides/playground) you define as LLM-as-a-judge, TypeScript, or Python functions. See
   [docs](/docs/guides/evals/write#online-evaluation) for more details.
-<LoomVideo id="13e916c6095c4a98bc5682bed038c7ea" />
+  <LoomVideo id="13e916c6095c4a98bc5682bed038c7ea" />
 - New member invitations now support being added to multiple permission groups.
 - Move datasets and prompts to a new Library navigation tab, and include a list of custom scorers.
 - Clean up tree view by truncating the root preview and showing a preview of a node only if collapsed.
-![Truncated tree view](./reference/release-notes/truncated-tree-view.png)
+  ![Truncated tree view](./reference/release-notes/truncated-tree-view.png)
 - Automatically save changes to table views.
 
 ## Week of 2024-09-02
@@ -294,12 +295,13 @@ npx braintrust eval --bundle
 ## Week of 2024-08-12
 
 - You can now create custom LLM and code (TypeScript and Python) evaluators in the playground.
-<LoomVideo id="407591dee805422588ee83a8bcb44100" />
+
+  <LoomVideo id="407591dee805422588ee83a8bcb44100" />
 
 - Fullscreen trace toggle
 - Datasets now accept JSON file uploads
 - When uploading a CSV/JSON file to a dataset, columns/fields named `input`, `expected`, and `metadata`
-are now auto-assigned to the corresponding dataset fields
+  are now auto-assigned to the corresponding dataset fields
 - Fix bug in logs/dataset viewer when changing the search params.
 
 ### API (version 0.0.53)
@@ -315,7 +317,7 @@ are now auto-assigned to the corresponding dataset fields
   - These metrics, along with cost, now exclude LLM calls used in autoevals (as of 0.0.85)
 - Switching organizations via the header navigates to the same-named project in the selected organization
 - Added `MarkAsyncWrapper` to the Python SDK to allow explicitly marking
-functions which return awaitable objects as async
+  functions which return awaitable objects as async
 
 ### Autoevals (version 0.0.85)
 
@@ -370,37 +372,37 @@ functions which return awaitable objects as async
 ## Week of 2024-07-22
 
 - Categorical human review scores can now be re-ordered via Drag-n-Drop.
-![Reorder categorical score](./reference/release-notes/category-score-reorder.gif)
+  ![Reorder categorical score](./reference/release-notes/category-score-reorder.gif)
 - Human review row selection is now a free text field, enabling a quick jump to a specific row.
-![Human review free text](./reference/release-notes/humanreviewfreetext.png)
+  ![Human review free text](./reference/release-notes/humanreviewfreetext.png)
 - Added REST endpoint for managing org membership. See
   [docs](/docs/reference/api/Organizations#modify-organization-membership).
 
 ### API (version 0.0.51)
 
-* The proxy is now a first-class citizen in the API service, which simplifies deployment and sets the groundwork for some
+- The proxy is now a first-class citizen in the API service, which simplifies deployment and sets the groundwork for some
   exciting new features. Here is what you need to know:
-  * The updates are available as of API version 0.0.51.
-  * The proxy is now accessible at `https://api.braintrust.dev/v1/proxy`. You can use this as a base URL in your OpenAI client,
+  - The updates are available as of API version 0.0.51.
+  - The proxy is now accessible at `https://api.braintrust.dev/v1/proxy`. You can use this as a base URL in your OpenAI client,
     instead of `https://braintrustproxy.com/v1`. [NOTE: The latter is still supported, but will be deprecated in the future.]
-  * If you are self-hosting, the proxy is now bundled into the API service. That means you no longer need to deploy the proxy as
+  - If you are self-hosting, the proxy is now bundled into the API service. That means you no longer need to deploy the proxy as
     a separate service.
-  * If you have deployed through AWS, after updating the Cloudformation, you'll need to grab the "Universal API URL" from the
+  - If you have deployed through AWS, after updating the Cloudformation, you'll need to grab the "Universal API URL" from the
     "Outputs" tab.
 
 ![Universal URL Cloudformation](./reference/release-notes/universal-url-cloudformation.png)
 
-  * Then, replace that in your settings page <Link href="/app/settings?subroute=api-url" target="_blank">settings page</Link>
+- Then, replace that in your settings page <a href="/app/settings?subroute=api-url" target="_blank">settings page</a>
 
 ![Universal API](./reference/release-notes/universal-api.png)
 
-  * If you have a Docker-based deployment, you can just update your containers.
-  * Once you see the "Universal API" indicator, you can remove the proxy URL from your settings page, if you have it set.
+- If you have a Docker-based deployment, you can just update your containers.
+- Once you see the "Universal API" indicator, you can remove the proxy URL from your settings page, if you have it set.
 
 ### SDK (version 0.0.146)
 
-* Add support for `max_concurrency` in the Python SDK
-* Hill climbing evals that use a `BaseExperiment` as data will use that as the default base experiment.
+- Add support for `max_concurrency` in the Python SDK
+- Hill climbing evals that use a `BaseExperiment` as data will use that as the default base experiment.
 
 ## Week of 2024-07-15
 
@@ -420,14 +422,14 @@ functions which return awaitable objects as async
 
 ### Autoevals (version 0.0.77)
 
-* Officially switch the default model to be `gpt-4o`. Our testing showed that it performed on average 10% more accurately than `gpt-3.5-turbo`!
-* Support claude models (e.g. claude-3-5-sonnet-20240620). You can use them by simply specifying the `model` param in any LLM based evaluator.
-  * Under the hood, this will use the proxy, so make sure to configure your Anthropic API keys in your settings.
+- Officially switch the default model to be `gpt-4o`. Our testing showed that it performed on average 10% more accurately than `gpt-3.5-turbo`!
+- Support claude models (e.g. claude-3-5-sonnet-20240620). You can use them by simply specifying the `model` param in any LLM based evaluator.
+  - Under the hood, this will use the proxy, so make sure to configure your Anthropic API keys in your settings.
 
 ## Week of 2024-07-08
 
 - Human review scores are now sortable from the project configuration page.
-![Reorder scores](./reference/release-notes/reorder-human-review-scores.gif)
+  ![Reorder scores](./reference/release-notes/reorder-human-review-scores.gif)
 - Streaming support for tool calls in Anthropic models through the proxy and playground.
 - The playground now supports different "parsing" modes:
   - `auto`: (same as before) the completion text and the first tool call arguments, if any
@@ -436,7 +438,6 @@ functions which return awaitable objects as async
   - `raw_stream`: the completion in the OpenAI streaming format
 - Cleaned up environment variables in the public [docker
   deployment](https://github.com/braintrustdata/braintrust-deployment/tree/main/docker). Functionally, nothing has changed.
-
 
 ### Autoevals (version 0.0.76)
 
@@ -447,7 +448,7 @@ functions which return awaitable objects as async
 
 - Table views [can now be saved](/docs/reference/views), persisting the BTQL filters, sorts, and column state.
 - Add support for the new `window.ai` model into the playground.
-![window.ai](./reference/release-notes/window-ai.gif)
+  ![window.ai](./reference/release-notes/window-ai.gif)
 - Use push history when navigating table rows to allow for back button navigation.
 - In the experiments list, grouping by a metadata field will group rows in the table as well.
 - Allow the trace tree panel to be resized.
@@ -471,8 +472,8 @@ const foo = wrapTraced(async function foo(input) {
 });
 ```
 
-
 ### SDK (version 0.0.138)
+
 - The TypeScript SDK's `Eval()` function now takes a `maxConcurrency` parameter, which bounds the
   number of concurrent tasks that run.
 - `braintrust install api` now sets up your API and Proxy URL in your environment.
@@ -512,7 +513,7 @@ const foo = wrapTraced(async function foo(input) {
 ## Week of 2024-06-03
 
 - You can now collapse the trace tree. It's auto collapsed if you have a single span.
-![Collapsible trace tree](./reference/release-notes/trace-tree.png)
+  ![Collapsible trace tree](./reference/release-notes/trace-tree.png)
 - Improvements to the experiment chart including greyed out lines for inactive scores and improved legend.
 - Show diffs when you save a new prompt version.
 
@@ -812,7 +813,7 @@ As part of this change, we had to rework the core logging implementation in the
 SDKs to rely on some newer backend API features. Therefore, if you are hosting
 Braintrust on-prem, before upgrading your SDK to any version `>= 0.0.115`, make
 sure your API version is `>= 0.0.35`. You can query the version of the on-prem
-server with `curl [api-url]/version`, where the API URL can be found on the <Link href="/app/settings?subroute=api-url" target="_blank">settings page</Link>.
+server with `curl [api-url]/version`, where the API URL can be found on the <a href="/app/settings?subroute=api-url" target="_blank">settings page</a>.
 
 </Callout>
 
@@ -1438,7 +1439,7 @@ braintrust install api <YOUR_CLOUDFORMAT_STACK_NAME> --update-template
   ![Scatter Plot](/docs/release-notes/ReleaseNotes-2023-06-Scatter.gif)
 
 - API keys that can be set in the SDK (explicitly or through an environment variable) and do not require user login.
-  Visit the <Link href="/app/settings?subroute=api-keys">settings page</Link> to create an API key.
+  Visit the <a href="/app/settings?subroute=api-keys">settings page</a> to create an API key.
   - Update the braintrust Python SDK to [version 0.0.6](https://pypi.org/project/braintrust/0.0.6/) and the CloudFormation template (https://braintrust-cf.s3.amazonaws.com/braintrust-latest.yaml) to use the new API key feature.
 
 ## Week of 2023-06-12

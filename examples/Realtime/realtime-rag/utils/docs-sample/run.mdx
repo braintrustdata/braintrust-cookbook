@@ -5,8 +5,7 @@ description: "Create evaluations directly in your code, and run them in your dev
 ---
 
 import { CodeTabs, TSTab, PYTab } from "#/ui/docs/code-tabs";
-import { Step, Steps } from "fumadocs-ui/components/steps";
-import { Callout } from "fumadocs-ui/components/callout";
+import { Callout } from "#/ui/callout";
 
 # Run evals
 
@@ -187,8 +186,8 @@ jobs:
 </CodeTabs>
 
 <Callout type="warn">
-You must specify `permissions` for the action to leave comments on your PR.
-Without these permissions, you'll see Github API errors.
+  You must specify `permissions` for the action to leave comments on your PR.
+  Without these permissions, you'll see Github API errors.
 </Callout>
 
 For more information, see the [`braintrustdata/eval-action` README](https://github.com/braintrustdata/eval-action), or check
@@ -296,18 +295,19 @@ import { Factuality, Levenshtein } from "autoevals";
 import { Eval } from "braintrust";
 
 Eval("Say Hi Bot", {
-  data: () =>
-    Array.from({ length: 100 }, (_, i) => ({
-      input: `${i}`,
-      expected: `${i + 1}`,
-    })),
-  task: (input) => {
-    return input + 1;
-  },
-  scores: [Factuality, Levenshtein],
-  maxConcurrency: 5, // Run 5 tests concurrently
+data: () =>
+Array.from({ length: 100 }, (\_, i) => ({
+input: `${i}`,
+expected: `${i + 1}`,
+})),
+task: (input) => {
+return input + 1;
+},
+scores: [Factuality, Levenshtein],
+maxConcurrency: 5, // Run 5 tests concurrently
 });
-```
+
+````
 </TSTab>
 
 <PYTab>
@@ -323,7 +323,8 @@ result = Eval(
     scores=[Factuality, Levenstein],
     max_concurrency=5,  # Run 5 tests concurrently
 )
-```
+````
+
 </PYTab>
 </CodeTabs>
 

@@ -4,8 +4,7 @@ metaTitle: "Visualize and interpret evaluations"
 ---
 
 import { CodeTabs, TSTab, PYTab } from "#/ui/docs/code-tabs";
-import { Step, Steps } from "fumadocs-ui/components/steps";
-import { Callout } from "fumadocs-ui/components/callout";
+import { Callout } from "#/ui/callout";
 import Image from "next/image";
 
 # Visualize and interpret eval results
@@ -25,7 +24,13 @@ Running an eval from the API or SDK will return a link to the corresponding resu
 
 Summaries will appear for score and metric columns. To find test cases to focus on, use column header summaries to filter by improvements or regressions (test cases that decreased in score). This allows you to see the scorers with the biggest issues. You can also group the table to view summaries across metadata fields or inputs. For example, if you use separate datasets for distinct types of usecases, you can group by dataset to see which usecases are having the biggest issues.
 
-<video className="border rounded-md" loop autoPlay muted poster="/docs/guides/evals/column-grouping-poster.png">
+<video
+  className="border rounded-md"
+  loop
+  autoPlay
+  muted
+  poster="/docs/guides/evals/column-grouping-poster.png"
+>
   <source src="/docs/guides/evals/column-grouping.mp4" type="video/mp4" />
 </video>
 
@@ -35,12 +40,17 @@ By default, group rows will show one experiment's summary data, and you can swit
 
 ![Summary experiment aggregations](/docs/guides/evals/summary-experiment-aggregations.png)
 
-<video className="border rounded-md" loop autoPlay muted poster="/docs/guides/evals/group-summaries-poster.png">
+<video
+  className="border rounded-md"
+  loop
+  autoPlay
+  muted
+  poster="/docs/guides/evals/group-summaries-poster.png"
+>
   <source src="/docs/guides/evals/group-summaries.mp4" type="video/mp4" />
 </video>
 
 Now that you've narrowed your test cases, you can view a test case in detail by selecting a row.
-
 
 ### Trace view
 
@@ -59,7 +69,13 @@ To do this, use the **Add custom column** option at the bottom of the **Columns*
 
 After naming your custom column, you can either choose from the inferred fields in the dropdown or enter a custom [BTQL](/docs/reference/btql) statement.
 
-<video className="border rounded-md" loop autoPlay muted poster="/docs/guides/evals/create-column-dialog-poster.png">
+<video
+  className="border rounded-md"
+  loop
+  autoPlay
+  muted
+  poster="/docs/guides/evals/create-column-dialog-poster.png"
+>
   <source src="/docs/guides/evals/create-column-dialog.mp4" type="video/mp4" />
 </video>
 
@@ -74,14 +90,15 @@ it's useful to look at both duration and token metrics to diagnose the underlyin
 
 Wherever possible, metrics are computed on the `task` subspan, so that LLM-as-a-judge calls are excluded. Specifically:
 
-* `Duration` is the duration of the `"task"` span.
-* `Prompt tokens`, `Completion tokens`, `Total tokens`, `LLM duration`, and `Estimated cost` are averaged over every span
+- `Duration` is the duration of the `"task"` span.
+- `Prompt tokens`, `Completion tokens`, `Total tokens`, `LLM duration`, and `Estimated cost` are averaged over every span
   that is not marked with `span_attributes.purpose = "scorer"`, which is set automatically in autoevals.
 
 If you are using the logging SDK, or API, you will need to follow these conventions to ensure that metrics are computed correctly.
 
 <Callout type="info">
-To compute LLM metrics (like token counts), make sure you [wrap your LLM calls](/docs/guides/traces/customize#wrapping-llm-clients).
+  To compute LLM metrics (like token counts), make sure you [wrap your LLM
+  calls](/docs/guides/traces/customize#wrapping-llm-clients).
 </Callout>
 
 ### Diff mode
@@ -89,7 +106,13 @@ To compute LLM metrics (like token counts), make sure you [wrap your LLM calls](
 When you run multiple experiments, Braintrust will automatically compare the results of experiments to each other. This allows you to
 quickly see which test cases improved or regressed across experiments.
 
-<video className="border rounded-md" loop autoPlay muted poster="/docs/guides/evals/diff-poster.png">
+<video
+  className="border rounded-md"
+  loop
+  autoPlay
+  muted
+  poster="/docs/guides/evals/diff-poster.png"
+>
   <source src="/docs/guides/evals/diff.mp4" type="video/mp4" />
 </video>
 #### How rows are matched
@@ -104,7 +127,13 @@ This will consolidate each trial for a given input and display aggregate data, s
 
 If Braintrust has detected that any rows have the same `input` value within the same experiment, diff mode will show a column where you can view matching trials in your comparison experiemnts.
 
-<video className="border rounded-md" loop autoPlay muted poster="/docs/guides/evals/diff-trials-poster.png">
+<video
+  className="border rounded-md"
+  loop
+  autoPlay
+  muted
+  poster="/docs/guides/evals/diff-trials-poster.png"
+>
   <source src="/docs/guides/evals/diff-trials.mp4" type="video/mp4" />
 </video>
 
@@ -113,7 +142,14 @@ If Braintrust has detected that any rows have the same `input` value within the 
 However, sometimes your `input` may include additional data, and you need to use a different
 expression to match test cases. You can configure the comparison key in your project's **Configuration** page.
 
-<Image unoptimized className="box-content" src="/docs/guides/projects/comparison-key.png" alt="Create comparison key" width={1552 / 2} height={282 / 2} />
+<Image
+  unoptimized
+  className="box-content"
+  src="/docs/guides/projects/comparison-key.png"
+  alt="Create comparison key"
+  width={1552 / 2}
+  height={282 / 2}
+/>
 
 ### Experiment view layouts
 
@@ -133,7 +169,14 @@ experiments over time, it's often useful to have a single score that represents 
 Braintrust allows you to do this with aggregate scores, which are formulas that combine multiple scores. To create an aggregate score, go to your project's **Configuration** page,
 and select **Add aggregate score**.
 
-<Image unoptimized className="box-content" src="/docs/guides/evals/add-aggregate-score.png" alt="Add aggregate score" width={1136 / 2} height={1012 / 2} />
+<Image
+  unoptimized
+  className="box-content"
+  src="/docs/guides/evals/add-aggregate-score.png"
+  alt="Add aggregate score"
+  width={1136 / 2}
+  height={1012 / 2}
+/>
 
 Braintrust currently supports three types of aggregate scores:
 
@@ -149,14 +192,25 @@ Braintrust allows you to analyze data across experiments to, for example, compar
 
 On the Experiments page, you can view your scores as a bar chart by selecting **Score comparison** from the X axis selector:
 
-<video className="border rounded-md" loop autoPlay muted poster="/docs/guides/evals/bar-score-comparison-poster.png">
+<video
+  className="border rounded-md"
+  loop
+  autoPlay
+  muted
+  poster="/docs/guides/evals/bar-score-comparison-poster.png"
+>
   <source src="/docs/guides/evals/bar-score-comparison.mp4" type="video/mp4" />
 </video>
 
-
 You can also select the metadata fields you want to group by to create bar charts:
 
-<video className="border rounded-md" loop autoPlay muted poster="/docs/guides/evals/group-by-dataset-poster.png">
+<video
+  className="border rounded-md"
+  loop
+  autoPlay
+  muted
+  poster="/docs/guides/evals/group-by-dataset-poster.png"
+>
   <source src="/docs/guides/evals/group-by-dataset.mp4" type="video/mp4" />
 </video>
 
@@ -164,7 +218,13 @@ You can also select the metadata fields you want to group by to create bar chart
 
 Select a metric on the x-axis to construct a scatter plot. Here's an example comparing the relationship between accuracy and duration.
 
-<video className="border rounded-md" loop autoPlay muted poster="/docs/guides/evals/scatterplot-poster.png">
+<video
+  className="border rounded-md"
+  loop
+  autoPlay
+  muted
+  poster="/docs/guides/evals/scatterplot-poster.png"
+>
   <source src="/docs/guides/evals/scatterplot.mp4" type="video/mp4" />
 </video>
 
@@ -192,18 +252,19 @@ If you need to access the data from a previous experiment, you can pass the `ope
 import { init } from "braintrust";
 
 async function openExperiment() {
-  const experiment = init(
-    "Say Hi Bot", // Replace with your project name
-    {
-      experiment: "my-experiment", // Replace with your experiment name
-      open: true,
-    },
-  );
-  for await (const testCase of experiment) {
-    console.log(testCase);
-  }
+const experiment = init(
+"Say Hi Bot", // Replace with your project name
+{
+experiment: "my-experiment", // Replace with your experiment name
+open: true,
+},
+);
+for await (const testCase of experiment) {
+console.log(testCase);
 }
-```
+}
+
+````
 
 </TSTab>
 
@@ -221,7 +282,7 @@ def open_experiment():
     )
     for test in experiment:
         print(test_case)
-```
+````
 
 </PYTab>
 

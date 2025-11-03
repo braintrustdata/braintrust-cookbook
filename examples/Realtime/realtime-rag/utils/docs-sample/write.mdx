@@ -4,8 +4,7 @@ metaTitle: "Write evaluations"
 ---
 
 import { CodeTabs, TSTab, PYTab } from "#/ui/docs/code-tabs";
-import { Step, Steps } from "fumadocs-ui/components/steps";
-import { Callout } from "fumadocs-ui/components/callout";
+import { Callout } from "#/ui/callout";
 
 # Write evals
 
@@ -116,9 +115,9 @@ As you scale, Braintrust's [Datasets](/docs/guides/datasets) are a great tool fo
 <Callout type="warn">
   It's a common misconception that you need a large volume of perfectly labeled
   evaluation data, but that's not the case. In practice, it's better to assume
-  your data is noisy, your AI model is imperfect, and your scoring methods are a little
-  bit wrong. The goal of evaluation is to assess each of these components and
-  improve them over time.
+  your data is noisy, your AI model is imperfect, and your scoring methods are a
+  little bit wrong. The goal of evaluation is to assess each of these components
+  and improve them over time.
 </Callout>
 
 ## Scorers
@@ -140,34 +139,35 @@ import { Eval } from "braintrust";
 import { Factuality } from "autoevals";
 
 const exactMatch = (args: {
-  input: string;
-  output: string;
-  expected: string;
+input: string;
+output: string;
+expected: string;
 }) => {
-  return {
-    name: "Exact match",
-    score: args.output === args.expected ? 1 : 0,
-  };
+return {
+name: "Exact match",
+score: args.output === args.expected ? 1 : 0,
+};
 };
 
 Eval(
-  "Say Hi Bot", // Replace with your project name
-  {
-    data: () => {
-      return [
-        {
-          input: "David",
-          expected: "Hi David",
-        },
-      ]; // Replace with your eval dataset
-    },
-    task: (input) => {
-      return "Hi " + input; // Replace with your LLM call
-    },
-    scores: [Factuality, exactMatch],
-  },
+"Say Hi Bot", // Replace with your project name
+{
+data: () => {
+return [
+{
+input: "David",
+expected: "Hi David",
+},
+]; // Replace with your eval dataset
+},
+task: (input) => {
+return "Hi " + input; // Replace with your LLM call
+},
+scores: [Factuality, exactMatch],
+},
 );
-```
+
+````
 </TSTab>
 
 <PYTab>
@@ -192,7 +192,8 @@ Eval(
     task=lambda input: "Hi " + input,  # Replace with your LLM call
     scores=[Factuality, exact_match],
 )
-```
+````
+
 </PYTab>
 </CodeTabs>
 
@@ -339,32 +340,33 @@ You can also return a list of scorers from a scorer function. This allows you to
 import { NumericDiff } from "autoevals";
 
 interface QueryInput {
-  type: string;
-  text: string;
+type: string;
+text: string;
 }
 
 const calculatorAccuracy = ({
-  input,
-  output,
+input,
+output,
 }: {
-  input: QueryInput;
-  output: number;
+input: QueryInput;
+output: number;
 }) => {
-  if (input.type !== "calculator") {
-    return null;
-  }
-  return [
-    {
-      name: "Numeric diff",
-      score: NumericDiff({ output, expected: eval(input.text) }),
-    },
-    {
-      name: "Exact match",
-      score: output === eval(input.text) ? 1 : 0,
-    },
-  ];
+if (input.type !== "calculator") {
+return null;
+}
+return [
+{
+name: "Numeric diff",
+score: NumericDiff({ output, expected: eval(input.text) }),
+},
+{
+name: "Exact match",
+score: output === eval(input.text) ? 1 : 0,
+},
+];
 };
-```
+
+````
 </TSTab>
 <PYTab>
 ```python title="eval_calculator_accuracy.py"
@@ -385,7 +387,8 @@ def calculator_accuracy(input, output, **kwargs):
             "score": 1 if output == eval(input["text"]) else 0,
         },
     ]
-```
+````
+
 </PYTab>
 </CodeTabs>
 
@@ -402,40 +405,41 @@ import { ClosedQA } from "autoevals";
 import { OpenAI } from "openai";
 
 const client = wrapOpenAI(
-  new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  }),
+new OpenAI({
+apiKey: process.env.OPENAI_API_KEY,
+}),
 );
 
 Eval("QA bot", {
-  data: () => [
-    {
-      input: "Which insect has the highest population?",
-      expected: "ant",
-    },
-  ],
-  task: async (input) => {
-    const response = await client.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "system",
-          content:
-            "Answer the following question. Specify how confident you are (or not)",
-        },
-        { role: "user", content: "Question: " + input },
-      ],
-    });
-    return response.choices[0].message.content || "Unknown";
-  },
-  scores: [
-    ClosedQA.partial({
-      criteria:
-        "Does the submission specify whether or not it can confidently answer the question?",
-    }),
-  ],
+data: () => [
+{
+input: "Which insect has the highest population?",
+expected: "ant",
+},
+],
+task: async (input) => {
+const response = await client.chat.completions.create({
+model: "gpt-4o",
+messages: [
+{
+role: "system",
+content:
+"Answer the following question. Specify how confident you are (or not)",
+},
+{ role: "user", content: "Question: " + input },
+],
 });
-```
+return response.choices[0].message.content || "Unknown";
+},
+scores: [
+ClosedQA.partial({
+criteria:
+"Does the submission specify whether or not it can confidently answer the question?",
+}),
+],
+});
+
+````
 </TSTab>
 <PYTab>
 ```python title="eval_closed_q_a.py"
@@ -470,7 +474,8 @@ Eval(
         ClosedQA.partial(criteria="Does the submission specify whether or not it can confidently answer the question?")
     ],
 )
-```
+````
+
 </PYTab>
 </CodeTabs>
 
@@ -486,49 +491,50 @@ import { OpenAI } from "openai";
 const openai = wrapOpenAI(new OpenAI());
 
 interface Metadata {
-  criteria: string;
+criteria: string;
 }
 
 const closedQA = (args: {
-  input: string;
-  output: string;
-  metadata: Metadata;
+input: string;
+output: string;
+metadata: Metadata;
 }) => {
-  return ClosedQA({
-    input: args.input,
-    output: args.output,
-    criteria: args.metadata.criteria,
-  });
+return ClosedQA({
+input: args.input,
+output: args.output,
+criteria: args.metadata.criteria,
+});
 };
 
 Eval("QA bot", {
-  data: () => [
-    {
-      input: "Which insect has the highest population?",
-      expected: "ant",
-      metadata: {
-        criteria:
-          "Does the submission specify whether or not it can confidently answer the question?",
-      },
-    },
-  ],
-  task: async (input) => {
-    const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [
-        {
-          role: "system",
-          content:
-            "Answer the following question. Specify how confident you are (or not)",
-        },
-        { role: "user", content: "Question: " + input },
-      ],
-    });
-    return response.choices[0].message.content || "Unknown";
-  },
-  scores: [closedQA],
+data: () => [
+{
+input: "Which insect has the highest population?",
+expected: "ant",
+metadata: {
+criteria:
+"Does the submission specify whether or not it can confidently answer the question?",
+},
+},
+],
+task: async (input) => {
+const response = await openai.chat.completions.create({
+model: "gpt-3.5-turbo",
+messages: [
+{
+role: "system",
+content:
+"Answer the following question. Specify how confident you are (or not)",
+},
+{ role: "user", content: "Question: " + input },
+],
 });
-```
+return response.choices[0].message.content || "Unknown";
+},
+scores: [closedQA],
+});
+
+````
 </TSTab>
 <PYTab>
 ```python title="eval_closed_q_a.py"
@@ -576,7 +582,8 @@ Eval(
     or "Unknown",
     scores=[closed_q_a],
 )
-```
+````
+
 </PYTab>
 </CodeTabs>
 
@@ -595,67 +602,68 @@ import { Eval, wrapOpenAI } from "braintrust";
 import OpenAI from "openai";
 
 const client = wrapOpenAI(
-  new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  }),
+new OpenAI({
+apiKey: process.env.OPENAI_API_KEY,
+}),
 );
 
 async function translationScore({
-  input,
-  output,
+input,
+output,
 }: {
-  input: string;
-  output: string;
+input: string;
+output: string;
 }) {
-  const completion = await client.chat.completions.create({
-    model: "gpt-4o",
-    messages: [
-      {
-        role: "system",
-        content:
-          "You are a helpful assistant that translates from French to English.",
-      },
-      { role: "user", content: output },
-    ],
-  });
-  const reverseTranslated = completion.choices[0].message.content ?? "";
-  const similarity = await EmbeddingSimilarity({
-    output: reverseTranslated,
-    expected: input,
-  });
-  return {
-    name: "TranslationScore",
-    score: similarity.score,
-    metadata: {
-      original: input,
-      translated: output,
-      reverseTranslated,
-    },
-  };
+const completion = await client.chat.completions.create({
+model: "gpt-4o",
+messages: [
+{
+role: "system",
+content:
+"You are a helpful assistant that translates from French to English.",
+},
+{ role: "user", content: output },
+],
+});
+const reverseTranslated = completion.choices[0].message.content ?? "";
+const similarity = await EmbeddingSimilarity({
+output: reverseTranslated,
+expected: input,
+});
+return {
+name: "TranslationScore",
+score: similarity.score,
+metadata: {
+original: input,
+translated: output,
+reverseTranslated,
+},
+};
 }
 
 Eval("Translate", {
-  data: [
-    { input: "May I order a pizza?" },
-    { input: "Where is the nearest bank?" },
-  ],
-  task: async (input) => {
-    const completion = await client.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are a helpful assistant that translates from English to French.",
-        },
-        { role: "user", content: input },
-      ],
-    });
-    return completion.choices[0].message.content ?? "";
-  },
-  scores: [translationScore],
+data: [
+{ input: "May I order a pizza?" },
+{ input: "Where is the nearest bank?" },
+],
+task: async (input) => {
+const completion = await client.chat.completions.create({
+model: "gpt-4o",
+messages: [
+{
+role: "system",
+content:
+"You are a helpful assistant that translates from English to French.",
+},
+{ role: "user", content: input },
+],
 });
-```
+return completion.choices[0].message.content ?? "";
+},
+scores: [translationScore],
+});
+
+````
 </TSTab>
 <PYTab>
 ```python title="translate.py"
@@ -706,7 +714,8 @@ Eval(
     task=task,
     scores=[translation_score],
 )
-```
+````
+
 </PYTab>
 </CodeTabs>
 
@@ -808,6 +817,7 @@ Eval(
   },
 );
 ```
+
 </TSTab>
 
 <PYTab>
@@ -817,18 +827,19 @@ from braintrust import Eval
 from autoevals import Factuality
 
 Eval(
-    "Say Hi Bot",  # Replace with your project name
-    data=lambda: [
-        {
-            "input": "David",
-            "expected": "Hi David",
-        },
-    ],  # Replace with your eval dataset
-    task=lambda input: "Hi " + input,  # Replace with your LLM call
-    scores=[Factuality],
-    metadata={"model": "gpt-4o"},
+"Say Hi Bot", # Replace with your project name
+data=lambda: [
+{
+"input": "David",
+"expected": "Hi David",
+},
+], # Replace with your eval dataset
+task=lambda input: "Hi " + input, # Replace with your LLM call
+scores=[Factuality],
+metadata={"model": "gpt-4o"},
 )
-```
+
+````
 </PYTab>
 </CodeTabs>
 
@@ -874,7 +885,7 @@ Eval(
     trialCount: 10,
   },
 );
-```
+````
 
 </TSTab>
 
@@ -922,16 +933,17 @@ import { Battle } from "autoevals";
 import { Eval, BaseExperiment } from "braintrust";
 
 Eval<string, string, string>(
-  "Say Hi Bot", // Replace with your project name
-  {
-    data: BaseExperiment(),
-    task: (input) => {
-      return "Hi " + input; // Replace with your LLM call
-    },
-    scores: [Battle.partial({ instructions: "Which response said 'Hi'?" })],
-  },
+"Say Hi Bot", // Replace with your project name
+{
+data: BaseExperiment(),
+task: (input) => {
+return "Hi " + input; // Replace with your LLM call
+},
+scores: [Battle.partial({ instructions: "Which response said 'Hi'?" })],
+},
 );
-```
+
+````
 </TSTab>
 <PYTab>
 ```python title="eval_hill_climbing.py"
@@ -945,7 +957,8 @@ Eval(
     task=lambda input: "Hi " + input,  # Replace with your LLM call
     scores=[Battle.partial(instructions="Which response said 'Hi'?")],
 )
-```
+````
+
 </PYTab>
 </CodeTabs>
 
@@ -1086,11 +1099,11 @@ As an example, here's the default reporter that Braintrust uses:
 import { Reporter, reportFailures } from "braintrust";
 
 Reporter("Braintrust default reporter", {
-  reportEval: async (evaluator, result, { verbose, jsonl }) => {
-    const { results, summary } = result;
-    const failingResults = results.filter(
-      (r: { error: unknown }) => r.error !== undefined,
-    );
+reportEval: async (evaluator, result, { verbose, jsonl }) => {
+const { results, summary } = result;
+const failingResults = results.filter(
+(r: { error: unknown }) => r.error !== undefined,
+);
 
     if (failingResults.length > 0) {
       reportFailures(evaluator, failingResults, { verbose, jsonl });
@@ -1098,12 +1111,14 @@ Reporter("Braintrust default reporter", {
 
     console.log(jsonl ? JSON.stringify(summary) : summary);
     return failingResults.length === 0;
-  },
-  reportRun: async (evalReports: boolean[]) => {
-    return evalReports.every((r) => r);
-  },
+
+},
+reportRun: async (evalReports: boolean[]) => {
+return evalReports.every((r) => r);
+},
 });
-```
+
+````
 </TSTab>
 
 <PYTab>
@@ -1136,7 +1151,8 @@ Reporter(
     report_eval=report_eval,
     report_run=report_run,
 )
-```
+````
+
 </PYTab>
 </CodeTabs>
 
@@ -1155,29 +1171,30 @@ import { NumericDiff } from "autoevals";
 import path from "path";
 
 function loadPdfs() {
-  return ["example.pdf"].map((pdf) => ({
-    input: {
-      file: new Attachment({
-        filename: pdf,
-        contentType: "application/pdf",
-        data: path.join("files", pdf),
-      }),
-    },
-    // This is a toy example where we check that the file size is what we expect.
-    expected: 469513,
-  }));
+return ["example.pdf"].map((pdf) => ({
+input: {
+file: new Attachment({
+filename: pdf,
+contentType: "application/pdf",
+data: path.join("files", pdf),
+}),
+},
+// This is a toy example where we check that the file size is what we expect.
+expected: 469513,
+}));
 }
 
 async function getFileSize(input: { file: Attachment }) {
-  return (await input.file.data()).size;
+return (await input.file.data()).size;
 }
 
 Eval("Project with PDFs", {
-  data: loadPdfs,
-  task: getFileSize,
-  scores: [NumericDiff],
+data: loadPdfs,
+task: getFileSize,
+scores: [NumericDiff],
 });
-```
+
+````
 </TSTab>
 <PYTab>
 ```python title="attachment.py"
@@ -1216,7 +1233,8 @@ Eval(
     task=get_file_size,
     scores=[NumericDiff],
 )
-```
+````
+
 </PYTab>
 </CodeTabs>
 
@@ -1230,28 +1248,28 @@ import { Attachment, ReadonlyAttachment, initDataset, Eval } from "braintrust";
 import path from "node:path";
 
 async function createPdfDataset(): Promise<void> {
-  const dataset = initDataset({
-    project: "Project with PDFs",
-    dataset: "My PDF Dataset",
-  });
-  for (const filename of ["example.pdf"]) {
-    dataset.insert({
-      input: {
-        file: new Attachment({
-          filename,
-          contentType: "application/pdf",
-          data: path.join("files", filename),
-        }),
-      },
-    });
-  }
-  await dataset.flush();
+const dataset = initDataset({
+project: "Project with PDFs",
+dataset: "My PDF Dataset",
+});
+for (const filename of ["example.pdf"]) {
+dataset.insert({
+input: {
+file: new Attachment({
+filename,
+contentType: "application/pdf",
+data: path.join("files", filename),
+}),
+},
+});
+}
+await dataset.flush();
 }
 
 async function getFileSize(input: {
-  file: ReadonlyAttachment;
+file: ReadonlyAttachment;
 }): Promise<number> {
-  return (await input.file.data()).size;
+return (await input.file.data()).size;
 }
 
 // First create a dataset with attachments.
@@ -1259,14 +1277,15 @@ createPdfDataset();
 
 // Later, we can refer to the dataset by name to load it from Braintrust.
 Eval("Project with PDFs", {
-  data: initDataset({
-    project: "Project with PDFs",
-    dataset: "My PDF Dataset",
-  }),
-  task: getFileSize,
-  scores: [NumericDiff],
+data: initDataset({
+project: "Project with PDFs",
+dataset: "My PDF Dataset",
+}),
+task: getFileSize,
+scores: [NumericDiff],
 });
-```
+
+````
 </TSTab>
 <PYTab>
 ```python title="attachment_dataset_eval.py"
@@ -1312,7 +1331,8 @@ Eval(
     task=get_file_size,
     scores=[NumericDiff],
 )
-```
+````
+
 </PYTab>
 </CodeTabs>
 
@@ -1350,10 +1370,10 @@ end:
 import { Eval, traced } from "braintrust";
 
 async function callModel(input: string) {
-  return traced(
-    async (span) => {
-      const messages = { messages: [{ role: "system", text: input }] };
-      span.log({ input: messages });
+return traced(
+async (span) => {
+const messages = { messages: [{ role: "system", text: input }] };
+span.log({ input: messages });
 
       // Replace this with a model call
       const result = {
@@ -1376,30 +1396,32 @@ async function callModel(input: string) {
     {
       name: "My AI model",
     },
-  );
+
+);
 }
 
 const exactMatch = (args: {
-  input: string;
-  output: string;
-  expected?: string;
+input: string;
+output: string;
+expected?: string;
 }) => {
-  return {
-    name: "Exact match",
-    score: args.output === args.expected ? 1 : 0,
-  };
+return {
+name: "Exact match",
+score: args.output === args.expected ? 1 : 0,
+};
 };
 
 Eval("My Evaluation", {
-  data: () => [
-    { input: "Which country has the highest population?", expected: "China" },
-  ],
-  task: async (input, { span }) => {
-    return await callModel(input);
-  },
-  scores: [exactMatch],
+data: () => [
+{ input: "Which country has the highest population?", expected: "China" },
+],
+task: async (input, { span }) => {
+return await callModel(input);
+},
+scores: [exactMatch],
 });
-```
+
+````
 </TSTab>
 <PYTab>
 ```python
@@ -1447,7 +1469,8 @@ Eval(
     task=run_input,
     scores=[exact_match],
 )
-```
+````
+
 </PYTab>
 </CodeTabs>
 
@@ -1685,7 +1708,14 @@ a sampling rate along with more granular filters to control which logs get evalu
 
 To create an online evaluation, navigate to the **Configuration** tab in a project and create an online scoring rule.
 
-<video className="border rounded-md" src="/docs/guides/logging/Online-Scoring-Setup.mp4" loop autoPlay muted poster="/docs/guides/logging/Online-Scoring-Setup-Poster.png"></video>
+<video
+  className="border rounded-md"
+  src="/docs/guides/logging/Online-Scoring-Setup.mp4"
+  loop
+  autoPlay
+  muted
+  poster="/docs/guides/logging/Online-Scoring-Setup-Poster.png"
+></video>
 
 The score will now automatically run at the specified sampling rate for all logs in the project.
 

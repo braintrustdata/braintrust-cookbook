@@ -1,10 +1,9 @@
 ---
 title: "Eval via SDK"
 ---
+
 import { CodeTabs, TSTab, PYTab } from "#/ui/docs/code-tabs";
-import { Step, Steps } from "fumadocs-ui/components/steps";
-import { Callout } from "fumadocs-ui/components/callout";
-import Link from "fumadocs-core/link";
+import { Callout } from "#/ui/callout";
 
 # Evaluate via SDK
 
@@ -53,27 +52,28 @@ import { Eval } from "braintrust";
 import { Levenshtein } from "autoevals";
 
 Eval(
-  "Say Hi Bot", // Replace with your project name
-  {
-    data: () => {
-      return [
-        {
-          input: "Foo",
-          expected: "Hi Foo",
-        },
-        {
-          input: "Bar",
-          expected: "Hello Bar",
-        },
-      ]; // Replace with your eval dataset
-    },
-    task: async (input) => {
-      return "Hi " + input; // Replace with your LLM call
-    },
-    scores: [Levenshtein],
-  },
+"Say Hi Bot", // Replace with your project name
+{
+data: () => {
+return [
+{
+input: "Foo",
+expected: "Hi Foo",
+},
+{
+input: "Bar",
+expected: "Hello Bar",
+},
+]; // Replace with your eval dataset
+},
+task: async (input) => {
+return "Hi " + input; // Replace with your LLM call
+},
+scores: [Levenshtein],
+},
 );
-```
+
+````
 </TSTab>
 <PYTab>
 ```python
@@ -96,7 +96,8 @@ Eval(
     task=lambda input: "Hi " + input,  # Replace with your LLM call
     scores=[Levenshtein],
 )
-```
+````
+
 </PYTab>
 </CodeTabs>
 
