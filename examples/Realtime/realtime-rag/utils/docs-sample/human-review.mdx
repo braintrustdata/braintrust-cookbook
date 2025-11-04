@@ -13,7 +13,7 @@ feedback from end users, subject matter experts, and product teams in one place.
 use human review to evaluate/compare experiments, assess the efficacy of your automated scoring
 methods, and curate log events to use in your evals.
 
-![Human review label](./human-review/label.gif)
+![Human review label](./human-review/label.mp4)
 
 ## Configuring human review
 
@@ -32,7 +32,6 @@ options and their scores.
 Once you create a score, it will automatically appear in the "Scores" section in each experiment
 and log event throughout the project.
 
-
 ### Writing to expected fields
 
 You may choose to write categorical scores to the `expected` field of a span instead of a score.
@@ -40,9 +39,9 @@ To enable this, simply check the "Write to expected field instead of score" opti
 an option to select multiple values when writing to the expected field.
 
 <Callout type="info">
-  A numeric score will not be assigned to the categorical options when writing to the expected
-  field. If there is an existing object in the expected field, the categorical value will be
-  appended to the object.
+  A numeric score will not be assigned to the categorical options when writing
+  to the expected field. If there is an existing object in the expected field,
+  the categorical value will be appended to the object.
 </Callout>
 
 ![Write to expected](./human-review/write-to-expected.webp)
@@ -54,7 +53,7 @@ In addition to categorical scores, you can always directly edit the structured o
 To manually review results in your logs or an experiment, simply click on a row, and you'll see
 the human review scores you configured in the expanded trace view.
 
-![Set score](./human-review/in-experiment.gif)
+![Set score](./human-review/in-experiment.mp4)
 
 As you set scores, they will be automatically saved and reflected in the summary metrics. The exact same
 mechanism works whether you're reviewing logs or experiments.
@@ -64,7 +63,7 @@ mechanism works whether you're reviewing logs or experiments.
 In addition to setting scores, you can also add comments to spans and update their `expected` values. These updates
 are tracked alongside score updates to form an audit trail of edits to a span.
 
-![Save comment](./human-review/comment.gif)
+![Save comment](./human-review/comment.mp4)
 
 ## Rapid review mode
 
@@ -72,7 +71,7 @@ If you or a subject matter expert is reviewing a large number of logs, you can u
 a UI that's optimized specifically for review. To enter review mode, hit the "r" key or the expand (<Maximize2 className="size-3 inline" />)
 icon next to the "Human review" header.
 
-![Review mode](./human-review/review-mode.gif)
+![Review mode](./human-review/review-mode.mp4)
 
 In review mode, you can set scores, leave comments, and edit expected values. Review mode is optimized for keyboard
 navigation, so you can quickly move between scores and rows with keyboard shortcuts. You can also share a link to the
