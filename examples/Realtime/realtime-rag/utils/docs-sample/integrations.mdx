@@ -31,13 +31,15 @@ OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer <Your API Key>, x-bt-parent=pro
 ```
 
 <Callout type="info">
-  The trace endpoint URL is `https://api.braintrust.dev/otel/v1/traces`. If your exporter
-  uses signal-specific environment variables, you'll need to set the full path:
+  The trace endpoint URL is `https://api.braintrust.dev/otel/v1/traces`. If your
+  exporter uses signal-specific environment variables, you'll need to set the
+  full path:
   `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=https://api.braintrust.dev/otel/v1/traces`
 </Callout>
 
 <Callout type="info">
-  If you're self-hosting Braintrust, substitute your stack's Universal API URL. For example:
+  If you're self-hosting Braintrust, substitute your stack's Universal API URL.
+  For example:
   `OTEL_EXPORTER_OTLP_ENDPOINT=https://dfwhllz61x709.cloudfront.net/otel`
 </Callout>
 
@@ -161,7 +163,8 @@ The [Vercel AI SDK](https://sdk.vercel.ai/docs/ai-sdk-core) is an elegant tool f
 You can wrap the SDK in Braintrust to automatically log your requests.
 
 ```typescript
-import { initLogger, wrapAISDKModel } from "braintrust";
+import { initLogger, wrapAISDK } from "braintrust";
+import * as ai from "ai";
 import { openai } from "@ai-sdk/openai";
 
 const logger = initLogger({
@@ -169,23 +172,15 @@ const logger = initLogger({
   apiKey: process.env.BRAINTRUST_API_KEY,
 });
 
-const model = wrapAISDKModel(openai.chat("gpt-3.5-turbo"));
+const { generateText } = wrapAISDK(ai);
 
 async function main() {
   // This will automatically log the request, response, and metrics to Braintrust
-  const response = await model.doGenerate({
-    inputFormat: "messages",
-    mode: {
-      type: "regular",
-    },
-    prompt: [
-      {
-        role: "user",
-        content: [{ type: "text", text: "What is the capital of France?" }],
-      },
-    ],
+  const response = await generateText({
+    model: openai("gpt-3.5-turbo"),
+    prompt: "What is the capital of France?",
   });
-  console.log(response);
+  console.log(response.text);
 }
 
 main();
