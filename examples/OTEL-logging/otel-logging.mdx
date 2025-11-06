@@ -24,10 +24,10 @@ Then, we’ll need to create a `.env` file to set the required environment varia
 OPENAI_API_KEY=<your-api-key>
 ```
 
-<Callout type="info">
+<Note>
   You can also use the OpenAI API by adding your Braintrust API key and using
   the Braintrust [AI Proxy](/docs/guides/proxy).
-</Callout>
+</Note>
 
 ## Setting up OTel
 
@@ -46,13 +46,13 @@ BRAINTRUST_PARENT=project_name:<Your Project Name>
 
 Replace `<Your API Key>` with your Braintrust API key, and `<Your Project Name>` with the name of the project in Braintrust where you'd like to store your logs.
 
-<Callout type="info">
+<Note>
   The `BRAINTRUST_PARENT` environment variable sets the trace's parent project
   or experiment. You can use a prefix like `project_id:`, `project_name:`, or
   `experiment_id:` here, or pass in a [**span
   slug**](/docs/guides/traces#distributed-tracing) (`span.export()`) to nest the
   trace under a span within the parent object.
-</Callout>
+</Note>
 
 Create a new file called `instrumentation.ts` to set up the Braintrust span processor:
 
