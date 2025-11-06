@@ -76,13 +76,13 @@ The Braintrust SDK provides functions to "wrap" the Vercel AI SDK, automatically
 
 The `wrapAISDK` function wraps AI SDK functions like `streamText` and `generateText`, automatically tracing their inputs and outputs. It does not trace intermediary steps such as tool calls that may be invoked during execution. Later in the cookbook, we will explore how to use `wrapTraced` to trace tool calls and nested functions.
 
-<Callout type="info">
+<Note>
   The `wrapAISDK` works with the Vercel AI SDK module. If you are not using the
   Vercel AI SDK and instead using a model provider's first-party library
   directly, you can [wrap your model
   clients](https://www.braintrust.dev/docs/guides/traces/customize#wrapping-llm-clients)
   with `wrapOpenAI` or `wrapAnthropic`.
-</Callout>
+</Note>
 
 To correctly wrap the AI SDK in our weather app example, your code should look like this after uncommenting the proper lines:
 
