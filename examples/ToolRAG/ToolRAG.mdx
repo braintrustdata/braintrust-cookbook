@@ -53,10 +53,10 @@ PINECONE_API_KEY=<your-pinecone-api-key>
 Finally, make sure to set your `OPENAI_API_KEY` environment variable in the [AI providers](https://www.braintrust.dev/app/braintrustdata.com/settings/secrets) section
 of your account, and set the `PINECONE_API_KEY` environment variable in the [Environment variables](https://www.braintrust.dev/app/settings?subroute=env-vars) section.
 
-<Callout type="info">
+<Note>
   We'll use the local environment variables to embed and upload the vectors, and
   the Braintrust variables to run the RAG tool and LLM calls remotely.
-</Callout>
+</Note>
 
 ## Upload the vectors
 
@@ -156,10 +156,10 @@ If you visit the **Logs** tab, you can check out detailed logs for each call:
 
 ![Prompt logs](./assets/Prompt-logs.png)
 
-<Callout type="info">
+<Note>
   We recommend using code-based prompts to initialize projects, but we'll show
   how convenient it is to tweak your prompts in the UI in a moment.
-</Callout>
+</Note>
 
 ## Import a dataset
 

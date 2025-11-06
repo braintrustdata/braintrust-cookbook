@@ -75,7 +75,7 @@ The Braintrust SDK provides functions to "wrap" models, automatically logging in
 
 The `wrapAISDKModel` function only traces the inputs and outputs of the model. It does not trace intermediary steps such as tool calls that may be invoked during the model's execution. Later in the cookbook, we will explore how to use `wrapTraced` to trace tool calls and nested functions.
 
-<Callout type="info">
+<Note>
   The `wrapAISDKModel` must be used with a Vercel interface (not a model
   interface directly from the OpenAI, Anthropic, or other first-party libraries
   from model providers). If you are not using Vercel model interfaces (such as
@@ -83,7 +83,7 @@ The `wrapAISDKModel` function only traces the inputs and outputs of the model. I
   [wrap your model
   clients](https://www.braintrust.dev/docs/guides/traces/customize#wrapping-llm-clients)
   with `wrapOpenAI` or `wrapAnthropic`.
-</Callout>
+</Note>
 
 To correctly wrap the model client in our weather app example, your model client instantiation code should look like this after uncommenting the proper lines:
 
