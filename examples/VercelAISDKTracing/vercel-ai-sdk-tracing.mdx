@@ -57,10 +57,11 @@ To send logs to Braintrust, you'll need to initialize a logger by calling the `i
 
 ```typescript title="app/(preview)/api/chat/route.ts"
 import { openai } from "@ai-sdk/openai";
-import { streamText, ToolInvocation } from "ai";
+import * as ai from "ai";
+import { ToolInvocation } from "ai";
 import { getWeather, getFahrenheit } from "@/components/tools";
 // Uncomment below to use Braintrust's tracing features
-import { initLogger, wrapAISDKModel, traced, currentSpan } from "braintrust";
+import { initLogger, wrapAISDK, traced, currentSpan } from "braintrust";
 
 // Initialize Braintrust as the logging backend. Uncomment below
 const logger = initLogger({
@@ -69,32 +70,31 @@ const logger = initLogger({
 });
 ```
 
-### Automatic tracing of models
+### Automatic tracing of AI SDK functions
 
-The Braintrust SDK provides functions to "wrap" models, automatically logging inputs and outputs. When working with the Vercel AI SDK, you can use the `wrapAISDKModel` function, which provides a common interface for models initiated by the Vercel AI SDK (for example, `@ai-sdk/openai`).
+The Braintrust SDK provides functions to "wrap" the Vercel AI SDK, automatically logging inputs and outputs. You can use the `wrapAISDK` function, which provides a unified interface that works across all AI SDK versions (v3, v4, v5, and v6 beta).
 
-The `wrapAISDKModel` function only traces the inputs and outputs of the model. It does not trace intermediary steps such as tool calls that may be invoked during the model's execution. Later in the cookbook, we will explore how to use `wrapTraced` to trace tool calls and nested functions.
+The `wrapAISDK` function wraps AI SDK functions like `streamText` and `generateText`, automatically tracing their inputs and outputs. It does not trace intermediary steps such as tool calls that may be invoked during execution. Later in the cookbook, we will explore how to use `wrapTraced` to trace tool calls and nested functions.
 
 <Note>
-  The `wrapAISDKModel` must be used with a Vercel interface (not a model
-  interface directly from the OpenAI, Anthropic, or other first-party libraries
-  from model providers). If you are not using Vercel model interfaces (such as
-  `@ai-sdk/openai`) and using a model provider's first-party library, you can
-  [wrap your model
+  The `wrapAISDK` works with the Vercel AI SDK module. If you are not using the
+  Vercel AI SDK and instead using a model provider's first-party library
+  directly, you can [wrap your model
   clients](https://www.braintrust.dev/docs/guides/traces/customize#wrapping-llm-clients)
   with `wrapOpenAI` or `wrapAnthropic`.
 </Note>
 
-To correctly wrap the model client in our weather app example, your model client instantiation code should look like this after uncommenting the proper lines:
+To correctly wrap the AI SDK in our weather app example, your code should look like this after uncommenting the proper lines:
 
 ```typescript title="app/(preview)/api/chat/route.ts"
-// Any time this model is called, the input and output will be logged to Braintrust.
-const model = wrapAISDKModel(openai("gpt-4o"));
+// Any time streamText is called, the input and output will be logged to Braintrust.
+const { streamText } = wrapAISDK(ai);
+const model = openai("gpt-4o");
 ```
 
 When we use the chatbot again, we see three logs appear in Braintrust: one log for the `getWeather` tool call, one log for the `getFahrenheit` tool call, and one call to form the final response. However, it'd probably be more useful to have all of these operations in the same log.
 
-![using wrapAISDKModel](./assets/wrapAISDKModel.gif)
+![using wrapAISDK](./assets/wrapAISDKModel.gif)
 
 ### Creating spans (and sub-spans)
 
@@ -152,7 +152,7 @@ After you uncomment those lines of code, you should see the following:
 A couple of things happened in this step:
 
 - We created a root span called "POST /api/chat" to group any subsequent logs into.
-- We continued to create spans via the `wrapAISDKModel` function.
+- We continued to create spans via the `wrapAISDK` function wrapping `streamText`.
 - We used the `onFinish` argument of the `streamText` function to gather the input and output of the LLM and return it to the root span.
 
 This looks good so far, but we also want to know about the different tool calls that the LLM is making as it works to form its response.
