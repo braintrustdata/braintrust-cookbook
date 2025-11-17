@@ -309,9 +309,9 @@
     - logging
 - title: Observability for Strands Agents on Amazon Bedrock
   path: examples/AmazonBedrockStrands/AmazonBedrockStrands.ipynb
-  date: 2025-10-09
+  date: 2025-11-18
   authors:
-    - ornellaaltunyan
+    - ishansingh
   tags:
     - observability
     - agent
