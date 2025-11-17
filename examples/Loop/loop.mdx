@@ -1,22 +1,50 @@
-# Loop Cookbook First Draft
+# Using Loop for AI development
 
-This guide demonstrates how loop can be used throughout the logging/evaluation process to make common tasks easier/more accessible. We are going to start with a basic agent that can only fetch the current weather and go through how loop can be useful as we instrument/improve it.
+[Loop](/docs/guides/loop) is a built-in AI assistant that helps you throughout the AI product development process in Braintrust. From creating scorers and generating datasets to analyzing logs and improving prompts, Loop is available throughout the product to help with your workflows. This guide shows how you can use Loop to build, evaluate, and improve a weather agent, demonstrating how Loop can make common AI development tasks easier and more accessible.
 
-Messages sent to loop are represented by a 💬
+By the end of this guide, you'll learn how to:
 
-## The agent
+- Use Loop to create custom scorers for your specific use case
+- Analyze logs with Loop to understand quality issues
+- Clean and prepare datasets with Loop's help
+- Iterate on prompts using Loop's experiment analysis
 
-We are going to use a basic agent set up with the OpenAI agents framework and one tool:
+In this cookbook, we'll represent messages you send to Loop with 💬.
 
-```jsx
+## Getting started
+
+This example uses the OpenAI Agents SDK to build a simple weather agent. You'll need:
+
+- A [Braintrust](/signup) account
+- An [OpenAI](https://platform.openai.com/) API key
+- Node.js and npm installed
+
+First, install the required dependencies:
+
+```bash
+npm install @openai/agents braintrust @braintrust/openai-agents
+```
+
+Set up your environment variables in a `.env` file:
+
+```bash
+BRAINTRUST_API_KEY=<your-api-key>
+OPENAI_API_KEY=<your-openai-key>
+```
+
+## Building the weather agent
+
+Let's start with a basic agent that can fetch current weather information. This agent uses the OpenAI Agents SDK and has one tool that returns realtime weather data for a given location.
+
+```typescript
 import { Agent, run, addTraceProcessor } from "@openai/agents";
-import { getWeatherByPlace } from "./weather-tool.js"; // returns realtime weather for a place
+import { getWeatherByPlace } from "./weather-tool.js";
 import { initLogger } from "braintrust";
 import { OpenAIAgentsTraceProcessor } from "@braintrust/openai-agents";
 
 // Initialize Braintrust logger
 const logger = initLogger({
-  projectName: "Test-Project",
+  projectName: "Weather-Agent",
   apiKey: process.env.BRAINTRUST_API_KEY,
 });
 
@@ -26,144 +54,134 @@ const processor = new OpenAIAgentsTraceProcessor({ logger });
 // Add the processor to OpenAI Agents
 addTraceProcessor(processor);
 
+// Create the agent with a simple instruction
 const agent = new Agent({
   name: "WeatherAgent",
-  instructions: ["You are a friendly assistant"].join(" "),
-  model: "gpt-5-nano",
+  instructions: "You are a friendly assistant",
+  model: "gpt-4o-mini",
   tools: [getWeatherByPlace],
 });
 
-const result = await run(agent, "What's the weather in london?");
+// Test the agent
+const result = await run(agent, "What's the weather in London?");
 ```
 
-<aside>
-❗
+The agent works, but there's an important limitation: it can only fetch current weather data, not forecasts or historical information. We need to ensure the agent doesn't promise capabilities it doesn't have.
 
-Because this tool has a limitation where it can only pull realtime data, we want to make sure that the agent is not offering to do something that it can’t do.
+## Creating a scorer with Loop
 
-</aside>
+Instead of manually writing a scorer from scratch, we can ask Loop to create one for us. This is especially useful when you need domain-specific evaluation logic.
 
-## Making a Scorer
+Send this message to Loop:
 
-<aside>
-💬
+💬 _Create an LLM scorer that checks output to make sure it provides realtime weather information when asked, but doesn't offer to provide forecasts or historical data. We will be running this on an agent that can ONLY get realtime data._
 
-Create an llm scorer that checks output to make sure that it can provides realtime weather information when asked, but doesn't offer to provide forecasts or historical data. We will be running this on an agent that can ONLY get realtime data.
+![Creating a scorer with Loop](./assets/image.png)
 
-</aside>
+Loop will generate a scorer that checks whether the agent stays within its capabilities. Once created, you can add it to your online scoring configuration to automatically evaluate incoming logs.
 
-![image.png](./assets/image.png)
+![Configuring online scoring](./assets/image%201.png)
 
-Then we can add it to the online scoring configuration so it runs on our incoming logs:
+## Analyzing logs with Loop
 
-![image.png](./assets/image%201.png)
+After running your agent for a while, you'll accumulate logs that you can analyze. Looking at the Logs view, you might notice some responses are getting poor scores.
 
-## Working with logs
+![Logs view showing scores](./assets/image%202.png)
 
-We have some logs now and I need to look at my scorer and prompt quality
+Rather than manually reviewing each log, ask Loop to identify patterns:
 
-![image.png](./assets/image%202.png)
+💬 _Can you look at the last 3 days of logs and explain why some of them got poor scores?_
 
-First, we can ask loop to take a look at logs and tell us where our bad ratings are coming from:
+![Loop analyzing logs](./assets/image%203.png)
 
-<aside>
-💬
-
-can you look at the last 3 days of logs and explain why some of them got poor scores?
-
-</aside>
-
-![image.png](./assets/image%203.png)
-
-Snippet from the feedback:
+Loop analyzes the logs and provides insights like:
 
 ```markdown
-# Key Patterns in Poor Scores:
+# Key patterns in poor scores:
 
 Over-helpful follow-ups hurt scores: When the agent offers forecasts,
 hourly predictions, or future weather after correctly providing current weather,
-it gets penalized Missing weather data: When the agent asks for clarification
+it gets penalized.
+
+Missing weather data: When the agent asks for clarification
 without providing any weather information (even when it could make a reasonable
-assumption), it fails the quality check The agent seems too eager to offer
-additional services that are outside its allowed scope (current weather only)
+assumption), it fails the quality check.
+
+The agent seems too eager to offer additional services that are outside
+its allowed scope (current weather only).
 
 # Recommendations:
 
 Configure the agent to ONLY provide current weather without suggesting
-forecasts or additional features For ambiguous locations, provide weather for
-the most common interpretation while noting the assumption, rather than just
-asking for clarification Remove any prompts or behaviors that cause the agent
-to offer forecast-related capabilities
+forecasts or additional features.
+
+For ambiguous locations, provide weather for the most common interpretation
+while noting the assumption, rather than just asking for clarification.
+
+Remove any prompts or behaviors that cause the agent to offer
+forecast-related capabilities.
 ```
 
-One of the runs got a good rating but should not have: the agent is asking if the user wants it to monitor the weather. It can’t do that. I need to adjust my scorer.
+### Refining the scorer
 
-<aside>
-💬
+Sometimes you'll notice edge cases where the scorer doesn't catch problematic behavior. For example, if an agent response asks "Would you like me to monitor it and alert you if anything changes?" - the agent can't actually do that, but the scorer might miss it.
 
-The scorer "Realtime Weather Only" rated this response as good but it contains the phrase "Would you like me to monitor it and alert you if anything changes?" which is not in the capability of the agent. It can't do anything independently. Please update the scorer so it catches this in the future.
+You can ask Loop to update the scorer:
 
-</aside>
+💬 _The scorer "Realtime weather only" rated this response as good but it contains the phrase "Would you like me to monitor it and alert you if anything changes?" which is not in the capability of the agent. It can't do anything independently. Please update the scorer so it catches this in the future._
 
-![image.png](./assets/image%204.png)
+![Updating the scorer](./assets/image%204.png)
 
-## Working with datasets
+Loop will modify the scorer to catch these cases going forward.
 
-Ok, now let’s look at the responses that received bad ratings (correctly) so we can tweak the agent. The first thing I am going to do is add these to a dataset:
+## Building a dataset with Loop
 
-![image.png](./assets/image%205.png)
+To systematically improve the agent, you'll want to create a dataset of problematic cases. Start by adding poorly-rated responses to a dataset:
 
-They have some extra data we don’t need though:
+![Adding logs to dataset](./assets/image%205.png)
 
-![image.png](./assets/image%206.png)
+You might notice the dataset has extra columns you don't need:
 
-<aside>
-💬
+![Dataset with extra columns](./assets/image%206.png)
 
-Remove the expected column/cell from all the rows in this dataset
+Instead of manually editing each row, ask Loop to clean it up:
 
-</aside>
+💬 _Remove the expected column/cell from all the rows in this dataset_
 
-<aside>
-💬
+The input format might also need adjustment. If your inputs are JSON objects but you only need the content field:
 
-The inputs are in json format right now, but I want them to be just whatever is in the "content" field of the json object in input.
+💬 _The inputs are in JSON format right now, but I want them to be just whatever is in the "content" field of the JSON object in input._
 
-</aside>
+Now your dataset is clean and ready to use:
 
-Now our dataset is clean and looks like this:
+![Clean dataset](./assets/image%207.png)
 
-![image.png](./assets/image%207.png)
+You can also ask Loop to generate additional test cases:
 
-So we can add more rows:
+💬 _Add 5 more rows to this dataset that are like the other ones in here where the input is asking for the current weather in a specific city._
 
-<aside>
-💬
+![Dataset with generated rows](./assets/image%208.png)
 
-add 5 more rows to this dataset that are like the other ones in here where the input is asking for the current weather in a specific city.
+## Running evaluations
 
-</aside>
+With a scorer and dataset ready, you can run evaluations to measure your agent's performance. This example pulls the dataset and scorer from Braintrust and runs the evaluation with the SDK:
 
-![image.png](./assets/image%208.png)
-
-## Evals
-
-Now that we have a scorer and dataset we like, we can run an evaluation with them. Because this is an agent, this example is going to pull the dataset and eval from braintrust but run the eval with the SDK as is most common:
-
-```jsx
+```typescript
 import { Agent, run } from "@openai/agents";
 import { getWeatherByPlace } from "./weather-tool.js";
 import { initDataset, Eval, initFunction } from "braintrust";
 
+// Create the agent (same as before)
 const agent = new Agent({
   name: "WeatherAgent",
-  instructions: ["You are a friendly assistant"].join(" "),
-  model: "gpt-5-nano",
+  instructions: "You are a friendly assistant",
+  model: "gpt-4o-mini",
   tools: [getWeatherByPlace],
 });
 
+// Run the evaluation
 Eval("Weather Agent", {
-  data: initDataset("Alex-Test-Project", {
+  data: initDataset("Weather-Agent", {
     dataset: "weather-failure-examples",
   }),
   task: async (input) => {
@@ -172,27 +190,24 @@ Eval("Weather Agent", {
   },
   scores: [
     initFunction({
-      projectName: "Alex-Test-Project",
+      projectName: "Weather-Agent",
       slug: "realtime-weather-only-fa43",
     }),
   ],
 });
 ```
 
-In this particular run we got a 0%
+Since we know this dataset is made up of difficult examples, the initial run might show a low score, close to 0%:
 
-![image.png](./assets/image%209.png)
+![Initial evaluation results](./assets/image%209.png)
 
-Let’s ask loop how we can improve the system message to improve out score.
+## Improving the prompt with Loop
 
-<aside>
-💬
+Instead of guessing how to improve the system prompt, ask Loop to analyze the experiment results:
 
-Can you check the scorer output in this experiment and give me suggestions for how to improve my system prompt?
+💬 _Can you check the scorer output in this experiment and give me suggestions for how to improve my system prompt?_
 
-</aside>
-
-Loop provided the following suggestion which we can add to our agent:
+Loop will provide specific, actionable suggestions based on where the agent failed. For example:
 
 ```
 You are a weather information assistant that provides ONLY current/realtime weather data.
@@ -222,23 +237,37 @@ EXAMPLE GOOD RESPONSE:
 After providing current weather data, your task is complete. Do not offer any additional services.
 ```
 
-Now I can run the eval again with this new system prompt:
+Update your agent with this improved system prompt and run the evaluation again:
 
-![image.png](./assets/image%2010.png)
+![Improved evaluation results](./assets/image%2010.png)
 
-Success!
+Success! The agent now consistently stays within its capabilities.
 
-# Other use cases:
+## Other Loop use cases
 
-Loop can be helpful in other areas as well
+Beyond the core workflow shown above, Loop can help with other common tasks.
 
-## Ask loop to generate a chart definition for you
+### Generating charts
 
-<aside>
-💬
+You can ask Loop to create visualizations of your data:
 
-Can you make me a chart that shows the number of times a tool called "get_weather_by_city" was called over time?
+💬 _Can you make me a chart that shows the number of times a tool called "get_weather_by_city" was called over time?_
 
-</aside>
+![Loop-generated chart](./assets/image%2011.png)
 
-![image.png](./assets/image%2011.png)
+Loop will generate the chart definition and display it for you, making it easy to understand usage patterns and share data with stakeholders without writing any charting code.
+
+## Next steps
+
+Now that you've seen how Loop can accelerate your AI development workflow, try applying it to your own projects:
+
+- Use Loop to create scorers for your specific evaluation criteria
+- Ask Loop to analyze your logs and identify quality issues
+- Let Loop help you clean and augment your datasets
+- Get Loop's suggestions for improving your prompts based on experiment results
+
+For more information on Loop and other Braintrust features:
+
+- Learn more about [Loop](/docs/guides/loop)
+- Explore [logging](/docs/core/logs) and [experiments](/docs/core/experiments)
+- Check out other [cookbook recipes](/cookbook)

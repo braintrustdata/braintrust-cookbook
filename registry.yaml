@@ -307,14 +307,12 @@
     - evals
     - typescript
     - logging
-- title: Using Loop
+- title: Using Loop in AI product development
   path: examples/Loop/loop.mdx
   date: 2025-11-23
   authors:
     - alexzelenskiy
   tags:
     - agent
-    - tools
     - evals
-    - typescript
     - logging
