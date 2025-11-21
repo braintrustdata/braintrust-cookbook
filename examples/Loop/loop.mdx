@@ -74,12 +74,12 @@ Instead of manually writing a scorer from scratch, we can ask Loop to create one
 
 Send this message to Loop:
 
-<Note>
+<Callout>
   💬 _Create an LLM scorer that checks output to make sure it provides realtime
   weather information when asked, but doesn't offer to provide forecasts or
   historical data. We will be running this on an agent that can ONLY get
   realtime data._
-</Note>
+</Callout>
 
 ![Creating a scorer with Loop](./assets/create-scorer-with-loop.png)
 
@@ -95,10 +95,10 @@ After running your agent for a while, you'll accumulate logs that you can analyz
 
 Rather than manually reviewing each log, ask Loop to identify patterns:
 
-<Note>
+<Callout>
   💬 _Can you look at the last 3 days of logs and explain why some of them got
   poor scores?_
-</Note>
+</Callout>
 
 ![Loop analyzing logs](./assets/loop-analyzing-logs.png)
 
@@ -136,12 +136,12 @@ Sometimes you'll notice edge cases where the scorer doesn't catch problematic be
 
 You can ask Loop to update the scorer:
 
-<Note>
+<Callout>
   💬 _The scorer "Realtime weather only" rated this response as good but it
   contains the phrase "Would you like me to monitor it and alert you if anything
   changes?" which is not in the capability of the agent. It can't do anything
   independently. Please update the scorer so it catches this in the future._
-</Note>
+</Callout>
 
 ![Updating the scorer](./assets/update-scorer.png)
 
@@ -159,16 +159,16 @@ You might notice the dataset has extra columns you don't need:
 
 Instead of manually editing each row, ask Loop to clean it up:
 
-<Note>
+<Callout>
   💬 _Remove the expected column/cell from all the rows in this dataset_
-</Note>
+</Callout>
 
 The input format might also need adjustment. If your inputs are JSON objects but you only need the content field:
 
-<Note>
+<Callout>
   💬 _The inputs are in JSON format right now, but I want them to be just
   whatever is in the "content" field of the JSON object in input._
-</Note>
+</Callout>
 
 Now your dataset is clean and ready to use:
 
@@ -176,10 +176,10 @@ Now your dataset is clean and ready to use:
 
 You can also ask Loop to generate additional test cases:
 
-<Note>
+<Callout>
   💬 _Add 5 more rows to this dataset that are like the other ones in here where
   the input is asking for the current weather in a specific city._
-</Note>
+</Callout>
 
 ![Dataset with generated rows](./assets/dataset-generated-rows.png)
 
@@ -226,10 +226,10 @@ Since we know this dataset is made up of difficult examples, the initial run mig
 
 Instead of guessing how to improve the system prompt, ask Loop to analyze the experiment results:
 
-<Note>
+<Callout>
   💬 _Can you check the scorer output in this experiment and give me suggestions
   for how to improve my system prompt?_
-</Note>
+</Callout>
 
 Loop will provide specific, actionable suggestions based on where the agent failed. For example:
 
@@ -275,10 +275,10 @@ Beyond the core workflow shown above, Loop can help with other common tasks.
 
 You can ask Loop to create visualizations of your data:
 
-<Note>
+<Callout>
   💬 _Can you make me a chart that shows the number of times a tool called
   "get_weather_by_city" was called over time?_
-</Note>
+</Callout>
 
 ![Loop-generated chart](./assets/loop-generated-chart.png)
 
