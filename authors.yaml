@@ -55,8 +55,12 @@ jamesle:
 carlosesteban:
   name: "Carlos Esteban"
   website: "https://www.linkedin.com/in/cmesteban/"
-  avatar: "https://www.braintrust.dev/blog/img/author/carlos-esteban.jpg"
+  avatar: "/blog/img/author/carlos-esteban.jpg"
 alexzelenskiy:
   name: "Alex Zelenskiy"
   website: "https://www.linkedin.com/in/alexzelenskiy/"
   avatar: "https://www.braintrust.dev/blog/img/author/alex-zelenskiy.jpg"
+ishansingh:
+  name: "Ishan Singh"
+  website: "https://www.linkedin.com/in/shan199434/"
+  avatar: "/blog/img/author/ishan-singh.jpg"
