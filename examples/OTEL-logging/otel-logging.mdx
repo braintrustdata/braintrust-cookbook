@@ -34,7 +34,7 @@ OPENAI_API_KEY=<your-api-key>
 To set up Braintrust as an [**OpenTelemetry**](https://opentelemetry.io/docs/) backend, you'll use the `BraintrustSpanProcessor` which handles all the configuration automatically. First, install the required dependencies:
 
 ```bash
-npm install braintrust @opentelemetry/sdk-node
+npm install braintrust @braintrust/otel @opentelemetry/sdk-node
 ```
 
 Then add your Braintrust configuration to your `.env` file:
@@ -58,7 +58,7 @@ Create a new file called `instrumentation.ts` to set up the Braintrust span proc
 
 ```tsx
 import { NodeSDK } from "@opentelemetry/sdk-node";
-import { BraintrustSpanProcessor } from "braintrust";
+import { BraintrustSpanProcessor } from "@braintrust/otel";
 
 const sdk = new NodeSDK({
   serviceName: "multi-step-tool-calls-demo",
