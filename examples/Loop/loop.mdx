@@ -76,23 +76,23 @@ Send this message to Loop:
 
 💬 _Create an LLM scorer that checks output to make sure it provides realtime weather information when asked, but doesn't offer to provide forecasts or historical data. We will be running this on an agent that can ONLY get realtime data._
 
-![Creating a scorer with Loop](./assets/image.png)
+![Creating a scorer with Loop](./assets/create-scorer-with-loop.png)
 
 Loop will generate a scorer that checks whether the agent stays within its capabilities. Once created, you can add it to your online scoring configuration to automatically evaluate incoming logs.
 
-![Configuring online scoring](./assets/image%201.png)
+![Configuring online scoring](./assets/configure-online-scoring.png)
 
 ## Analyzing logs with Loop
 
 After running your agent for a while, you'll accumulate logs that you can analyze. Looking at the Logs view, you might notice some responses are getting poor scores.
 
-![Logs view showing scores](./assets/image%202.png)
+![Logs view showing scores](./assets/logs-view-with-scores.png)
 
 Rather than manually reviewing each log, ask Loop to identify patterns:
 
 💬 _Can you look at the last 3 days of logs and explain why some of them got poor scores?_
 
-![Loop analyzing logs](./assets/image%203.png)
+![Loop analyzing logs](./assets/loop-analyzing-logs.png)
 
 Loop analyzes the logs and provides insights like:
 
@@ -130,7 +130,7 @@ You can ask Loop to update the scorer:
 
 💬 _The scorer "Realtime weather only" rated this response as good but it contains the phrase "Would you like me to monitor it and alert you if anything changes?" which is not in the capability of the agent. It can't do anything independently. Please update the scorer so it catches this in the future._
 
-![Updating the scorer](./assets/image%204.png)
+![Updating the scorer](./assets/update-scorer.png)
 
 Loop will modify the scorer to catch these cases going forward.
 
@@ -138,11 +138,11 @@ Loop will modify the scorer to catch these cases going forward.
 
 To systematically improve the agent, you'll want to create a dataset of problematic cases. Start by adding poorly-rated responses to a dataset:
 
-![Adding logs to dataset](./assets/image%205.png)
+![Adding logs to dataset](./assets/add-logs-to-dataset.png)
 
 You might notice the dataset has extra columns you don't need:
 
-![Dataset with extra columns](./assets/image%206.png)
+![Dataset with extra columns](./assets/dataset-extra-columns.png)
 
 Instead of manually editing each row, ask Loop to clean it up:
 
@@ -154,13 +154,13 @@ The input format might also need adjustment. If your inputs are JSON objects but
 
 Now your dataset is clean and ready to use:
 
-![Clean dataset](./assets/image%207.png)
+![Clean dataset](./assets/clean-dataset.png)
 
 You can also ask Loop to generate additional test cases:
 
 💬 _Add 5 more rows to this dataset that are like the other ones in here where the input is asking for the current weather in a specific city._
 
-![Dataset with generated rows](./assets/image%208.png)
+![Dataset with generated rows](./assets/dataset-generated-rows.png)
 
 ## Running evaluations
 
@@ -199,7 +199,7 @@ Eval("Weather Agent", {
 
 Since we know this dataset is made up of difficult examples, the initial run might show a low score, close to 0%:
 
-![Initial evaluation results](./assets/image%209.png)
+![Initial evaluation results](./assets/initial-evaluation-results.png)
 
 ## Improving the prompt with Loop
 
@@ -239,7 +239,7 @@ After providing current weather data, your task is complete. Do not offer any ad
 
 Update your agent with this improved system prompt and run the evaluation again:
 
-![Improved evaluation results](./assets/image%2010.png)
+![Improved evaluation results](./assets/improved-evaluation-results.png)
 
 Success! The agent now consistently stays within its capabilities.
 
@@ -253,7 +253,7 @@ You can ask Loop to create visualizations of your data:
 
 💬 _Can you make me a chart that shows the number of times a tool called "get_weather_by_city" was called over time?_
 
-![Loop-generated chart](./assets/image%2011.png)
+![Loop-generated chart](./assets/loop-generated-chart.png)
 
 Loop will generate the chart definition and display it for you, making it easy to understand usage patterns and share data with stakeholders without writing any charting code.
 
