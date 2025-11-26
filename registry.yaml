@@ -311,7 +311,7 @@
   path: examples/EvalionVoiceAgentEval/EvalionVoiceAgentEvaluation.ipynb
   date: 2024-11-26
   authors:
-    - femave
+    - ornellaaltunyan
   tags:
     - evals
     - voice
