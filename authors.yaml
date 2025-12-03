@@ -3,56 +3,64 @@
 ankrgyl:
   name: "Ankur Goyal"
   website: "https://twitter.com/ankrgyl"
-  avatar: "/blog/img/author/ankur-goyal.jpg"
+  avatar: "https://www.braintrust.dev/blog/img/author/ankur-goyal.jpg"
 austinmxx:
   name: "Austin Moehle"
   website: "https://www.linkedin.com/in/austinmxx/"
-  avatar: "/blog/img/author/austin-moehle.jpg"
+  avatar: "https://www.braintrust.dev/blog/img/author/austin-moehle.jpg"
 davidtsong:
   name: "David Song"
   website: "https://twitter.com/davidtsong"
-  avatar: "/blog/img/author/david-song.jpg"
+  avatar: "https://www.braintrust.dev/blog/img/author/david-song.jpg"
 j13huang:
   name: "John Huang"
   website: "https://www.linkedin.com/in/j13huang/"
-  avatar: "/blog/img/author/john-huang.jpg"
+  avatar: "https://www.braintrust.dev/blog/img/author/john-huang.jpg"
 kevin1:
   name: "Kevin Chen"
   website: "https://x.com/kevinchen"
-  avatar: "/blog/img/author/kevin-chen.jpg"
+  avatar: "https://www.braintrust.dev/blog/img/author/kevin-chen.jpg"
 nelsonauner:
   name: "Nelson Auner"
   website: "https://twitter.com/nelsonauner"
-  avatar: "/blog/img/author/nelson-auner.jpg"
+  avatar: "https://www.braintrust.dev/blog/img/author/nelson-auner.jpg"
 ornellaaltunyan:
   name: "Ornella Altunyan"
   website: "https://twitter.com/ornelladotcom"
-  avatar: "/blog/img/author/ornella-altunyan.jpg"
+  avatar: "https://www.braintrust.dev/blog/img/author/ornella-altunyan.jpg"
 wong:
   name: "Kenny Wong"
   website: "https://twitter.com/siuheihk"
-  avatar: "/blog/img/author/kenny-wong.png"
+  avatar: "https://www.braintrust.dev/blog/img/author/kenny-wong.png"
 vitorbal:
   name: "Vítor Balocco"
   website: "https://twitter.com/vitorbal"
-  avatar: "/blog/img/author/vitor-balocco.jpg"
+  avatar: "https://www.braintrust.dev/blog/img/author/vitor-balocco.jpg"
 tara-nagar:
   name: "Tara Nagar"
   website: "https://www.linkedin.com/in/taranagar/"
-  avatar: "/blog/img/author/tara-nagar.jpg"
+  avatar: "https://www.braintrust.dev/blog/img/author/tara-nagar.jpg"
 abarbir12:
   name: "Adrian Barbir"
   website: "https://www.linkedin.com/in/adrianbarbir/"
-  avatar: "/blog/img/author/adrian-barbir.jpg"
+  avatar: "https://www.braintrust.dev/blog/img/author/adrian-barbir.jpg"
 philhetzel:
   name: "Phil Hetzel"
   website: "https://www.linkedin.com/in/philliphetzel/"
-  avatar: "/blog/img/author/phil-hetzel.jpg"
+  avatar: "https://www.braintrust.dev/blog/img/author/phil-hetzel.jpg"
 jamesle:
   name: "James Le"
   website: "https://x.com/le_james94"
-  avatar: "/blog/img/author/james-le.jpg"
+  avatar: "https://www.braintrust.dev/blog/img/author/james-le.jpg"
 carlosesteban:
   name: "Carlos Esteban"
   website: "https://www.linkedin.com/in/cmesteban/"
   avatar: "/blog/img/author/carlos-esteban.jpg"
+alexzelenskiy:
+  name: "Alex Zelenskiy"
+  website: "https://www.linkedin.com/in/alexzelenskiy/"
+  avatar: "https://www.braintrust.dev/blog/img/author/alex-zelenskiy.jpg"
+ishansingh:
+  name: "Ishan Singh"
+  website: "https://www.linkedin.com/in/shan199434/"
+  avatar: "/blog/img/author/ishan-singh.jpg"
