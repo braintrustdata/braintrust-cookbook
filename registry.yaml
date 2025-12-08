@@ -307,3 +307,32 @@
     - evals
     - typescript
     - logging
+- title: Observability for Strands Agents on Amazon Bedrock
+  path: examples/AmazonBedrockStrands/AmazonBedrockStrands.ipynb
+  date: 2025-11-18
+  authors:
+    - ishansingh
+  tags:
+    - observability
+    - agent
+    - aws
+- title: Using Loop in AI product development
+  path: examples/Loop/loop.mdx
+  date: 2025-11-21
+  authors:
+    - alexzelenskiy
+  tags:
+    - agent
+    - evals
+    - logging
+- title: Evaluating voice AI agents with Evalion
+  path: examples/EvalionVoiceAgentEval/EvalionVoiceAgentEvaluation.ipynb
+  date: 2024-12-05
+  authors:
+    - femave
+    - miguelgueles
+  tags:
+    - evals
+    - voice
+    - agent
+    - python
