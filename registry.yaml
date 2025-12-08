@@ -336,3 +336,12 @@
     - voice
     - agent
     - python
+- title: Evaluating and iterating on Lovable apps
+  path: examples/Lovable/Lovable.ipynb
+  date: 2025-12-08
+  authors:
+    - mengying_braintrust
+  tags:
+    - logging
+    - evals
+    - typescript
