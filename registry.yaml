@@ -336,7 +336,7 @@
     - voice
     - agent
     - python
-- title: Evaluating and iterating on Lovable apps
+- title: Evaluating and iterating on AI apps with Lovable
   path: examples/Lovable/Lovable.ipynb
   date: 2025-12-08
   authors:
