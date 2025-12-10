@@ -1,272 +1,54 @@
 # yaml-language-server: $schema=./.github/registry_schema.json
 
-- title: Text-to-SQL
-  path: examples/Text2SQL/Text2SQL.ipynb
-  date: 2023-08-12
+- title: Evaluating and iterating on AI apps with Lovable
+  path: examples/Lovable/Lovable.ipynb
+  date: 2025-12-08
   authors:
-    - ankrgyl
-  tags:
-    - evals
-    - sql
-- title: Classifying news articles
-  path: examples/ClassifyingNewsArticles/ClassifyingNewsArticles.ipynb
-  date: 2023-09-01
-  authors:
-    - davidtsong
-  tags:
-    - evals
-    - classification
-- title: Improving Github issue titles using their contents
-  path: examples/Github-Issues/Github-Issues.ipynb
-  date: 2023-10-29
-  authors:
-    - ankrgyl
-  tags:
-    - evals
-    - summarization
-- title: Coda's Help Desk with and without RAG
-  path: examples/CodaHelpDesk/CodaHelpDesk.ipynb
-  date: 2023-12-21
-  authors:
-    - austinmxx
-    - wong
-  tags:
-    - evals
-    - rag
-- title: Generating beautiful HTML components
-  path: examples/HTMLGenerator/HTMLGenerator.ipynb
-  date: 2024-01-29
-  authors:
-    - ankrgyl
+    - mengying_braintrust
   tags:
     - logging
-    - datasets
     - evals
-- title: Generating release notes and hill-climbing to improve them
-  path: examples/ReleaseNotes/ReleaseNotes.ipynb
-  date: 2024-02-02
+    - typescript
+- title: Using Loop in AI product development
+  path: examples/Loop/loop.mdx
+  date: 2025-11-21
   authors:
-    - ankrgyl
-  tags:
-    - evals
-    - hill-climbing
-- title: How Zapier uses assertions to evaluate tool usage in chatbots
-  path: examples/Assertions/Assertions.ipynb
-  date: 2024-02-13
-  authors:
-    - vitorbal
-  tags:
-    - evals
-    - assertions
-    - tools
-  logo: https://cdn.zapier.com/zapier/images/favicon.ico
-- title: AI Search Bar
-  path: examples/AISearch/ai_search_evals.ipynb
-  date: 2024-03-04
-  authors:
-    - austinmxx
-  tags:
-    - evals
-    - sql
-- title: Detecting Prompt Injections
-  path: examples/PromptInjectionDetector/PromptInjectionGPT4o.ipynb
-  date: 2024-05-20
-  authors:
-    - nelsonauner
-  tags:
-    - evals
-    - classification
-- title: Comparing evals across multiple AI models
-  path: examples/ModelComparison/ModelComparison.ipynb
-  date: 2024-05-22
-  authors:
-    - j13huang
-  tags:
-    - evals
-    - charts
-- title: Optimizing Ragas to evaluate a RAG pipeline
-  path: examples/SimpleRagas/SimpleRagas.ipynb
-  date: 2024-05-27
-  authors:
-    - ankrgyl
-    - nelsonauner
-  tags:
-    - evals
-    - rag
-- title: LLM Eval For Text2SQL
-  path: examples/Text2SQL-Data/Text2SQL-Data.ipynb
-  date: 2024-05-29
-  authors:
-    - ankrgyl
-  tags:
-    - evals
-    - datasets
-    - text2sql
-- title: Evaluating a chat assistant
-  path: examples/EvaluatingChatAssistant/EvaluatingChatAssistant.ipynb
-  date: 2024-07-16
-  authors:
-    - tara-nagar
-  tags:
-    - evals
-    - chat
-- title: Tool calls in LLaMa 3.1
-  path: examples/LLaMa-3_1-Tools/LLaMa-3_1-Tools.ipynb
-  date: 2024-07-26
-  authors:
-    - ankrgyl
-  tags:
-    - evals
-    - llama-3.1
-    - tools
-- title: Benchmarking inference providers
-  path: examples/ProviderBenchmark/ProviderBenchmark.ipynb
-  date: 2024-07-29
-  authors:
-    - ankrgyl
-  tags:
-    - evals
-    - llama-3.1
-    - providers
-- title: An agent that runs OpenAPI commands
-  path: examples/APIAgent-Py/APIAgent.ipynb
-  date: 2024-08-12
-  authors:
-    - ankrgyl
+    - alexzelenskiy
   tags:
     - agent
-    - rag
     - evals
-- title: "Unreleased AI: A full stack Next.js app for generating changelogs"
-  path: examples/UnreleasedAI/UnreleasedAI.mdx
-  date: 2024-08-28
+    - logging
+- title: Observability for Strands Agents on Amazon Bedrock
+  path: examples/AmazonBedrockStrands/AmazonBedrockStrands.ipynb
+  date: 2025-11-18
+  authors:
+    - ishansingh
+  tags:
+    - observability
+    - agent
+    - aws
+- title: Building reliable AI agents
+  path: examples/AgentWhileLoop/AgentWhileLoop.mdx
+  date: 2025-08-05
   authors:
     - ornellaaltunyan
   tags:
+    - agent
+    - tools
     - evals
+    - typescript
     - logging
-    - next.js
-- title: "Evaluating multimodal receipt extraction"
-  path: examples/ReceiptExtraction/ReceiptExtraction.ipynb
-  date: 2024-09-30
+- title: Using PDF attachments in playgrounds
+  path: examples/PDFPlayground/PDFPlayground.mdx
+  date: 2025-05-22
   authors:
-    - ankrgyl
+    - carlosesteban
+    - ornellaaltunyan
   tags:
-    - evals
+    - logging
     - multimodal
-    - receipts
-- title: Using functions to build a RAG agent
-  path: examples/ToolRAG/ToolRAG.mdx
-  date: 2024-10-08
-  authors:
-    - ornellaaltunyan
-    - ankrgyl
-  tags:
-    - functions
-    - rag
-    - tools
-- title: Using OpenTelemetry for LLM observability
-  path: examples/OTEL-logging/OTEL-logging.mdx
-  date: 2024-10-31
-  authors:
-    - ornellaaltunyan
-  tags:
-    - evals
-    - tools
-- title: Using Python functions to extract text from images
-  path: examples/ToolOCR/ToolOCR.mdx
-  date: 2024-11-22
-  authors:
-    - ornellaaltunyan
-  tags:
-    - python
-    - tools
-    - ocr
-    - functions
-- title: Evaluating SimpleQA
-  path: examples/SimpleQA/SimpleQA.ipynb
-  date: 2024-12-06
-  authors:
-    - ankrgyl
-    - ornellaaltunyan
-  tags:
-    - datasets
-    - evals
-- title: Evaluating audio with the OpenAI Realtime API
-  path: examples/Realtime/Realtime.mdx
-  date: 2024-12-14
-  authors:
-    - ornellaaltunyan
-  tags:
-    - evals
-    - tools
-    - audio
-- title: Evaluating the precision and recall of an emotion classifier
-  path: examples/PrecisionRecall/PrecisionRecall.ipynb
-  date: 2025-01-17
-  authors:
-    - abarbir12
-  tags:
-    - recall
-    - precision
-    - evals
-    - classifier
-    - python
-- title: Evaluating a prompt chaining agent
-  path: examples/PromptChaining/prompt-chaining.ipynb
-  date: 2025-01-30
-  authors:
-    - abarbir12
-  tags:
-    - agent
-    - evals
-    - python
-- title: Classifying spam using structured outputs
-  path: examples/SpamClassifier/SpamClassifier.mdx
-  date: 2025-02-08
-  authors:
-    - ornellaaltunyan
-  tags:
-    - classifier
-    - structured outputs
     - playground
-- title: Evaluating a voice agent
-  path: examples/VoiceAgent/voiceagent.ipynb
-  date: 2025-02-13
-  authors:
-    - abarbir12
-  tags:
-    - agent
-    - evals
-    - voice
-- title: Evaluating video QA
-  path: examples/VideoQA/VideoQA.ipynb
-  date: 2025-02-18
-  authors:
-    - abarbir12
-  tags:
-    - evals
-    - video
-    - datasets
-- title: Prompt versioning and deployment
-  path: examples/PromptVersioning/PromptVersioning.ipynb
-  date: 2025-02-24
-  authors:
-    - abarbir12
-  tags:
-    - evals
-    - prompting
-    - functions
-- title: Evaluating a web agent
-  path: examples/WebAgent/WebAgent.ipynb
-  date: 2025-03-08
-  authors:
-    - ornellaaltunyan
-    - abarbir12
-  tags:
-    - eval
-    - agent
-    - multimodal
+    - typescript
 - title: Tracing Vercel AI SDK applications
   path: examples/VercelAISDKTracing/vercel-ai-sdk-tracing.mdx
   date: 2025-05-15
@@ -285,46 +67,90 @@
     - eval
     - video
     - multimodal
-- title: Using PDF attachments in playgrounds
-  path: examples/PDFPlayground/PDFPlayground.mdx
-  date: 2025-05-22
+- title: Evaluating a web agent
+  path: examples/WebAgent/WebAgent.ipynb
+  date: 2025-03-08
   authors:
-    - carlosesteban
     - ornellaaltunyan
+    - abarbir12
   tags:
-    - logging
+    - eval
+    - agent
     - multimodal
-    - playground
-    - typescript
-- title: Building reliable AI agents
-  path: examples/AgentWhileLoop/AgentWhileLoop.mdx
-  date: 2025-08-05
+- title: Prompt versioning and deployment
+  path: examples/PromptVersioning/PromptVersioning.ipynb
+  date: 2025-02-24
+  authors:
+    - abarbir12
+  tags:
+    - evals
+    - prompting
+    - functions
+- title: Evaluating video QA
+  path: examples/VideoQA/VideoQA.ipynb
+  date: 2025-02-18
+  authors:
+    - abarbir12
+  tags:
+    - evals
+    - video
+    - datasets
+- title: Evaluating a voice agent
+  path: examples/VoiceAgent/voiceagent.ipynb
+  date: 2025-02-13
+  authors:
+    - abarbir12
+  tags:
+    - agent
+    - evals
+    - voice
+- title: Classifying spam using structured outputs
+  path: examples/SpamClassifier/SpamClassifier.mdx
+  date: 2025-02-08
   authors:
     - ornellaaltunyan
   tags:
+    - classifier
+    - structured outputs
+    - playground
+- title: Evaluating a prompt chaining agent
+  path: examples/PromptChaining/prompt-chaining.ipynb
+  date: 2025-01-30
+  authors:
+    - abarbir12
+  tags:
     - agent
+    - evals
+    - python
+- title: Evaluating the precision and recall of an emotion classifier
+  path: examples/PrecisionRecall/PrecisionRecall.ipynb
+  date: 2025-01-17
+  authors:
+    - abarbir12
+  tags:
+    - recall
+    - precision
+    - evals
+    - classifier
+    - python
+- title: Evaluating audio with the OpenAI Realtime API
+  path: examples/Realtime/Realtime.mdx
+  date: 2024-12-14
+  authors:
+    - ornellaaltunyan
+  tags:
+    - evals
     - tools
-    - evals
-    - typescript
-    - logging
-- title: Observability for Strands Agents on Amazon Bedrock
-  path: examples/AmazonBedrockStrands/AmazonBedrockStrands.ipynb
-  date: 2025-11-18
+    - audio
+- title: Evaluating SimpleQA
+  path: examples/SimpleQA/SimpleQA.ipynb
+  date: 2024-12-06
   authors:
-    - ishansingh
+    - ankrgyl
+    - ornellaaltunyan
   tags:
-    - observability
-    - agent
-    - aws
-- title: Using Loop in AI product development
-  path: examples/Loop/loop.mdx
-  date: 2025-11-21
-  authors:
-    - alexzelenskiy
-  tags:
-    - agent
+    - datasets
     - evals
-    - logging
 - title: Evaluating voice AI agents with Evalion
   path: examples/EvalionVoiceAgentEval/EvalionVoiceAgentEvaluation.ipynb
   date: 2024-12-05
@@ -336,12 +162,186 @@
     - voice
     - agent
     - python
-- title: Evaluating and iterating on AI apps with Lovable
-  path: examples/Lovable/Lovable.ipynb
-  date: 2025-12-08
+- title: Using Python functions to extract text from images
+  path: examples/ToolOCR/ToolOCR.mdx
+  date: 2024-11-22
   authors:
-    - mengying_braintrust
+    - ornellaaltunyan
+  tags:
+    - python
+    - tools
+    - ocr
+    - functions
+- title: Using OpenTelemetry for LLM observability
+  path: examples/OTEL-logging/OTEL-logging.mdx
+  date: 2024-10-31
+  authors:
+    - ornellaaltunyan
+  tags:
+    - evals
+    - tools
+- title: Using functions to build a RAG agent
+  path: examples/ToolRAG/ToolRAG.mdx
+  date: 2024-10-08
+  authors:
+    - ornellaaltunyan
+    - ankrgyl
+  tags:
+    - functions
+    - rag
+    - tools
+- title: "Evaluating multimodal receipt extraction"
+  path: examples/ReceiptExtraction/ReceiptExtraction.ipynb
+  date: 2024-09-30
+  authors:
+    - ankrgyl
+  tags:
+    - evals
+    - multimodal
+    - receipts
+- title: "Unreleased AI: A full stack Next.js app for generating changelogs"
+  path: examples/UnreleasedAI/UnreleasedAI.mdx
+  date: 2024-08-28
+  authors:
+    - ornellaaltunyan
+  tags:
+    - evals
+    - logging
+    - next.js
+- title: An agent that runs OpenAPI commands
+  path: examples/APIAgent-Py/APIAgent.ipynb
+  date: 2024-08-12
+  authors:
+    - ankrgyl
+  tags:
+    - agent
+    - rag
+    - evals
+- title: Benchmarking inference providers
+  path: examples/ProviderBenchmark/ProviderBenchmark.ipynb
+  date: 2024-07-29
+  authors:
+    - ankrgyl
+  tags:
+    - evals
+    - llama-3.1
+    - providers
+- title: Tool calls in LLaMa 3.1
+  path: examples/LLaMa-3_1-Tools/LLaMa-3_1-Tools.ipynb
+  date: 2024-07-26
+  authors:
+    - ankrgyl
+  tags:
+    - evals
+    - llama-3.1
+    - tools
+- title: Evaluating a chat assistant
+  path: examples/EvaluatingChatAssistant/EvaluatingChatAssistant.ipynb
+  date: 2024-07-16
+  authors:
+    - tara-nagar
+  tags:
+    - evals
+    - chat
+- title: LLM Eval For Text2SQL
+  path: examples/Text2SQL-Data/Text2SQL-Data.ipynb
+  date: 2024-05-29
+  authors:
+    - ankrgyl
+  tags:
+    - evals
+    - datasets
+    - text2sql
+- title: Optimizing Ragas to evaluate a RAG pipeline
+  path: examples/SimpleRagas/SimpleRagas.ipynb
+  date: 2024-05-27
+  authors:
+    - ankrgyl
+    - nelsonauner
+  tags:
+    - evals
+    - rag
+- title: Comparing evals across multiple AI models
+  path: examples/ModelComparison/ModelComparison.ipynb
+  date: 2024-05-22
+  authors:
+    - j13huang
+  tags:
+    - evals
+    - charts
+- title: Detecting Prompt Injections
+  path: examples/PromptInjectionDetector/PromptInjectionGPT4o.ipynb
+  date: 2024-05-20
+  authors:
+    - nelsonauner
+  tags:
+    - evals
+    - classification
+- title: AI Search Bar
+  path: examples/AISearch/ai_search_evals.ipynb
+  date: 2024-03-04
+  authors:
+    - austinmxx
+  tags:
+    - evals
+    - sql
+- title: How Zapier uses assertions to evaluate tool usage in chatbots
+  path: examples/Assertions/Assertions.ipynb
+  date: 2024-02-13
+  authors:
+    - vitorbal
+  tags:
+    - evals
+    - assertions
+    - tools
+  logo: https://cdn.zapier.com/zapier/images/favicon.ico
+- title: Generating release notes and hill-climbing to improve them
+  path: examples/ReleaseNotes/ReleaseNotes.ipynb
+  date: 2024-02-02
+  authors:
+    - ankrgyl
+  tags:
+    - evals
+    - hill-climbing
+- title: Generating beautiful HTML components
+  path: examples/HTMLGenerator/HTMLGenerator.ipynb
+  date: 2024-01-29
+  authors:
+    - ankrgyl
   tags:
     - logging
+    - datasets
     - evals
-    - typescript
+- title: Coda's Help Desk with and without RAG
+  path: examples/CodaHelpDesk/CodaHelpDesk.ipynb
+  date: 2023-12-21
+  authors:
+    - austinmxx
+    - wong
+  tags:
+    - evals
+    - rag
+- title: Improving Github issue titles using their contents
+  path: examples/Github-Issues/Github-Issues.ipynb
+  date: 2023-10-29
+  authors:
+    - ankrgyl
+  tags:
+    - evals
+    - summarization
+- title: Classifying news articles
+  path: examples/ClassifyingNewsArticles/ClassifyingNewsArticles.ipynb
+  date: 2023-09-01
+  authors:
+    - davidtsong
+  tags:
+    - evals
+    - classification
+- title: Text-to-SQL
+  path: examples/Text2SQL/Text2SQL.ipynb
+  date: 2023-08-12
+  authors:
+    - ankrgyl
+  tags:
+    - evals
+    - sql
