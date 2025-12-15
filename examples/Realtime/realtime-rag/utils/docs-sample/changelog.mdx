@@ -67,7 +67,7 @@ loaded attachment data.
 
 ## Week of 2024-11-12
 
-- Support for creating and pushing custom Python tools and prompts from your codebase with `braintrust push`. Read the guides to [tools](/docs/guides/functions/tools) and [prompts](/docs/guides/functions/prompts) for more information.
+- Support for creating and pushing custom Python tools and prompts from your codebase with `braintrust push`. Read the guides to [tools](/docs/core/functions/tools) and [prompts](/docs/core/functions/prompts) for more information.
 - You can now view grouped summary data for all experiments by selecting **Include comparisons in group** from the **Group by** dropdown inside an experiment.
 - The experiments page now supports downloading as CSV/JSON.
 - Downloading or duplicating a dataset in the UI now properly copies all dataset rows.
@@ -231,7 +231,7 @@ from an exported span slug.
 ## Week of 2024-09-09
 
 - You can now create server-side online evaluations for your logs. Online evals support both [autoevals](/docs/reference/autoevals) and
-  [custom scorers](/docs/guides/playground) you define as LLM-as-a-judge, TypeScript, or Python functions. See
+  [custom scorers](/docs/core/playground) you define as LLM-as-a-judge, TypeScript, or Python functions. See
   [docs](/docs/guides/evals/write#online-evaluation) for more details.
 <LoomVideo id="13e916c6095c4a98bc5682bed038c7ea" />
 - New member invitations now support being added to multiple permission groups.
@@ -1019,7 +1019,7 @@ for record in dataset:
 
 - New [REST API](/docs/api/spec).
 - [Cookbook](/docs/cookbook) of common use cases and examples.
-- Support for [custom models](/docs/guides/playground#custom-models) in the playground.
+- Support for [custom models](/docs/core/playground#custom-models) in the playground.
 - Search now works across spans, not just top-level traces.
 - Show creator avatars in the prompt playground
 - Improved UI breadcrumbs and sticky table headers
@@ -1281,7 +1281,7 @@ Eval(
 ## Week of 2023-08-28
 
 - The prompt playground is now live! We're excited to get your feedback as we continue to build
-  this feature out. See [the docs](/docs/guides/playground) for more information.
+  this feature out. See [the docs](/docs/core/playground) for more information.
 
 ![Sync Playground](/docs/release-notes/ReleaseNotes-2023-08-Playground.gif)
 
@@ -1301,7 +1301,7 @@ Eval(
 
 - Introducing datasets! You can now upload datasets to Braintrust and use them in your experiments. Datasets are
   versioned, and you can use them in multiple experiments. You can also use datasets to compare your model's
-  performance against a baseline. Learn more about [how to create and use datasets in the docs](/docs/guides/datasets).
+  performance against a baseline. Learn more about [how to create and use datasets in the docs](/docs/core/datasets).
 - Fix several performance issues in the SDK and UI.
 
 ## Week of 2023-08-07
