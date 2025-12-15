@@ -20,7 +20,7 @@ API key</Link>.
 Logs in Braintrust consist of traces, which roughly correspond to a single request or interaction in your application. Traces consist
 of one or more spans, each of which corresponds to a unit of work in your application (e.g. an LLM call). You usually collect logs as
 you run your application, both internally (staging) and externally (production), and utilize them to debug issues, track user behavior,
-and collect data into [datasets](/docs/guides/datasets).
+and collect data into [datasets](/docs/core/datasets).
 
 See the [tracing guide](/docs/guides/tracing) for more details on how to trace your code in Braintrust.
 
@@ -606,7 +606,7 @@ The score will now automatically run at the specified sampling rate for all logs
 ### Defining custom scoring logic
 
 In addition to the pre-built autoevals, you can define your own custom scoring logic by creating custom scorers. Currently, you can
-do that by visiting the [Playground](/docs/guides/playground) and creating custom scorers.
+do that by visiting the [Playground](/docs/core/playground) and creating custom scorers.
 
 ## Implementation considerations
 
