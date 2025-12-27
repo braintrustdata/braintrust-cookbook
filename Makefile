@@ -1,6 +1,11 @@
-.PHONY: node-packages setup tslab
+.PHONY: node-packages mise-install setup tslab
 
-setup: venv/.initialized node-packages tslab
+.PHONY: mise-install
+mise-install:
+	@command -v mise >/dev/null 2>&1 || { echo "Error: mise is not installed. Visit https://mise.jdx.dev/getting-started.html"; exit 1; }
+	mise install
+
+setup: mise-install venv/.initialized node-packages tslab
 	source venv/bin/activate && npx tslab install
 
 tslab:
