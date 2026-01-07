@@ -48,7 +48,7 @@ export default function Home() {
                   Learn more about{" "}
                   <Link
                     className="text-blue-500 dark:text-blue-400"
-                    href="https://www.braintrust.dev/docs/guides/traces/integrations#vercel-ai-sdk-1"
+                    href="https://www.braintrust.dev/docs/instrument/frameworks#vercel-ai-sdk-1"
                     target="_blank"
                   >
                     Braintrust tracing{" "}

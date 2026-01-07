@@ -41,7 +41,7 @@ Let's dig into how we can use these models with tools, and run an eval to see ho
 ## Setup
 
 You can access LLaMa 3.1 models through inference services like [Together](https://www.together.ai/), which has generous rate limits and OpenAI protocol compatibility. We'll use Together, through the
-[Braintrust proxy](https://www.braintrust.dev/docs/guides/proxy) to access LLaMa 3.1 and OpenAI models.
+[Braintrust proxy](/docs/deploy/ai-proxy) to access LLaMa 3.1 and OpenAI models.
 
 To get started, make sure you have a Braintrust account and an API key for [Together](https://www.together.ai) and [OpenAI](https://platform.openai.com/). Make sure to plug them into your Braintrust account's
 [AI secrets](https://www.braintrust.dev/app/settings?subroute=secrets) configuration and acquire a [BRAINTRUST_API_KEY](https://www.braintrust.dev/app/settings?subroute=api-keys). Feel free to put your BRAINTRUST_API_KEY in a `.env.local` file next to this notebook, or just hardcode it into the code below.

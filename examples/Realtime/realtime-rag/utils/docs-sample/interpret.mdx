@@ -19,7 +19,7 @@ Running an eval from the API or SDK will return a link to the corresponding resu
 - **Column visibility** - Allows you to toggle column visibility. You can also order columns by regressions to hone in on problematic areas.
 - **Table** - Shows the data for every test case in your eval run.
 
-![One eval run](/docs/guides/evals/eval-run.png)
+![One eval run](/docs/evaluate/run-evaluations/eval-run.png)
 
 ### Experiment table header summaries
 
@@ -33,7 +33,7 @@ Summaries will appear for score and metric columns. To find test cases to focus 
 
 By default, group rows will show one experiment's summary data, and you can switch between them by selecting your desired aggregation. If you would like to view the summary data for all experiments, select **Include comparisons in group**.
 
-![Summary experiment aggregations](/docs/guides/evals/summary-experiment-aggregations.png)
+![Summary experiment aggregations](/docs/evaluate/run-evaluations/summary-experiment-aggregations.png)
 
 <video className="border rounded-md" loop autoPlay muted poster="/docs/guides/evals/group-summaries-poster.png">
   <source src="/docs/guides/evals/group-summaries.mp4" type="video/mp4" />
@@ -46,16 +46,16 @@ Now that you've narrowed your test cases, you can view a test case in detail by 
 
 Selecting a row will open the trace view. Here you can see all of the data for the trace for this test case, including input, output, metadata, and metrics for each span inside the trace.
 
-Look at the scores and the output and decide whether the scores seem "right". Do good scores correspond to a good output? If not, you'll want to improve your evals by updating [scorers](/docs/guides/evals/write#scorers) or [test cases](/blog/eval-feedback-loops).
+Look at the scores and the output and decide whether the scores seem "right". Do good scores correspond to a good output? If not, you'll want to improve your evals by updating [scorers](/docs/evaluate/run-evaluations#scorers) or [test cases](/blog/eval-feedback-loops).
 
-![Trace view](/docs/guides/evals/trace.png)
+![Trace view](/docs/evaluate/run-evaluations/trace.png)
 
 ### Create custom columns
 
 You can create custom columns to extract specific values from `input`, `output`, `expected`, or `metadata` fields if they are objects.
 To do this, use the **Add custom column** option at the bottom of the **Columns** dropdown or select the **+** icon at the end of the table headers.
 
-![Create column action](/docs/guides/evals/create-column.png)
+![Create column action](/docs/evaluate/run-evaluations/create-column.png)
 
 After naming your custom column, you can either choose from the inferred fields in the dropdown or enter a custom [BTQL](/docs/reference/btql) statement.
 
@@ -81,7 +81,7 @@ Wherever possible, metrics are computed on the `task` subspan, so that LLM-as-a-
 If you are using the logging SDK, or API, you will need to follow these conventions to ensure that metrics are computed correctly.
 
 <Callout type="info">
-To compute LLM metrics (like token counts), make sure you [wrap your LLM calls](/docs/guides/traces/customize#wrapping-llm-clients).
+To compute LLM metrics (like token counts), make sure you [wrap your LLM calls](/docs/instrument/custom-tracing#wrapping-llm-clients).
 </Callout>
 
 ### Diff mode
@@ -174,7 +174,7 @@ Select a metric on the x-axis to construct a scatter plot. Here's an example com
 
 To export an experiment's results, click on the three vertical dots in the upper right-hand corner of the UI. You can export as `CSV` or `JSON`.
 
-![Export experiments](/docs/guides/evals/exporting-experiments.png)
+![Export experiments](/docs/evaluate/run-evaluations/exporting-experiments.png)
 
 ### API
 
@@ -274,4 +274,4 @@ def open_experiment():
 
 </CodeTabs>
 
-For a more advanced overview of how to reuse experiments as datasets, see [Hill climbing](/docs/guides/evals/write#hill-climbing).
+For a more advanced overview of how to reuse experiments as datasets, see [Hill climbing](/docs/evaluate/run-evaluations#hill-climbing).

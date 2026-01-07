@@ -12,7 +12,7 @@ import Link from "fumadocs-core/link";
 This guide walks through how to trace your code in Braintrust. Tracing is an
 invaluable tool for exploring the sub-components of your program which produce
 each top-level input and output. We currently support tracing in
-[logging](/docs/guides/logging) and [evaluations](/docs/guides/eval).
+[logging](/docs/instrument/custom-tracing) and [evaluations](/docs/guides/eval).
 
 Before proceeding, make sure to read the [quickstart](/docs) guide and setup
 an <Link href="/app/settings?subroute=api-keys" target="_blank">API key</Link>.
@@ -24,7 +24,7 @@ an <Link href="/app/settings?subroute=api-keys" target="_blank">API key</Link>.
 The core building blocks of logging are _spans_ and _traces_. A _span_
 represents a unit of work, with a start and end time, and optional fields like
 input, output, metadata, scores, and metrics (the same fields you can log in an
-[Experiment](/docs/guides/evals)). Each span contains one or more children,
+[Experiment](/docs/evaluate/run-evaluations)). Each span contains one or more children,
 which are usually run within their parent span (e.g. a nested function call).
 Common examples of spans include LLM calls, vector searches, the steps of an
 agent chain, and model evaluations.

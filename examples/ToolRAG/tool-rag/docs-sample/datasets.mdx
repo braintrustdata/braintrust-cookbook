@@ -27,7 +27,7 @@ In Braintrust, datasets have a few key properties:
   of the dataset, rewind to a previous version, and track changes over time.
 - **Scalable**. Datasets are stored in a modern cloud data warehouse, so you can collect as much data as you want without worrying about
   storage or performance limits.
-- **Secure**. If you run Braintrust [in your cloud environment](/docs/guides/self-hosting), datasets are stored in your warehouse and
+- **Secure**. If you run Braintrust [in your cloud environment](/docs/admin/self-hosting), datasets are stored in your warehouse and
   never touch our infrastructure.
 
 ## Creating a dataset
@@ -148,7 +148,7 @@ In addition to managing datasets through the API, you can also manage them in th
 
 You can view a dataset in the Braintrust UI by navigating to the project and then clicking on the dataset.
 
-![Dataset Viewer](/docs/core/datasets/datasets.webp)
+![Dataset Viewer](/docs/annotate/datasets/datasets.webp)
 
 From the UI, you can filter records, create new ones, edit values, and delete records. You can also copy records
 between datasets and from experiments into datasets. This feature is commonly used to collect interesting or
@@ -169,7 +169,7 @@ Once you've uploaded a dataset, you can update records or add new ones directly 
 ### Labeling records
 
 In addition to updating datasets through the API, you can edit and label them in the UI. Like experiments and logs, you can
-configure [categorical fields](/docs/guides/human-review#writing-categorical-scores-to-expected-field) to allow human reviewers
+configure [categorical fields](/docs/annotate/human-review#writing-categorical-scores-to-expected-field) to allow human reviewers
 to rapidly label records.
 
 ![Write to expected](./human-review/write-to-expected.webp)
@@ -351,7 +351,7 @@ Eval(
 
 </CodeTabs>
 
-For a more advanced overview of how to use an experiment as a baseline for other experiments, see [Hill climbing](/docs/guides/evals/write#hill-climbing).
+For a more advanced overview of how to use an experiment as a baseline for other experiments, see [Hill climbing](/docs/evaluate/run-evaluations#hill-climbing).
 
 ## Logging from your application
 
@@ -430,4 +430,4 @@ class MyApplication:
 ### Downloading large datasets
 
 If you are trying to load a very large dataset, you may run into timeout errors while using the SDK. If so, you
-can [paginate](/docs/guides/api#downloading-a-dataset-using-pagination) through the dataset to download it in smaller chunks.
+can [paginate](/docs/deploy/api#downloading-a-dataset-using-pagination) through the dataset to download it in smaller chunks.

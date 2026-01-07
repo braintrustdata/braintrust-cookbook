@@ -20,13 +20,13 @@ API key</Link>.
 Logs in Braintrust consist of traces, which roughly correspond to a single request or interaction in your application. Traces consist
 of one or more spans, each of which corresponds to a unit of work in your application (e.g. an LLM call). You usually collect logs as
 you run your application, both internally (staging) and externally (production), and utilize them to debug issues, track user behavior,
-and collect data into [datasets](/docs/core/datasets).
+and collect data into [datasets](/docs/annotate/datasets).
 
-See the [tracing guide](/docs/guides/tracing) for more details on how to trace your code in Braintrust.
+See the [tracing guide](/docs/instrument/custom-tracing) for more details on how to trace your code in Braintrust.
 
 ## Why log in Braintrust?
 
-By design, logs are _exactly_ the same data structure as [Experiments](/docs/guides/evals). This leads to a number of useful properties:
+By design, logs are _exactly_ the same data structure as [Experiments](/docs/evaluate/run-evaluations). This leads to a number of useful properties:
 
 - If you instrument your code to run evals, you can reuse this instrumentation to generate logs
 - Your logged traces capture exactly the same data as your evals
@@ -125,7 +125,7 @@ def my_route_handler(req):
 </PYTab>
 </CodeTabs>
 
-For full details, refer to the [tracing](/docs/guides/tracing) guide, which
+For full details, refer to the [tracing](/docs/instrument/custom-tracing) guide, which
 describes how to log traces to braintrust.
 
 ## Viewing logs
@@ -606,7 +606,7 @@ The score will now automatically run at the specified sampling rate for all logs
 ### Defining custom scoring logic
 
 In addition to the pre-built autoevals, you can define your own custom scoring logic by creating custom scorers. Currently, you can
-do that by visiting the [Playground](/docs/core/playground) and creating custom scorers.
+do that by visiting the [Playground](/docs/evaluate/playgrounds) and creating custom scorers.
 
 ## Implementation considerations
 
@@ -626,7 +626,7 @@ do that by visiting the [Playground](/docs/core/playground) and creating custom 
 
 There are a few ways to handle production vs. staging data. The most common pattern we see is to split them into different projects,
 so that they are separated and code changes to staging cannot affect production. Separating projects also allows you to enforce [access
-controls](/docs/guides/access-control) at the project level.
+controls](/docs/admin/access-control) at the project level.
 
 Alternatively, if it's easier to keep things in one project (e.g. to have a single spot to triage them), you can use tags to separate them.
 If you need to physically isolate production and staging, you can create separate organizations, each mapping to a different deployment.

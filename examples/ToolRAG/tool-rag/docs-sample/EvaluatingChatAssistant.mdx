@@ -141,7 +141,7 @@ async function runTask(input: string) {
 
 We'll use the `Factuality` scoring function from the [autoevals library](https://www.braintrust.dev/docs/reference/autoevals) to check how the output of the chat completion compares factually to the expected value.
 
-We will also utilize [trials](https://www.braintrust.dev/docs/guides/evals/write#trials) by including the `trialCount` parameter in the `Eval` call. We expect the output of the chat completion to be non-deterministic, so running each input multiple times will give us a better sense of the "average" output.
+We will also utilize [trials](/docs/evaluate/run-evaluations#trials) by including the `trialCount` parameter in the `Eval` call. We expect the output of the chat completion to be non-deterministic, so running each input multiple times will give us a better sense of the "average" output.
 
 ```typescript
 import { Eval } from "braintrust";
@@ -248,7 +248,7 @@ These will score (F) = 0.2 and (G) = 0 so the model gets some credit if there wa
 
 We can then use this spec and the `LLMClassifierFromSpec` function to create our customer scorer to use in the eval function.
 
-Read more about [defining your own scorers](https://www.braintrust.dev/docs/guides/evals/write#define-your-own-scorers) in the documentation.
+Read more about [defining your own scorers](/docs/evaluate/run-evaluations#define-your-own-scorers) in the documentation.
 
 #### Re-running the eval
 
@@ -435,7 +435,7 @@ See results for gpt-4o assistant at https://www.braintrust.dev/app/braintrustdat
 
 60% score is a definite improvement from 4%.
 
-You'll notice that it says there were 0 improvements and 0 regressions compared to the last experiment `gpt-4o assistant - no history-934e5ca2` we ran. This is because by default, Braintrust uses the `input` field to match rows across experiments. From the dashboard, we can customize the comparison key ([see docs](https://www.braintrust.dev/docs/guides/evals/interpret#customizing-the-comparison-key)) by going to the [project configuration page](https://www.braintrust.dev/app/braintrustdata.com/p/Chat%20assistant/configuration).
+You'll notice that it says there were 0 improvements and 0 regressions compared to the last experiment `gpt-4o assistant - no history-934e5ca2` we ran. This is because by default, Braintrust uses the `input` field to match rows across experiments. From the dashboard, we can customize the comparison key ([see docs](/docs/evaluate/interpret-results#customizing-the-comparison-key)) by going to the [project configuration page](https://www.braintrust.dev/app/braintrustdata.com/p/Chat%20assistant/configuration).
 
 #### Update experiment comparison for diff mode
 

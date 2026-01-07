@@ -109,9 +109,9 @@ To get started with evals, you need some test data. A fine starting point is to 
 field (which could be complex JSON, or just a string) and should ideally have an expected output field, (although this is not required).
 
 Once you have an evaluation set up end-to-end, you can always add more test cases. You'll know you need more data if your eval scores and outputs seem fine, but your production
-app doesn't look right. And once you have Braintrust's [Logging](/docs/guides/logging) set up, your real application data will provide a rich source of examples to use as test cases.
+app doesn't look right. And once you have Braintrust's [Logging](/docs/instrument/custom-tracing) set up, your real application data will provide a rich source of examples to use as test cases.
 
-As you scale, Braintrust's [Datasets](/docs/core/datasets) are a great tool for managing your test cases.
+As you scale, Braintrust's [Datasets](/docs/annotate/datasets) are a great tool for managing your test cases.
 
 <Callout type="warn">
   It's a common misconception that you need a large volume of perfectly labeled
@@ -1143,7 +1143,7 @@ Reporter(
 ## Attachments
 
 Braintrust allows you to log arbitrary binary data, like images, audio, and
-PDFs, as [attachments](/docs/guides/tracing#uploading-attachments). The easiest way
+PDFs, as [attachments](/docs/instrument/custom-tracing#uploading-attachments). The easiest way
 to use attachments in your evals is to initialize an `Attachment` object in your
 data.
 
@@ -1327,7 +1327,7 @@ call, vector database lookup, or API request.
   If you are using the OpenAI API, Braintrust includes a wrapper function that
   automatically logs your requests. To use it, simply call
   `wrapOpenAI/wrap_openai` on your OpenAI instance. See [Wrapping
-  OpenAI](https://www.braintrustdata.com/docs/guides/tracing#wrapping-openai)
+  OpenAI](/docs/instrument/custom-tracing#wrapping-openai)
   for more info.
 </Callout>
 
@@ -1552,7 +1552,7 @@ run_evaluation()
 </PYTab>
 </CodeTabs>
 
-Refer to the [tracing](/docs/guides/tracing) guide for examples of how to trace
+Refer to the [tracing](/docs/instrument/custom-tracing) guide for examples of how to trace
 evaluations using the low-level SDK. For more details on how to use the low
 level SDK, see the [Python](/docs/libs/python) or [Node.js](/docs/libs/nodejs)
 documentation.
@@ -1692,4 +1692,4 @@ The score will now automatically run at the specified sampling rate for all logs
 ### Defining custom scoring logic
 
 In addition to the pre-built autoevals, you can define your own custom scoring logic by creating custom scorers. Currently, you can
-do that by visiting the [Playground](/docs/core/playground) and creating custom scorers.
+do that by visiting the [Playground](/docs/evaluate/playgrounds) and creating custom scorers.
