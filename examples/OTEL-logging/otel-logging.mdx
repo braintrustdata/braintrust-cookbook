@@ -4,7 +4,7 @@
 
 ![Popular AI SDKs -> OTel -> traces](assets/otel.png)
 
-In Braintrust, we enable observability in AI applications through [**logging**](/docs/core/logs). Logs are the recorded data and metadata from an AI routine — we record the inputs and outputs of your LLM calls to help you understand and debug your application. We want to make it simple for you to log to Braintrust from many different environments, so we defined a way to set up Braintrust as an OpenTelemetry backend. This guide will walk you through how to log to Braintrust from a sample project built with the Vercel AI SDK.
+In Braintrust, we enable observability in AI applications through [**logging**](/docs/observe/view-logs). Logs are the recorded data and metadata from an AI routine — we record the inputs and outputs of your LLM calls to help you understand and debug your application. We want to make it simple for you to log to Braintrust from many different environments, so we defined a way to set up Braintrust as an OpenTelemetry backend. This guide will walk you through how to log to Braintrust from a sample project built with the Vercel AI SDK.
 
 ## Getting started
 
@@ -26,7 +26,7 @@ OPENAI_API_KEY=<your-api-key>
 
 <Note>
   You can also use the OpenAI API by adding your Braintrust API key and using
-  the Braintrust [AI Proxy](/docs/guides/proxy).
+  the Braintrust [AI Proxy](/docs/deploy/ai-proxy).
 </Note>
 
 ## Setting up OTel
@@ -50,7 +50,7 @@ Replace `<Your API Key>` with your Braintrust API key, and `<Your Project Name>`
   The `BRAINTRUST_PARENT` environment variable sets the trace's parent project
   or experiment. You can use a prefix like `project_id:`, `project_name:`, or
   `experiment_id:` here, or pass in a [**span
-  slug**](/docs/guides/traces#distributed-tracing) (`span.export()`) to nest the
+  slug**](/docs/instrument/custom-tracing#distributed-tracing) (`span.export()`) to nest the
   trace under a span within the parent object.
 </Note>
 
@@ -143,7 +143,7 @@ Open your Braintrust project to the **Logs** page, and select **What orders have
 
 ![LLM calls and logs side by side](assets/otel-demo.gif)
 
-Because this application is using multi-step streaming and tool calls, the logs are especially interesting. In Braintrust, logs consist of [traces](/docs/guides/traces), which roughly correspond to a single request or interaction in your application. Traces consist of one or more spans, each of which corresponds to a unit of work in your application. In this example, each step and tool call is logged inside of its own span. This level of granularity makes it easier to debug issues, track user behavior, and collect data into datasets.
+Because this application is using multi-step streaming and tool calls, the logs are especially interesting. In Braintrust, logs consist of [traces](/docs/instrument/custom-tracing), which roughly correspond to a single request or interaction in your application. Traces consist of one or more spans, each of which corresponds to a unit of work in your application. In this example, each step and tool call is logged inside of its own span. This level of granularity makes it easier to debug issues, track user behavior, and collect data into datasets.
 
 ### Filtering your logs
 
@@ -161,6 +161,6 @@ This is valuable data that can be used to evaluate the quality of accuracy of yo
 
 Now that you’re able to log your application in Braintrust, you can explore other workflows like:
 
-- Adding your [tools](/docs/core/functions/tools) to your library and using them in [experiments](/docs/core/experiments) and the [playground](/docs/core/playground)
-- Creating [custom scorers](/docs/core/functions/scorers) to assess the quality of your LLM calls
-- Adding your logs to a [dataset](/docs/core/datasets) and running evaluations comparing models and prompts
+- Adding your [tools](/docs/deploy/functions) to your library and using them in [experiments](/docs/evaluate/run-evaluations) and the [playground](/docs/evaluate/playgrounds)
+- Creating [custom scorers](/docs/evaluate/write-scorers) to assess the quality of your LLM calls
+- Adding your logs to a [dataset](/docs/annotate/datasets) and running evaluations comparing models and prompts

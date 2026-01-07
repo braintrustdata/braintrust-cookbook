@@ -311,7 +311,7 @@ const providers = [
 
 We'll run each provider in parallel, and within the provider, we'll run each model in parallel. This roughly assumes that rate limits are per model, not per provider.
 
-We're also running with a low concurrency level (3) to avoid overwhelming a provider and hitting rate limits. The [Braintrust proxy](https://www.braintrust.dev/docs/guides/proxy) handles rate limits for us, but they are reflected in the final task duration.
+We're also running with a low concurrency level (3) to avoid overwhelming a provider and hitting rate limits. The [Braintrust proxy](/docs/deploy/ai-proxy) handles rate limits for us, but they are reflected in the final task duration.
 
 You'll also notice that we parse and track the provider as well as the model in each experiment's metadata. This allows us to do some rich analysis on the results.
 

@@ -35,7 +35,7 @@ You can use this identifier to refer to a specific version of the prompt in your
 
 ### Testing in the playground
 
-While developing a prompt, it can be useful to test it out on real-world data in the [Playground](/docs/core/playground).
+While developing a prompt, it can be useful to test it out on real-world data in the [Playground](/docs/evaluate/playgrounds).
 You can open a prompt in the playground, tweak it, and save a new version once you're ready.
 
 ![Playground](./prompts/playground.gif)
@@ -139,7 +139,7 @@ you'll receive a JSON object as the result.
 
 ### Executing directly
 
-In Braintrust, a prompt is a simple function that can be invoked directly through the SDK and [REST API](/docs/reference/api/Functions#invoke-function). When invoked, prompt functions leverage the [proxy](/docs/guides/proxy) to access a wide range of providers and models with managed secrets, and are automatically traced and logged to your Braintrust project. All functions are fully managed and versioned via the UI and API.
+In Braintrust, a prompt is a simple function that can be invoked directly through the SDK and [REST API](/docs/reference/api/Functions#invoke-function). When invoked, prompt functions leverage the [proxy](/docs/deploy/ai-proxy) to access a wide range of providers and models with managed secrets, and are automatically traced and logged to your Braintrust project. All functions are fully managed and versioned via the UI and API.
 
 <Callout type="info">
   Functions are a broad concept that encompass prompts, code snippets, HTTP
@@ -369,7 +369,7 @@ export async function POST(req: Request) {
 
 Any `invoke` requests you make will be logged using the active logging state, just like a function decorated
 with `@traced` or `wrapTraced`. You can also pass in the `parent` argument, which is a string that you can
-derive from `span.export()` while doing [distributed tracing](/docs/guides/tracing#distributed-tracing).
+derive from `span.export()` while doing [distributed tracing](/docs/instrument/custom-tracing#distributed-tracing).
 
 ### Fetching in code
 
@@ -447,7 +447,7 @@ def run_prompt():
 
 <Callout type="info">
   If you need to use another model provider, then you can use the [Braintrust
-  proxy](/docs/guides/proxy) to access a wide range of models using the OpenAI
+  proxy](/docs/deploy/ai-proxy) to access a wide range of models using the OpenAI
   format. You can also grab the `messages` and other parameters directly from
   the returned object to use a model library of your choice.
 </Callout>

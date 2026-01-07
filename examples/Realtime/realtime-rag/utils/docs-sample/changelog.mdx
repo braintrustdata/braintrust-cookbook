@@ -55,7 +55,7 @@ import Image from 'next/image';
 queries, we recommend using the `/btql` endpoint ([docs](/docs/reference/btql)).
 - New experiment summary layout option, a url-friendly view for experiment summaries that respects all filters.
 - Add a default limit of 10 to all fetch and `/btql` requests for project_logs.
-- You can now export your prompts from the playground as code snippets and run them through the [AI proxy](/docs/guides/proxy).
+- You can now export your prompts from the playground as code snippets and run them through the [AI proxy](/docs/deploy/ai-proxy).
 - Add a fallback for the "add prompt" dropdown button in the playground, which
 will search for prompts within the current project if the cross-org prompts
 query fails.
@@ -67,7 +67,7 @@ loaded attachment data.
 
 ## Week of 2024-11-12
 
-- Support for creating and pushing custom Python tools and prompts from your codebase with `braintrust push`. Read the guides to [tools](/docs/core/functions/tools) and [prompts](/docs/core/functions/prompts) for more information.
+- Support for creating and pushing custom Python tools and prompts from your codebase with `braintrust push`. Read the guides to [tools](/docs/deploy/functions) and [prompts](/docs/evaluate/write-prompts) for more information.
 - You can now view grouped summary data for all experiments by selecting **Include comparisons in group** from the **Group by** dropdown inside an experiment.
 - The experiments page now supports downloading as CSV/JSON.
 - Downloading or duplicating a dataset in the UI now properly copies all dataset rows.
@@ -92,9 +92,9 @@ loaded attachment data.
 
 ## Week of 2024-11-04
 
-- The Braintrust [AI Proxy](/docs/guides/proxy) now supports the [OpenAI Realtime API](https://platform.openai.com/docs/guides/realtime), providing observability for voice-to-voice model sessions and simplifying backend infrastructure.
+- The Braintrust [AI Proxy](/docs/deploy/ai-proxy) now supports the [OpenAI Realtime API](https://platform.openai.com/docs/guides/realtime), providing observability for voice-to-voice model sessions and simplifying backend infrastructure.
 - Add "Group by" functionality to the monitor page.
-- The experiment table can now be visualized in a [grid layout](/docs/guides/evals/interpret#grid-layout), where each column represents an experiment to compare long-form outputs side-by-side.
+- The experiment table can now be visualized in a [grid layout](/docs/evaluate/interpret-results#grid-layout), where each column represents an experiment to compare long-form outputs side-by-side.
 - 'Select all' button in permission dialogs
 - Create custom columns on dataset, experiment and logs tables from `JSON` values in `input`, `output`, `expected`, or `metadata` fields.
 
@@ -103,7 +103,7 @@ loaded attachment data.
 
 ## Week of 2024-10-28
 
-- The Braintrust [AI Proxy](/docs/guides/proxy) can now [issue temporary credentials](/docs/guides/proxy#api-key-management) to access the proxy for a limited time. This can be used to make AI requests directly from frontends and mobile apps, minimizing latency without exposing your API keys.
+- The Braintrust [AI Proxy](/docs/deploy/ai-proxy) can now [issue temporary credentials](/docs/deploy/ai-proxy#api-key-management) to access the proxy for a limited time. This can be used to make AI requests directly from frontends and mobile apps, minimizing latency without exposing your API keys.
 - Move experiment score summaries to the table column headers. To view improvements and regressions per metadata or input group, first group the table by the relevant field. Sooo much room for [table] activities!
 - You now receive a clear error message if you run out of free tier capacity while running an experiment from the playground.
 - Filters on JSON fields now support array indexing, e.g. `metadata.foo[0] = 'bar'`. See [docs](/docs/reference/btql#Expressions).
@@ -114,7 +114,7 @@ loaded attachment data.
 
 ## Week of 2024-10-21
 
-- Preview [file attachments](/docs/guides/tracing#uploading-attachments) in the trace view.
+- Preview [file attachments](/docs/instrument/custom-tracing#uploading-attachments) in the trace view.
 - View and filter by comments in the experiment table.
 - Add table row numbers to experiments, logs, and datasets.
 
@@ -128,7 +128,7 @@ loaded attachment data.
 
 - Support uploading [file attachments](/docs/reference/libs/nodejs/classes/Attachment).
 - You can now export [OpenTelemetry (OTel)](https://opentelemetry.io/docs/specs/otel/) traces to Braintrust. See
-  the [tracing guide](/docs/guides/tracing#opentelemetry-otel) for more details.
+  the [tracing guide](/docs/instrument/custom-tracing#opentelemetry-otel) for more details.
 
 ## Week of 2024-10-14
 
@@ -174,9 +174,9 @@ from an exported span slug.
 
 ## Week of 2024-09-30
 
-- The [Github action](/docs/guides/evals/run#github-action) now supports Python runtimes.
+- The [Github action](/docs/evaluate/run-evaluations#github-action) now supports Python runtimes.
 - Add support for [Cerebras](https://cerebras.ai/) models in the proxy, playground, and saved prompts.
-- You can now create [span iframe viewers](/docs/guides/tracing#custom-span-iframes) to visualize span data in a custom iframe.
+- You can now create [span iframe viewers](/docs/instrument/custom-tracing#custom-span-iframes) to visualize span data in a custom iframe.
   In this example, the "Table" section is a custom span iframe.
 ![Span iframe](./guides/traces/span-iframe.png)
 - `NOT LIKE`, `NOT ILIKE`, `NOT INCLUDES`, and `NOT CONTAINS` supported in BTQL.
@@ -189,7 +189,7 @@ from an exported span slug.
 ## Week of 2024-09-23
 
 - Basic monitor page that shows aggregate values for latency, token count, time to first token, and cost for logs.
-- Create custom tools to use in your prompts and in the playground. See the [docs](/docs/guides/prompts#calling-external-tools) for more details.
+- Create custom tools to use in your prompts and in the playground. See the [docs](/docs/evaluate/write-prompts#calling-external-tools) for more details.
 - <Link href="/app/settings?subroute=env-vars" target="_blank">Set org-wide environment variables</Link> to use in these tools
 - Pull your prompts to your codebase using the `braintrust pull` command.
 - Select and compare multiple experiments in the experiment view using the `compared with` dropdown.
@@ -205,7 +205,7 @@ from an exported span slug.
 ### SDK (version 0.0.159)
 
 - In Python, running the CLI with `--verbose` now uses the `INFO` log level, while still printing full stack traces. Pass the flag twice (`-vv`) to use the `DEBUG` log level.
-- Create and push custom tools from your codebase with `braintrust push`. See [docs](/docs/guides/prompts#calling-external-tools) for more details. TypeScript only for now.
+- Create and push custom tools from your codebase with `braintrust push`. See [docs](/docs/evaluate/write-prompts#calling-external-tools) for more details. TypeScript only for now.
 - A long awaited feature: you can now pull prompts to your codebase using the `braintrust pull` command. TypeScript only for now.
 
 ### API (version 0.0.56)
@@ -231,8 +231,8 @@ from an exported span slug.
 ## Week of 2024-09-09
 
 - You can now create server-side online evaluations for your logs. Online evals support both [autoevals](/docs/reference/autoevals) and
-  [custom scorers](/docs/core/playground) you define as LLM-as-a-judge, TypeScript, or Python functions. See
-  [docs](/docs/guides/evals/write#online-evaluation) for more details.
+  [custom scorers](/docs/evaluate/playgrounds) you define as LLM-as-a-judge, TypeScript, or Python functions. See
+  [docs](/docs/evaluate/run-evaluations#online-evaluation) for more details.
 <LoomVideo id="13e916c6095c4a98bc5682bed038c7ea" />
 - New member invitations now support being added to multiple permission groups.
 - Move datasets and prompts to a new Library navigation tab, and include a list of custom scorers.
@@ -328,7 +328,7 @@ functions which return awaitable objects as async
 - Update the `full` docker deployment configuration to bundle the metadata DB
   (supabase) inside the main docker compose file. Thus no separate supabase
   cluster is required. See
-  [docs](/docs/guides/self-hosting/docker#full-configuration) for details. If
+  [docs](/docs/admin/self-hosting/docker#full-configuration) for details. If
   you are upgrading an existing full deployment, you will likely want to mark
   the supabase db volumes `external` to continue using your existing data (see
   comments in the `docker-compose.full.yml` file for more details).
@@ -365,7 +365,7 @@ functions which return awaitable objects as async
 
 - `project_name` is now `projectName`, etc. in the `invoke(...)` function in TypeScript
 - `Eval()` return values are printed in a nicer format (e.g. in Notebooks)
-- [`updateSpan()`/`update_span()`](/docs/guides/tracing#updating-spans) allows you to update a span's fields after it has been created.
+- [`updateSpan()`/`update_span()`](/docs/instrument/custom-tracing#updating-spans) allows you to update a span's fields after it has been created.
 
 ## Week of 2024-07-22
 
@@ -495,7 +495,7 @@ const foo = wrapTraced(async function foo(input) {
 
 ## Week of 2024-06-17
 
-- Add support for labeling [expected fields using human review](/docs/guides/human-review#writing-categorical-scores-to-expected-field).
+- Add support for labeling [expected fields using human review](/docs/annotate/human-review#writing-categorical-scores-to-expected-field).
 - Create and edit descriptions for datasets.
 - Create and edit metadata for prompts.
 - Click scores and attributes (tree view only) in the trace view to filter by them.
@@ -506,7 +506,7 @@ const foo = wrapTraced(async function foo(input) {
 
 - Improved empty state and instructions for custom evaluators in the playground.
 - Show query examples when filtering/sorting.
-- [Custom comparison keys](/docs/guides/evals/interpret#customizing-the-comparison-key) for experiments.
+- [Custom comparison keys](/docs/evaluate/interpret-results#customizing-the-comparison-key) for experiments.
 - New model dropdown in the playground/prompt editor that is organized by provider and model type.
 
 ## Week of 2024-06-03
@@ -804,7 +804,7 @@ the board and plan to remove it in a future revision of the API.
 ## Week of 2024-04-01
 
 - Added functionality for distributed tracing. See the
-  [docs](/docs/guides/tracing#distributed-tracing) for more details.
+  [docs](/docs/instrument/custom-tracing#distributed-tracing) for more details.
 
 <Callout type="warn">
 
@@ -821,8 +821,8 @@ server with `curl [api-url]/version`, where the API URL can be found on the <Lin
 - Introduce multimodal support for OpenAI and Anthropic models in the prompt playground and proxy. You can now pass image URLs, base64-encoded image strings, or mustache template variables to models that support multimodal inputs.
   ![Multimodal prompt](./reference/release-notes/multimodal-prompt.gif)
 - The REST API now gzips responses.
-- You can now return dynamic arrays of scores in `Eval()` functions ([docs](/docs/guides/evals#dynamic-scoring)).
-- Launched [Reporters](/docs/guides/evals#custom-reporters), a way to summarize and report eval results in a custom format.
+- You can now return dynamic arrays of scores in `Eval()` functions ([docs](/docs/evaluate/run-evaluations#dynamic-scoring)).
+- Launched [Reporters](/docs/evaluate/run-evaluations#custom-reporters), a way to summarize and report eval results in a custom format.
 - New coat of paint in the trace view.
 - Added support for Clickhouse as an additional storage backend, offering a more scalable solution for handling large datasets and performance improvements for certain query types. You can enable it by
   setting the `UseManagedClickhouse` parameter to `true` in the CloudFormation template or installing the docker container.
@@ -838,7 +838,7 @@ server with `curl [api-url]/version`, where the API URL can be found on the <Lin
 
 ## Week of 2024-03-11
 
-- Shipped support for [prompt management](/docs/guides/prompts).
+- Shipped support for [prompt management](/docs/evaluate/write-prompts).
 - Moved playground sessions to be within projects. All existing sessions are now in the "Playground Sessions" project.
 - Allowed customizing proxy and real-time URLs through the web application, adding flexibility for different deployment scenarios.
 - Improved documentation for Docker deployments.
@@ -853,7 +853,7 @@ server with `curl [api-url]/version`, where the API URL can be found on the <Lin
 - Improve UI write performance with batching.
 - Log filters now apply to _any_ span.
 - Share button for traces
-- Images now supported in the tree view (see [tracing docs](/docs/guides/tracing#multimodal-content) for more).
+- Images now supported in the tree view (see [tracing docs](/docs/instrument/custom-tracing#multimodal-content) for more).
 
 ## Week of 2024-02-26
 
@@ -879,7 +879,7 @@ and [fetch](/docs/api/spec#fetch-dataset-get-form)).
 
 </Callout>
 
-- Add support for [tags](/docs/guides/logging#tags-and-queues).
+- Add support for [tags](/docs/instrument/custom-tracing#tags-and-queues).
 - Score fields are now sorted alphabetically.
 - Add support for Groq ModuleResolutionKind.
 - Improve tree viewer and XML parser.
@@ -1019,7 +1019,7 @@ for record in dataset:
 
 - New [REST API](/docs/api/spec).
 - [Cookbook](/docs/cookbook) of common use cases and examples.
-- Support for [custom models](/docs/core/playground#custom-models) in the playground.
+- Support for [custom models](/docs/evaluate/playgrounds#custom-models) in the playground.
 - Search now works across spans, not just top-level traces.
 - Show creator avatars in the prompt playground
 - Improved UI breadcrumbs and sticky table headers
@@ -1027,7 +1027,7 @@ for record in dataset:
 ## Week of 2024-01-22
 
 - UI improvements to the playground.
-- Added an example of [closed QA / extra fields](/docs/guides/evals#additional-fields).
+- Added an example of [closed QA / extra fields](/docs/evaluate/run-evaluations#additional-fields).
 - New YAML parser and new syntax highlighting colors for data editor.
 - Added support for enabling/disabling certain git fields from collection (in org settings and the SDK).
 - Added new GPT-3.5 and 4 models to the playground.
@@ -1052,7 +1052,7 @@ for record in dataset:
 ## Week of 2024-01-01
 
 - Added ability to upload dataset CSV files in prompt playgrounds
-- Published new [guide for tracing and logging your code](https://www.braintrustdata.com/docs/guides/tracing)
+- Published new [guide for tracing and logging your code](/docs/instrument/custom-tracing)
 - Added support to download experiment results as CSVs
 
 ## Week of 2023-12-25
@@ -1115,7 +1115,7 @@ functionality:
 
 ## Week of 2023-12-11
 
-- Released new [trials](https://www.braintrustdata.com/docs/guides/evals#trials) feature to rerun each input multiple times and collect aggregate results for a more robust score.
+- Released new [trials](/docs/evaluate/run-evaluations#trials) feature to rerun each input multiple times and collect aggregate results for a more robust score.
 - Added ability to run evals in the prompt playground. Use your existing dataset and the autoevals functions to score playground outputs.
 - Released new version of SDK (0.0.81) including a small breaking change. When setting the experiment name in the `Eval` function, the `exprimentName` key pair should be moved to a top level argument.
   before:
@@ -1157,15 +1157,15 @@ Eval([eval_name], {
     view](/docs/release-notes/ReleaseNotes11-27-search.gif)
   </figure>
 - Upgraded AI Proxy to support [tracking Prometheus metrics](https://github.com/braintrustdata/braintrust-proxy/blob/a31a82e6d46ff442a3c478773e6eec21f3d0ba69/apis/cloudflare/wrangler-template.toml#L19C1-L19C1)
-- Modified Autoevals library to use the [AI proxy](/docs/guides/proxy)
+- Modified Autoevals library to use the [AI proxy](/docs/deploy/ai-proxy)
 - Upgraded Python braintrust library to parallelize evals
 - Optimized experiment diff view for performance improvements
 
 ## Week of 2023-11-20
 
 - Added support for new Perplexity models (ex: pplx-7b-online) to playground
-- Released [AI proxy](/docs/guides/proxy): access many LLMs using one API w/ caching
-- Added [load balancing endpoints](/docs/guides/proxy#load-balancing) to AI proxy
+- Released [AI proxy](/docs/deploy/ai-proxy): access many LLMs using one API w/ caching
+- Added [load balancing endpoints](/docs/deploy/ai-proxy#load-balancing) to AI proxy
 - Updated org-level view to show projects and prompt playground sessions
 - Added ability to batch delete experiments
 - Added support for Claude 2.1 in playground
@@ -1205,7 +1205,7 @@ Eval([eval_name], {
 
 ## Week of 2023-10-16
 
-- [Launched new tracing feature: log and visualize complex LLM chains and executions.](/docs/guides/evals#tracing)
+- [Launched new tracing feature: log and visualize complex LLM chains and executions.](/docs/evaluate/run-evaluations#tracing)
 - Added a new “text-block” prompt type in the playground that just returns a string or variable back without a LLM call (useful for chaining prompts and debugging)
 - Increased default # of rows per page from 10 to 100 for experiments
 - UI fixes and improvements for the side panel and tooltips
@@ -1230,7 +1230,7 @@ Eval([eval_name], {
 
 ## Week of 2023-09-18
 
-- The Eval framework is now supported in Python! See the updated [evals guide](/docs/guides/evals) for more information:
+- The Eval framework is now supported in Python! See the updated [evals guide](/docs/evaluate/run-evaluations) for more information:
 
 ```python
 from braintrust import Eval
@@ -1281,7 +1281,7 @@ Eval(
 ## Week of 2023-08-28
 
 - The prompt playground is now live! We're excited to get your feedback as we continue to build
-  this feature out. See [the docs](/docs/core/playground) for more information.
+  this feature out. See [the docs](/docs/evaluate/playgrounds) for more information.
 
 ![Sync Playground](/docs/release-notes/ReleaseNotes-2023-08-Playground.gif)
 
@@ -1291,7 +1291,7 @@ Eval(
 
 ![Experiment Progress](/docs/release-notes/ReleaseNotes-2023-08-ExperimentProgress.png)
 
-- The [eval CLI](/docs/guides/evals) now supports `--watch`, which will automatically re-run your evaluation when you make
+- The [eval CLI](/docs/evaluate/run-evaluations) now supports `--watch`, which will automatically re-run your evaluation when you make
   changes to your code.
 - You can now edit datasets in the UI.
 
@@ -1301,7 +1301,7 @@ Eval(
 
 - Introducing datasets! You can now upload datasets to Braintrust and use them in your experiments. Datasets are
   versioned, and you can use them in multiple experiments. You can also use datasets to compare your model's
-  performance against a baseline. Learn more about [how to create and use datasets in the docs](/docs/core/datasets).
+  performance against a baseline. Learn more about [how to create and use datasets in the docs](/docs/annotate/datasets).
 - Fix several performance issues in the SDK and UI.
 
 ## Week of 2023-08-07
@@ -1335,7 +1335,7 @@ Eval(
 
 ## Week of 2023-07-24
 
-- A new [framework](/docs/guides/evals) for expressing evaluations in a much simpler way:
+- A new [framework](/docs/evaluate/run-evaluations) for expressing evaluations in a much simpler way:
 
 ```js #skip-compile
 import { Eval } from "braintrust";

@@ -10,7 +10,7 @@ import { Code } from "lucide-react";
 
 The prompt playground is a tool for exploring, comparing, and evaluating prompts. The playground
 is deeply integrated within Braintrust, so you can easily to try out prompts with data from your
-[datasets](/docs/core/datasets).
+[datasets](/docs/annotate/datasets).
 
 The playground supports a wide range of models including the latest models from OpenAI, Anthropic,
 Mistral, Google, Meta, and more deployed on first and third party infrastructure. You can also configure
@@ -25,13 +25,13 @@ feature requests, please [reach out](/contact) to us.
 The playground organizes your work into sessions. A session is a saved and collaborative workspace
 that includes one or more prompts and is linked to a dataset.
 
-![Empty Playground](/docs/core/playground/empty-playground.webp)
+![Empty Playground](/docs/evaluate/playgrounds/empty-playground.webp)
 
 ### Sharing playgrounds
 
 Playgrounds are designed for collaboration and automatically synchronize in real-time.
 
-![Sync Playground](/docs/core/playground/sync-playground.gif)
+![Sync Playground](/docs/evaluate/playgrounds/sync-playground.gif)
 
 To share a playground, simply copy the URL and send it to your collaborators. Your collaborators
 must be members of your organization to see the session. You can invite users from the <Link href="/app/settings?subroute=team" target="_blank">settings</Link> page.
@@ -54,27 +54,27 @@ on other playgrounds (e.g. OpenAI's). This mode is a useful way to explore and c
 The real power of Braintrust comes from linking a playground to a dataset. You can link to an existing dataset
 or create a new one from the dataset dropdown:
 
-![Dataset dropdown](/docs/core/playground/prompt-dataset-dropdown.webp)
+![Dataset dropdown](/docs/evaluate/playgrounds/prompt-dataset-dropdown.webp)
 
 Once you link a dataset, you will see a new row in the grid for each record in the dataset. You can reference the
 data from each record in your prompt using the `input`, `expected`, and `metadata` variables. The playground uses
 [mustache](https://mustache.github.io/) syntax for templating:
 
-![Prompt with dataset](/docs/core/playground/prompt-with-dataset.webp)
+![Prompt with dataset](/docs/evaluate/playgrounds/prompt-with-dataset.webp)
 
 Each value can be arbitrarily complex JSON, e.g.
 
-![Prompt with JSON data](/docs/core/playground/prompt-with-dataset-json.webp)
+![Prompt with JSON data](/docs/evaluate/playgrounds/prompt-with-dataset-json.webp)
 
 ### Multimodal prompts
 
 You can also add images to your prompts by selecting the image icon in the input field. Images can be accessed via URLs, base64 encoded images as strings, or variables that contain an image.
 
-![Multimodal prompt](/docs/core/playground/multimodal-prompt.png)
+![Multimodal prompt](/docs/evaluate/playgrounds/multimodal-prompt.png)
 
 ### Prompt code snippets
 
-The playground makes it easy to copy code snippets that you can run through the [AI proxy](/docs/guides/proxy). Select the code icon (<Code className="inline size-3" />) next to any chat-based prompt to get code snippets in TypeScript, Python, or cURL.
+The playground makes it easy to copy code snippets that you can run through the [AI proxy](/docs/deploy/ai-proxy). Select the code icon (<Code className="inline size-3" />) next to any chat-based prompt to get code snippets in TypeScript, Python, or cURL.
 
 <video
   className="border rounded-md"
@@ -93,5 +93,5 @@ The generated code includes all the prompt configuration, including the model, m
 
 ## Custom models
 
-To configure custom models, see the [Custom models](/docs/guides/proxy#custom-models) section of the proxy docs.
+To configure custom models, see the [Custom models](/docs/deploy/ai-proxy#custom-models) section of the proxy docs.
 Endpoint configurations, like custom models, are automatically picked up by the playground.

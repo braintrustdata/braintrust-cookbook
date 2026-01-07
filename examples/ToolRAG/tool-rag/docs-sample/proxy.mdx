@@ -344,8 +344,8 @@ The following headers allow you to configure the proxy's behavior:
 
 ## Integration with Braintrust platform
 
-Several features in Braintrust are powered by the proxy. For example, when you create a [playground](/docs/core/playground),
-the proxy handles running the LLM calls. Similarly, if you [create a prompt](/docs/guides/prompts), when you preview the
+Several features in Braintrust are powered by the proxy. For example, when you create a [playground](/docs/evaluate/playgrounds),
+the proxy handles running the LLM calls. Similarly, if you [create a prompt](/docs/evaluate/write-prompts), when you preview the
 prompt's results, the proxy is used to run the LLM. However, the proxy is _not_ required when you:
 
 - Run evals in your code
@@ -358,7 +358,7 @@ above](#quickstart) to set it as the base URL in your OpenAI client.
 ### Self-hosting
 
 If you're self-hosting Braintrust, your API service (serverless functions or containers) contain a built-in proxy that runs
-within your own environment. See the [self-hosting](/docs/guides/self-hosting) docs for more information on how to set up
+within your own environment. See the [self-hosting](/docs/admin/self-hosting) docs for more information on how to set up
 self-hosting.
 
 ## Open source

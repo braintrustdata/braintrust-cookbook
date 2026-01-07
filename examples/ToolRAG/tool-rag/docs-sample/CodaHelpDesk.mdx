@@ -125,7 +125,7 @@ Downloaded 988 Markdown sections. Here are the first 3:
 
 ## Use the Braintrust AI proxy to access the OpenAI API
 
-The [Braintrust AI proxy](https://www.braintrust.dev/docs/guides/proxy) provides a single API to access OpenAI and Anthropic models, LLaMa 2, Mistral and others. Here we use it to access `gpt-3.5-turbo`. Because the Braintrust AI proxy automatically caches and reuses results (when `temperature=0` or the `seed` parameter is set, or when the caching mode is set to `always`), we can re-evaluate the following prompts many times without incurring additional API costs.
+The [Braintrust AI proxy](/docs/deploy/ai-proxy) provides a single API to access OpenAI and Anthropic models, LLaMa 2, Mistral and others. Here we use it to access `gpt-3.5-turbo`. Because the Braintrust AI proxy automatically caches and reuses results (when `temperature=0` or the `seed` parameter is set, or when the caching mode is set to `always`), we can re-evaluate the following prompts many times without incurring additional API costs.
 
 If you'd prefer not to use the proxy, simply omit the `base_url` and `default_headers` parameters below.
 

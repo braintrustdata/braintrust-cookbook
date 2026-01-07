@@ -35,7 +35,7 @@ This tutorial walks through how to automatically generate release notes for a re
 the Github API and an LLM. Automatically generated release notes are tough to evaluate,
 and you often don't have pre-existing benchmark data to evaluate them on.
 
-To work around this, we'll use [hill climbing](https://braintrust.dev/docs/guides/evals#hill-climbing) to iterate on our prompt, comparing new results to previous experiments to see if we're making progress.
+To work around this, we'll use [hill climbing](/docs/evaluate/run-evaluations#hill-climbing) to iterate on our prompt, comparing new results to previous experiments to see if we're making progress.
 
 ## Installing dependencies
 
@@ -533,7 +533,7 @@ Release Notes:
 
 ### Hill climbing
 
-We'll use [hill climbing](https://www.braintrust.dev/docs/guides/evals#hill-climbing) to automatically use data from the previous experiment to compare to this one. Hill climbing is inspired by, but not exactly the same as, the term used in [numerical optimization](https://en.wikipedia.org/wiki/Hill_climbing). In the context of Braintrust, hill climbing is a way to iteratively improve a model's performance by comparing new experiments to previous ones. This is especially useful when you don't have a pre-existing benchmark to evaluate against.
+We'll use [hill climbing](/docs/evaluate/run-evaluations#hill-climbing) to automatically use data from the previous experiment to compare to this one. Hill climbing is inspired by, but not exactly the same as, the term used in [numerical optimization](https://en.wikipedia.org/wiki/Hill_climbing). In the context of Braintrust, hill climbing is a way to iteratively improve a model's performance by comparing new experiments to previous ones. This is especially useful when you don't have a pre-existing benchmark to evaluate against.
 
 Both the `Comprehensiveness` and `WritingQuality` scores evaluate the `output` against the `input`, without considering a comparison point. To take advantage of hill climbing, we'll add another scorer, `Summary`, which will compare the `output` against the `data` from the previous experiment. To learn more about the `Summary` scorer, check out its [prompt](https://github.com/braintrustdata/autoevals/blob/main/templates/summary.yaml).
 
