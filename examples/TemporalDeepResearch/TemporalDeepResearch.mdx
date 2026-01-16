@@ -308,7 +308,7 @@ With the `BraintrustPlugin`, you get automatic tracing for every workflow and ac
 from braintrust import init_logger
 from braintrust.contrib.temporal import BraintrustPlugin
 
-init_logger(project=os.environ.get("BRAINTRUST_PROJECT", "deep-research"))
+init_logger(project=os.environ.get("BRAINTRUST_PROJECT_NAME", "deep-research"))
 
 worker = Worker(
     client,
