@@ -1,5 +1,15 @@
 # yaml-language-server: $schema=./.github/registry_schema.json
 
+- title: Building a deep research agent with Temporal
+  path: examples/TemporalDeepResearch/TemporalDeepResearch.mdx
+  date: 2026-01-16
+  authors:
+    - ethanruhe
+  tags:
+    - agent
+    - temporal
+    - logging
+    - python
 - title: Evaluating and iterating on AI apps with Lovable
   path: examples/Lovable/Lovable.ipynb
   date: 2025-12-08
