@@ -8,5 +8,6 @@
   "devDependencies": {
     "tslab": "^1.0.21"
   },
-  "resolutions": {}
+  "resolutions": {},
+  "packageManager": "pnpm@10.33.0"
 }
