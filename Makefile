@@ -7,7 +7,7 @@ tslab:
 	npm install -g tslab
 
 node-packages: pnpm-lock.yaml
-	pnpm install
+	pnpm install --frozen-lockfile
 
 venv/.initialized: requirements.txt venv/bin/activate
 	source venv/bin/activate && pip install -r requirements.txt
