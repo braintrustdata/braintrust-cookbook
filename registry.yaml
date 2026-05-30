@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=./.github/registry_schema.json
 
-- title: Using Topics to find AI failures that testing misses
-  path: examples/TopicsCustomerSupport/TopicsCustomerSupport.mdx
+- title: Finding production issues using Topics
+  path: examples/FindingProductionIssues/FindingProductionIssues.mdx
   date: 2026-05-29
   authors:
     - jesswang

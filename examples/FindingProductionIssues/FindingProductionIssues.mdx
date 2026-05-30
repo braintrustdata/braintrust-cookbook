@@ -1,17 +1,8 @@
-# Using Topics to find AI failures that testing misses
+# Finding production issues using Topics
 
 Your existing evals tell you how well your AI performs on things you already know to test for, but what about the patterns and failure modes that you're not aware of yet?
 
 In this cookbook, we'll build a customer support chatbot that generates hundreds of conversation logs between human and AI, and use [Topics](/docs/topics/index) to surface patterns in the system that we wouldn't have caught with traditional evaluations. 
-
-Topics is a Braintrust feature that automatically analyzes your logged traces and classifies them into meaningful clusters. Here's how it works:
-1. Each logged conversation (thread) is first passed through a preprocessor that extracts the relevant content
-2. Then an LLM generates a short summary of what happened in that conversation. 
-3. Those summaries are then classified into clusters across multiple dimensions called facets. 
-
-<image here of the preprocessor thread>
-
-Out of the box, Topics ships with three built-in facets: **Task** (what the user was trying to accomplish), **Sentiment** (how the user felt during the interaction), and **Issues** (whether something went wrong). In this cookbook, we'll use those facets to run offline evals, fix the prompt, and improve our overall system.
 
 By the end, you'll learn how to:
 
@@ -33,9 +24,9 @@ You'll need:
 - A [Supabase](https://supabase.com/) project with Edge Functions enabled
 - Python 3.12+ with the `braintrust`, `openai`, and `requests` packages
 
-### Setup and code explaination
+### Setup and code explanation
 
-We have a Supabase database has six tables:
+The Supabase database has six tables:
 
 - **customers** — customer profiles with loyalty tiers (Bronze, Silver, Gold) and point balances
 - **products** — 15 outdoor/lifestyle products with SKUs, prices, sizes, and colors
@@ -127,9 +118,9 @@ SCENARIOS = [
 ]
 ```
 
-Each conversation is logged to Braintrust with full tracing. That means every tool call, LLM response, each conversational turn is logged to Braintrust.
+Each conversation is logged to Braintrust with full tracing. That means every tool call, LLM response, and each conversational turn is logged to Braintrust.
 
-<insert image of a full trace>
+![A full conversation trace in Braintrust showing tool calls, LLM responses, and conversational turns](./assets/full-trace.png)
 
 We run the generator multiple times to build up volume, because Topics needs at least ~100 traces to start clustering effectively. Each run shuffles the scenario order and uses a temperature of 1.0, so the bot's responses vary across runs. That way, the same customer complaint might get a slightly different resolution path each time, which gives Topics more diverse data to cluster against.
 
@@ -145,27 +136,27 @@ Once the logs are in Braintrust, navigate to **Topics** in your project. Topics 
 - **Sentiment** — How did the customer feel about the interaction? Topics classified conversations into clusters like "Positive resolution" where the customer's issue was handled well, "Negative emotional distress" where the customer left frustrated, and "Neutral informational" for straightforward product questions.
 - **Issues** — Did something go wrong during the conversation? This facet surfaced clusters like "Payment processing failures" where the refund tool returned errors, and "Order lookup errors" where the bot couldn't find an order number in the system.
 
-<image of topics homepage (before generating)>
+![The Topics homepage before enabling classification](./assets/topics-homepage.png)
 
 ### What the classifications revealed
 
 With ~200 traces logged, Topics surfaced several clusters. 
 
-On the Task dimension, conversations grouped naturally around the scenario categories we expected like shipping, returns, billing, account, and product inquiries. but Topics also identified cross-cutting clusters like "Product sizing and returns" that combined sizing questions with return requests, which we hadn't explicitly designed for. 
+On the Task dimension, conversations grouped naturally around the scenario categories we expected like shipping, returns, billing, account, and product inquiries. But Topics also identified cross-cutting clusters like "Product sizing and returns" that combined sizing questions with return requests, which we hadn't explicitly designed for. 
 
 Sentiment had a bunch of "Negative emotional distress" even though the bot's Brand Alignment scores were high, meaning the bot sounded on-brand but was still leaving customers frustrated. 
 
 On the Issues facet, clusters around "Payment processing failures" and "Order lookup errors" started forming once we had enough traces where tool calls failed.
 
-<Image of the final cluster results>
+![Topics cluster results after classifying ~200 traces](./assets/topics-clusters.png)
 
 ## Digging into the failure cluster
 
 Filtering to **Sentiment: Negative emotional distress** showed that a majority (32%) of negative conversations were classified under the "Product sizing and returns" task cluster. This is where customers were most frustrated.
 
-At this point, I would recommend spending a good 20-30 minutes manually reading through the logs. Though you could technically use AI to automate this portion of it, it's better to have a human read through and decide which AI responses were fine (even if it evoked negative emotion) versus which ones fundamenetally need to be fixed. As I did this myself, I wrote down what needed to be fixed in my system.
+At this point, I would recommend spending a good 20-30 minutes manually reading through the logs. Though you could technically use AI to automate this portion of it, it's better to have a human read through and decide which AI responses were fine (even if it evoked negative emotion) versus which ones fundamentally need to be fixed. As I did this myself, I wrote down what needed to be fixed in my system.
 
-**1. Order not found = dead end.** When a customer referenced an order number that wasn't in the system, the bot just said "order not found" and stopped. I think the correct behavior should be to look up the customer's account to find valid orders numbers, or find other order numbers that are close to what the customer provided, in case they made a typo.
+**1. Order not found = dead end.** When a customer referenced an order number that wasn't in the system, the bot just said "order not found" and stopped. I think the correct behavior should be to look up the customer's account to find valid order numbers, or find other order numbers that are close to what the customer provided, in case they made a typo.
 
 **2. Shipping delays = no refund.** When a customer paid for express shipping and it took 8 days (well past the 2-3 day window), the bot refused to refund shipping because the order status was "shipped." I think the correct behavior here would be to allow for a full refund on shipping only.
 
@@ -175,15 +166,13 @@ At this point, I would recommend spending a good 20-30 minutes manually reading 
 
 **5. 5xx errors = immediate escalation.** When a tool call hit a transient server error, the bot immediately escalated to a human instead of having any sort of retry logic setup.
 
-<image of me writing this down issues manually>
-
 ## Building a targeted eval dataset
 
 From the Topics UI, we saved the conversations in the "Product sizing and returns" cluster to a dataset called **Product Sizing and Return Issues**. This gives us a focused eval set containing exactly the conversations where the bot was failing.
 
 We cleaned the dataset to contain just the customer messages and the turn count so that we could replay it faithfully.
 
-**Before cleaning** (one row):
+**Before cleaning**:
 ```json
 {
   "input": [
@@ -296,7 +285,7 @@ This is the core loop that Topics enables:
 5. **Eval** prompt changes against that dataset
 6. **Deploy** and verify with fresh production logs
 
-<image of the whole thing here> 
+![The full Topics evaluation loop: log, classify, identify, save, eval, deploy](./assets/eval-loop.png)
 
 The key insight: you don't need to anticipate every failure mode upfront. Topics finds them for you from real traffic patterns, then gives you the data to build targeted evals that prevent regressions.
 
