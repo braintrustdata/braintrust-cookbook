@@ -24,6 +24,22 @@ You'll need:
 - A [Supabase](https://supabase.com/) project with Edge Functions enabled
 - Python 3.12+ with the `braintrust`, `openai`, and `requests` packages
 
+Clone the cookbook and install dependencies:
+
+```bash
+git clone https://github.com/braintrustdata/braintrust-cookbook.git
+cd braintrust-cookbook/examples/FindingProductionIssues/customer-support-bot
+pip install -r requirements.txt
+```
+
+Set the required environment variables:
+
+```bash
+export OPENAI_API_KEY="your-openai-api-key"
+export BRAINTRUST_API_KEY="your-braintrust-api-key"
+export SUPABASE_SERVICE_ROLE_KEY="your-supabase-key"
+```
+
 ### Setup and code explanation
 
 The Supabase database has six tables:
@@ -61,6 +77,8 @@ def _call_edge_function(function_name: str, payload: dict) -> dict:
     resp = requests.post(url, json=payload, timeout=15)
     return {"status_code": resp.status_code, **resp.json()}
 ```
+
+The complete tool implementations are in [`supabase_tools.py`](https://github.com/braintrustdata/braintrust-cookbook/blob/main/examples/FindingProductionIssues/customer-support-bot/supabase_tools.py) and the chatbot itself is in [`chat_app.py`](https://github.com/braintrustdata/braintrust-cookbook/blob/main/examples/FindingProductionIssues/customer-support-bot/chat_app.py).
 
 And this is our initial system prompt:
 
@@ -117,6 +135,8 @@ SCENARIOS = [
     # ... 51 total scenarios
 ]
 ```
+
+The complete scenario list and log generation logic is in [`generate_logs.py`](https://github.com/braintrustdata/braintrust-cookbook/blob/main/examples/FindingProductionIssues/customer-support-bot/generate_logs.py).
 
 Each conversation is logged to Braintrust with full tracing. That means every tool call, LLM response, and each conversational turn is logged to Braintrust.
 
@@ -222,6 +242,8 @@ Eval(
     experiment_name="product-sizing-returns-v1",
 )
 ```
+
+The complete eval script is in [`eval_product_sizing_returns.py`](https://github.com/braintrustdata/braintrust-cookbook/blob/main/examples/FindingProductionIssues/customer-support-bot/eval_product_sizing_returns.py).
 
 The v1 baseline scores on the Product Sizing and Return Issues dataset:
 
