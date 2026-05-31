@@ -6,8 +6,6 @@ In this cookbook, we'll build a customer support chatbot that generates hundreds
 
 By the end, you'll learn how to:
 
-- Set up a tool-calling customer support chatbot with real API backends
-- Generate realistic conversation logs and send them to Braintrust
 - Use Topics to classify conversations by task, sentiment, and issues
 - Dig into failure clusters to identify specific prompt and system-level bugs
 - Build targeted eval datasets from Topics classifications
@@ -138,15 +136,15 @@ SCENARIOS = [
 
 The complete scenario list and log generation logic is in [`generate_logs.py`](https://github.com/braintrustdata/braintrust-cookbook/blob/main/examples/FindingProductionIssues/customer-support-bot/generate_logs.py).
 
+```bash
+python generate_logs.py  # Run this several times
+```
+
 Each conversation is logged to Braintrust with full tracing. That means every tool call, LLM response, and each conversational turn is logged to Braintrust.
 
 ![A full conversation trace in Braintrust showing tool calls, LLM responses, and conversational turns](./assets/full-trace.png)
 
 We run the generator multiple times to build up volume, because Topics needs at least ~100 traces to start clustering effectively. Each run shuffles the scenario order and uses a temperature of 1.0, so the bot's responses vary across runs. That way, the same customer complaint might get a slightly different resolution path each time, which gives Topics more diverse data to cluster against.
-
-```bash
-python generate_logs.py  # Run this several times
-```
 
 ## Using Topics to find failures
 
@@ -155,18 +153,6 @@ Once the logs are in Braintrust, navigate to **Topics** in your project. Topics 
 - **Task** — What was the customer trying to do? In this project, Topics identified clusters like "Product sizing and returns" for customers dealing with fit issues and return requests, "Shipping status inquiries" for customers tracking delayed packages, and "Billing disputes" for promo code and double-charge complaints.
 - **Sentiment** — How did the customer feel about the interaction? Topics classified conversations into clusters like "Positive resolution" where the customer's issue was handled well, "Negative emotional distress" where the customer left frustrated, and "Neutral informational" for straightforward product questions.
 - **Issues** — Did something go wrong during the conversation? This facet surfaced clusters like "Payment processing failures" where the refund tool returned errors, and "Order lookup errors" where the bot couldn't find an order number in the system.
-
-![The Topics homepage before enabling classification](./assets/topics-homepage.png)
-
-### What the classifications revealed
-
-With ~200 traces logged, Topics surfaced several clusters. 
-
-On the Task dimension, conversations grouped naturally around the scenario categories we expected like shipping, returns, billing, account, and product inquiries. But Topics also identified cross-cutting clusters like "Product sizing and returns" that combined sizing questions with return requests, which we hadn't explicitly designed for. 
-
-Sentiment had a bunch of "Negative emotional distress" even though the bot's Brand Alignment scores were high, meaning the bot sounded on-brand but was still leaving customers frustrated. 
-
-On the Issues facet, clusters around "Payment processing failures" and "Order lookup errors" started forming once we had enough traces where tool calls failed.
 
 ![Topics cluster results after classifying ~200 traces](./assets/topics-clusters.png)
 
