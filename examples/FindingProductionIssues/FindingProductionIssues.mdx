@@ -208,7 +208,7 @@ We cleaned the dataset to contain just the customer messages and the turn count 
 
 ## Running offline evals
 
-The eval script runs each customer complaint through the chatbot with real Supabase tools, then scores the response with three LLM-based scorers. These are separate from the online scorers you see in the Topics logs view (Brand Alignment and Conversation Quality, which Braintrust applies automatically) — the eval scorers are custom functions we wrote to measure specific dimensions:
+The eval script runs each customer complaint through the chatbot with real Supabase tools, then scores the response with three LLM-based scorers. The eval scorers are custom functions we wrote to measure specific dimensions:
 
 - **Helpfulness** checks whether the agent addressed the customer's concern and provided clear next steps. 
 - **Resolution** checks whether the agent actually took action — processed a refund, initiated a return, provided tracking — or just acknowledged the problem without doing anything. 
@@ -277,8 +277,6 @@ Running the same eval dataset with the updated prompt:
 | Empathy | 62.5% | 75% | +12.5 |
 
 Helpfulness nearly doubled. The bot is now actually processing refunds for delayed shipments, handling promo codes as billing corrections, and retrying on transient errors instead of immediately escalating.
-
-You can compare the two experiments side-by-side in Braintrust to see exactly which conversations improved and which still need work.
 
 ## Deploying and monitoring
 
