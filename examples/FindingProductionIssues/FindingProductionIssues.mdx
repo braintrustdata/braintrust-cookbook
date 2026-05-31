@@ -172,8 +172,6 @@ At this point, I would recommend spending a good 20-30 minutes manually reading 
 
 **5. 5xx errors = immediate escalation.** When a tool call hit a transient server error, the bot immediately escalated to a human instead of having any sort of retry logic setup.
 
-![Handwritten notes on failure patterns identified from reading through logs](./assets/manual-notes.jpg)
-
 ## Building a targeted eval dataset
 
 From the Topics UI, we saved the conversations in the "Product sizing and returns" cluster to a dataset called **Product Sizing and Return Issues**. This gives us a focused eval set containing exactly the conversations where the bot was failing.
