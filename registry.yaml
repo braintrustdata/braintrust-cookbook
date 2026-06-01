@@ -1,5 +1,16 @@
 # yaml-language-server: $schema=./.github/registry_schema.json
 
+- title: Finding production issues using Topics
+  path: examples/FindingProductionIssues/FindingProductionIssues.mdx
+  date: 2026-06-01
+  authors:
+    - jesswang
+  tags:
+    - topics
+    - evals
+    - logging
+    - python
+    - agent
 - title: Building a deep research agent with Temporal
   path: examples/TemporalDeepResearch/TemporalDeepResearch.mdx
   date: 2026-01-16
