@@ -2,7 +2,7 @@
 
 Your existing evals tell you how well your AI performs on things you already know to test for, but what about the patterns and failure modes that you're not aware of yet?
 
-In this cookbook, we'll build a customer support chatbot that generates hundreds of conversation logs between human and AI, and use [Topics](/docs/topics/index) to surface patterns in the system that we wouldn't have caught with traditional evaluations. 
+In this cookbook, we'll build a customer support chatbot that generates hundreds of conversation logs between human and AI, and use [Topics](/docs/observe/topics/index) to surface patterns in the system that we wouldn't have caught with traditional evaluations. 
 
 By the end, you'll learn how to:
 
@@ -295,6 +295,6 @@ This is the core loop that Topics enables:
 
 ## Next steps
 
-- Add [custom facets](/docs/topics/index#custom-facets) to classify dimensions specific to your domain (for example, "Resolution Gap," which checks whether the bot sounded helpful but failed to actually resolve the issue)
-- Set up [online scoring](/docs/evaluate/online-scoring) to get real-time quality signals alongside Topics classifications
-- Explore the [Braintrust SDK](/docs/reference/sdk/python) to programmatically query Topics data and build automated alerting
+- Add [custom facets](/docs/observe/topics/custom-facets) to classify dimensions specific to your domain (for example, "Resolution Gap," which checks whether the bot sounded helpful but failed to actually resolve the issue)
+- Set up [online scoring](/docs/evaluate/score-online) to get real-time quality signals alongside Topics classifications
+- Explore the [Braintrust SDK](/docs/reference/sdks/python/latest) to programmatically query Topics data and build automated alerting
