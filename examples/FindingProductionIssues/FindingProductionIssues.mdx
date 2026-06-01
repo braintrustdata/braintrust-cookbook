@@ -11,7 +11,7 @@ By the end, you'll learn how to:
 - Build targeted eval datasets from Topics classifications
 - Iterate on prompts and measure improvement with offline evals
 
-## Project setup
+## Getting started
 
 We're building a customer support chatbot for a fictional e-commerce company called Evergreen Goods. The chatbot uses OpenAI's API to interact with Supabase to look up orders, process refunds, initiate returns, and check shipping status.
 
@@ -42,12 +42,12 @@ export SUPABASE_SERVICE_ROLE_KEY="your-supabase-key"
 
 The Supabase database has six tables:
 
-- **customers** — customer profiles with loyalty tiers (Bronze, Silver, Gold) and point balances
-- **products** — 15 outdoor/lifestyle products with SKUs, prices, sizes, and colors
-- **orders** — orders with statuses (shipped, delivered, cancelled, etc.), tracking numbers, and payment info
-- **returns** — return records linked to orders
-- **refund_requests** — refund records with processor responses
-- **support_tickets** — escalation tickets created by the bot
+- **customers**: customer profiles with loyalty tiers (Bronze, Silver, Gold) and point balances
+- **products**: 15 outdoor/lifestyle products with SKUs, prices, sizes, and colors
+- **orders**: orders with statuses (shipped, delivered, cancelled, etc.), tracking numbers, and payment info
+- **returns**: return records linked to orders
+- **refund_requests**: refund records with processor responses
+- **support_tickets**: escalation tickets created by the bot
 
 Our customer support chatbot has two types of tools:
 
@@ -148,11 +148,11 @@ We run the generator multiple times to build up volume, because Topics needs at 
 
 ## Using Topics to find failures
 
-Once the logs are in Braintrust, navigate to **Topics** in your project. Topics automatically classifies each conversation across three built-in facets:
+Once the logs are in Braintrust, go to [**<Icon icon="pentagon" /> Topics**](https://www.braintrust.dev/app/~/topics). Topics automatically classifies each conversation across three built-in facets:
 
-- **Task** — What was the customer trying to do? In this project, Topics identified clusters like "Product sizing and returns" for customers dealing with fit issues and return requests, "Shipping status inquiries" for customers tracking delayed packages, and "Billing disputes" for promo code and double-charge complaints.
-- **Sentiment** — How did the customer feel about the interaction? Topics classified conversations into clusters like "Positive resolution" where the customer's issue was handled well, "Negative emotional distress" where the customer left frustrated, and "Neutral informational" for straightforward product questions.
-- **Issues** — Did something go wrong during the conversation? This facet surfaced clusters like "Payment processing failures" where the refund tool returned errors, and "Order lookup errors" where the bot couldn't find an order number in the system.
+- **Task**: What was the customer trying to do? In this project, Topics identified clusters like "Product sizing and returns" for customers dealing with fit issues and return requests, "Shipping status inquiries" for customers tracking delayed packages, and "Billing disputes" for promo code and double-charge complaints.
+- **Sentiment**: How did the customer feel about the interaction? Topics classified conversations into clusters like "Positive resolution" where the customer's issue was handled well, "Negative emotional distress" where the customer left frustrated, and "Neutral informational" for straightforward product questions.
+- **Issues**: Did something go wrong during the conversation? This facet surfaced clusters like "Payment processing failures" where the refund tool returned errors, and "Order lookup errors" where the bot couldn't find an order number in the system.
 
 ![Topics cluster results after classifying ~200 traces](./assets/topics-clusters.png)
 
@@ -211,7 +211,7 @@ We cleaned the dataset to contain just the customer messages and the turn count 
 The eval script runs each customer complaint through the chatbot with real Supabase tools, then scores the response with three LLM-based scorers. The eval scorers are custom functions we wrote to measure specific dimensions:
 
 - **Helpfulness** checks whether the agent addressed the customer's concern and provided clear next steps. 
-- **Resolution** checks whether the agent actually took action — processed a refund, initiated a return, provided tracking — or just acknowledged the problem without doing anything. 
+- **Resolution** checks whether the agent actually took action (processed a refund, initiated a return, or provided tracking) rather than just acknowledging the problem without doing anything. 
 - **Empathy** checks whether the agent's tone was professional and acknowledged the customer's frustration.
 
 ```python
@@ -291,12 +291,10 @@ This is the core loop that Topics enables:
 5. **Eval** prompt changes against that dataset
 6. **Deploy** and verify with fresh production logs
 
-![The full Topics evaluation loop: log, classify, identify, save, eval, deploy](./assets/eval-loop.png)
-
-The key insight: you don't need to anticipate every failure mode upfront. Topics finds them for you from real traffic patterns, then gives you the data to build targeted evals that prevent regressions.
+![The Topics evaluation loop: get patterns from logs, save errors to a dataset, run offline evals, then implement the better hypothesis online](./assets/eval-loop.png)
 
 ## Next steps
 
-- Add [custom facets](/docs/topics/index#custom-facets) to classify dimensions specific to your domain (e.g., "Resolution Gap" — did the bot sound helpful but fail to actually resolve the issue?)
+- Add [custom facets](/docs/topics/index#custom-facets) to classify dimensions specific to your domain (for example, "Resolution Gap," which checks whether the bot sounded helpful but failed to actually resolve the issue)
 - Set up [online scoring](/docs/evaluate/online-scoring) to get real-time quality signals alongside Topics classifications
 - Explore the [Braintrust SDK](/docs/reference/sdk/python) to programmatically query Topics data and build automated alerting
