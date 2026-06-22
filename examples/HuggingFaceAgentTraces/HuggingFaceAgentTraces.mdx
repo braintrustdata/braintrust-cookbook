@@ -1,0 +1,186 @@
+# Analyzing agent traces from Hugging Face in Braintrust
+
+Production agents emit traces, but raw traces don't tell you which configuration actually works. They have no scores, no consistent structure, and no easy way to ask "which harness and model combination succeeds most often, and at what cost?"
+
+In this cookbook, you'll take 1,781 real agent-eval traces published on Hugging Face (the [Exgentic `agent-llm-traces`](https://huggingface.co/datasets/Exgentic/agent-llm-traces) dataset), import them into Braintrust, score them with an LLM judge, and use [Topics](/docs/observe/topics/index) and SQL to find the patterns. This is the same pipeline behind our [analysis of those traces](https://www.braintrust.dev/blog/hf-agent-traces).
+
+By the end, you'll learn how to:
+
+- Stream a Hugging Face trace dataset into Braintrust as a span tree per session
+- Score each session with an LLM-as-a-judge and write the scores back onto the same spans
+- Use Topics to cluster failure modes without manual tagging
+- Slice success rate by benchmark, harness, and model with a single query
+- Turn a failure cluster into a targeted eval dataset
+
+## What you're working with
+
+The dataset is 1,781 agent runs across six benchmarks (SWE-bench, AppWorld, BrowseComp+, and three τ²-bench customer-service suites), six models, and five harnesses. Each run records the task, the agent's full conversation (every LLM call), and metadata like model, benchmark, harness, and token count. There are roughly 49,000 LLM calls in total, and importantly, the dataset ships with no ground-truth labels: every `scores` and `expected` field is null. You'll build your own success measure in the scoring step.
+
+## Getting started
+
+You'll need:
+
+- A [Braintrust account](https://www.braintrust.dev/signup) with an API key
+- Python 3.10+ with the `braintrust`, `datasets`, `requests`, and `python-dotenv` packages, plus the `bt` CLI (installed with the `braintrust` package) for the logs push
+- Optionally, a Hugging Face token for higher rate limits (`HF_TOKEN`); the Exgentic dataset is public, so it isn't required
+
+Clone the cookbook and install dependencies:
+
+```bash
+git clone https://github.com/braintrustdata/braintrust-cookbook.git
+cd braintrust-cookbook/examples/HuggingFaceAgentTraces
+pip install -r requirements.txt
+```
+
+Set your API key:
+
+```bash
+export BRAINTRUST_API_KEY="your-braintrust-api-key"
+```
+
+Finally, create a Braintrust project named `Hugging Face topics`. The import script resolves the project by name, so it has to exist first.
+
+## Importing the traces
+
+The importer lives in `hf_bt_cookbook/import_logs.py`. It's a worked example you edit and re-run, not a black box: the entire mapping lives in an `EDIT ME` block at the top of the file, where you name the Hugging Face repo and say which columns hold the session ID, the trace, the metadata, and any scores.
+
+```python
+# hf_bt_cookbook/import_logs.py
+HF_REPO = "Exgentic/agent-llm-traces"
+HF_SPLIT = "train"
+
+BT_PROJECT = "Hugging Face topics"  # must already exist in Braintrust
+
+ID_COL = "session_id"               # stable id per session (drives the root span id)
+TRACE_COL = "spans"                 # column holding the list of OTel spans
+METADATA_COLS = ["benchmark", "harness", "models", "total_tokens"]
+SCORE_COLS = {}                     # {"task_success": "judge_task_success"}
+```
+
+The script streams the dataset with `datasets.load_dataset(HF_REPO, streaming=True)`, so there's no need to download and materialize all 39 Parquet shards locally. For each session row, it builds a span tree:
+
+```
+root  task span   (one per session)
+│       input  = first user message
+│       output = final answer  (+ tool errors surfaced here, so Topics can cluster on them)
+├── llm span      call 1   (token metrics, model)
+├── llm span      call 2
+└── …             one child per LLM call
+```
+
+The source uses the OpenTelemetry GenAI "parts" format, which the script normalizes to OpenAI-style messages so Braintrust renders them as readable chat turns. Run the script once to preview, then again with `--push` to upload:
+
+```bash
+python hf_bt_cookbook/import_logs.py            # writes the bt-sync JSONL to out/logs, no network writes
+python hf_bt_cookbook/import_logs.py --push     # also runs `bt sync push` for you
+```
+
+Nothing leaves your machine until you pass `--push`. One detail that matters later: root span IDs are deterministic (`uuid5` of the session ID), so re-importing the same session upserts instead of duplicating.
+
+Once the push finishes, every run is a row in the Braintrust **Logs** view that you can sort, filter, and slice on any metadata field.
+
+![The Braintrust Logs view, with each agent run as a filterable row showing model, benchmark, tokens, and duration](./assets/logs-view.png)
+
+## Scoring with an LLM judge
+
+The traces record what each agent did, but not whether it succeeded. To build a success measure, run an LLM-as-a-judge over each session: feed it the task, the agent's final conversation, and a benchmark-specific rubric, and ask for a binary verdict. Using the [Braintrust AI proxy](/docs/guides/proxy) keeps this to a single endpoint and your existing key:
+
+```python
+import os, requests
+
+PROXY = "https://api.braintrust.dev/v1/proxy/chat/completions"
+HDRS = {"Authorization": f"Bearer {os.environ['BRAINTRUST_API_KEY']}"}
+
+def judge(benchmark_desc, rubric, task, conversation, model="gpt-4.1"):
+    system = (
+        "You grade whether an AI agent SUCCEEDED at a task, from its execution trace.\n"
+        f"Task type: {benchmark_desc}\nGrading rule: {rubric}\n"
+        "Judge from visible verification; be strict: ambiguous or unverified = 0.\n"
+        'Respond ONLY with JSON: {"success":0 or 1,"confidence":"low"|"medium"|"high","reasoning":"<=35 words"}'
+    )
+    body = {
+        "model": model,
+        "temperature": 0,
+        "response_format": {"type": "json_object"},
+        "messages": [
+            {"role": "system", "content": system},
+            {"role": "user", "content": f"=== TASK ===\n{task}\n\n=== AGENT TRACE ===\n{conversation}"},
+        ],
+    }
+    r = requests.post(PROXY, headers=HDRS, json=body, timeout=120)
+    r.raise_for_status()
+    return r.json()["choices"][0]["message"]["content"]
+```
+
+Use a stricter rubric per benchmark (for SWE-bench the judge can see the diff and test output, so it verifies directly; for the conversational suites it sees the tool calls and the agent's confirmation). To avoid self-grading, judge a model's runs with a different judge model than the one under test.
+
+Because the root span IDs are deterministic, you don't patch the existing spans. Instead you write the verdict back the same way you imported: join the judge's output onto the source rows as a new column, point `SCORE_COLS` at it, and re-run the importer. The matching IDs upsert the score onto the spans that are already there.
+
+```python
+# hf_bt_cookbook/import_logs.py
+SCORE_COLS = {"task_success": "judge_task_success"}   # column you added from the judge
+```
+
+```bash
+python hf_bt_cookbook/import_logs.py --push
+```
+
+After this, each session carries a `scores.task_success` you can filter and aggregate on. Filter `scores.task_success IS NOT NULL` to work only with scored rows.
+
+## Finding failure modes with Topics
+
+With the sessions scored, [Topics](/docs/observe/topics/index) clusters them automatically, no manual tagging required. The **Issues** facet groups agent misbehaviors into named classes, and clusters like `False success confirmation`, `Incomplete multi-step execution`, and `Truncated task completion` map directly onto the failure modes you would otherwise have to discover by hand.
+
+![The Topics Issues facet, clustering agent-behavior problems into named groups](./assets/topics-issues.png)
+
+The **Tasks** facet does the same for what the agents were asked to do, which is a fast way to confirm the benchmark mix and spot tasks that cut across suites.
+
+![The Topics Tasks facet, clustering sessions by the kind of task the agent attempted](./assets/topics-tasks.png)
+
+## Slicing the results
+
+The reason to put traces in Braintrust is to ask structured questions across all of them at once. Every span carries queryable metadata, so grouping by benchmark, harness, and model is a single query:
+
+```sql
+SELECT benchmark, harness, model,
+       COUNT(*) AS n,
+       AVG(metrics.tokens) AS avg_tokens,
+       AVG(scores.task_success) AS success_rate
+FROM project_logs
+WHERE scores.task_success IS NOT NULL
+GROUP BY benchmark, harness, model
+ORDER BY success_rate DESC
+```
+
+That one query is the backbone of the analysis: it isolates which configuration wins each benchmark, how much it costs in tokens, and where a high average hides a suite the configuration fails badly on.
+
+## Building a targeted eval dataset
+
+Analyzing traces tells you where the agent fails. To check whether a fix actually helps, you need a gradable [dataset](/docs/guides/datasets) and an experiment. The cookbook's second script, `hf_bt_cookbook/import_dataset.py`, turns Hugging Face rows into a Braintrust **Dataset** of `{input, expected, metadata}` records. You rewrite one function, `to_record`, which is the entire mapping:
+
+```python
+# hf_bt_cookbook/import_dataset.py
+def to_record(row: dict, i: int) -> dict:
+    return {
+        "id": str(row.get("task_id") or i),
+        "input": row["question"],
+        "expected": row["answer"],          # optional
+        "metadata": {"hf_dataset": HF_REPO, "hf_split": HF_SPLIT},
+    }
+```
+
+```bash
+python hf_bt_cookbook/import_dataset.py            # preview the first few records, no writes
+python hf_bt_cookbook/import_dataset.py --push     # insert into Braintrust
+```
+
+A natural next move is to take one failure cluster from Topics, build a focused dataset from those tasks, and run an experiment against the configuration you're considering, so you measure whether a prompt or harness change fixes that specific failure mode instead of hoping an aggregate score moved for the right reason.
+
+## Next steps
+
+You've imported real agent traces, scored them, clustered their failures, and sliced success by configuration. From here you can:
+
+- Read the full [analysis of this dataset](https://www.braintrust.dev/blog/hf-agent-traces) for what the numbers actually showed
+- Point `import_logs.py` at your own trace dataset by editing the `EDIT ME` block
+- Run [experiments](/docs/guides/playground) against the configurations your analysis flagged
+- Explore [Topics](/docs/observe/topics/index) further to surface patterns your evals don't yet test for
