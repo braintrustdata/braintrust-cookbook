@@ -1,8 +1,6 @@
 # Analyzing agent traces from Hugging Face in Braintrust
 
-Production agents emit traces, but raw traces don't tell you which configuration actually works. They have no scores, no consistent structure, and no easy way to ask "which harness and model combination succeeds most often, and at what cost?"
-
-In this cookbook, you'll take 1,781 real agent-eval traces published on Hugging Face (the [Exgentic `agent-llm-traces`](https://huggingface.co/datasets/Exgentic/agent-llm-traces) dataset), import them into Braintrust, score them with an LLM judge, and use [Topics](/docs/observe/topics/index) and SQL to find the patterns. This is the same pipeline behind our [analysis of those traces](https://www.braintrust.dev/blog/hf-agent-traces).
+In this cookbook, you'll take 1,781 real agent-eval traces published on Hugging Face (the [Exgentic `agent-llm-traces`](https://huggingface.co/datasets/Exgentic/agent-llm-traces) dataset), import them into Braintrust, score them with an LLM judge, and use [Topics](/docs/observe/topics/index) and SQL to find the patterns. This cookbook covers setting up a pipeline, but you can read our deeper analysis of those traces [in our blog post](https://www.braintrust.dev/blog/hf-agent-traces).
 
 By the end, you'll learn how to:
 
@@ -14,7 +12,7 @@ By the end, you'll learn how to:
 
 ## What you're working with
 
-The dataset is 1,781 agent runs across six benchmarks (SWE-bench, AppWorld, BrowseComp+, and three τ²-bench customer-service suites), six models, and five harnesses. Each run records the task, the agent's full conversation (every LLM call), and metadata like model, benchmark, harness, and token count. There are roughly 49,000 LLM calls in total, and importantly, the dataset ships with no ground-truth labels: every `scores` and `expected` field is null. You'll build your own success measure in the scoring step.
+The dataset is 1,781 agent runs across six benchmarks (SWE-bench, AppWorld, BrowseComp+, and three τ²-bench customer-service suites), six models, and five harnesses. Each run records the task, the agent's full conversation (every LLM call), and metadata like model, benchmark, harness, and token count. There are roughly 49,000 LLM calls in total, and importantly, the dataset ships with no ground-truth labels, meaning that every `scores` and `expected` field is null. You'll build your own success measure in the scoring step.
 
 ## Getting started
 
@@ -22,7 +20,6 @@ You'll need:
 
 - A [Braintrust account](https://www.braintrust.dev/signup) with an API key
 - Python 3.10+ with the `braintrust`, `datasets`, `requests`, and `python-dotenv` packages, plus the `bt` CLI (installed with the `braintrust` package) for the logs push
-- Optionally, a Hugging Face token for higher rate limits (`HF_TOKEN`); the Exgentic dataset is public, so it isn't required
 
 Clone the cookbook and install dependencies:
 
@@ -42,7 +39,7 @@ Finally, create a Braintrust project named `Hugging Face topics`. The import scr
 
 ## Importing the traces
 
-The importer lives in `hf_bt_cookbook/import_logs.py`. It's a worked example you edit and re-run, not a black box: the entire mapping lives in an `EDIT ME` block at the top of the file, where you name the Hugging Face repo and say which columns hold the session ID, the trace, the metadata, and any scores.
+The importer lives in `hf_bt_cookbook/import_logs.py`. It's a worked example you edit and re-run. The entire mapping lives in an `EDIT ME` block at the top of the file, where you name the Hugging Face repo and say which columns hold the session ID, the trace, the metadata, and any scores.
 
 ```python
 # hf_bt_cookbook/import_logs.py
@@ -57,7 +54,7 @@ METADATA_COLS = ["benchmark", "harness", "models", "total_tokens"]
 SCORE_COLS = {}                     # {"task_success": "judge_task_success"}
 ```
 
-The script streams the dataset with `datasets.load_dataset(HF_REPO, streaming=True)`, so there's no need to download and materialize all 39 Parquet shards locally. For each session row, it builds a span tree:
+The script streams the dataset with `datasets.load_dataset(HF_REPO, streaming=True)`. For each session row, it builds a span tree:
 
 ```
 root  task span   (one per session)
@@ -75,7 +72,7 @@ python hf_bt_cookbook/import_logs.py            # writes the bt-sync JSONL to ou
 python hf_bt_cookbook/import_logs.py --push     # also runs `bt sync push` for you
 ```
 
-Nothing leaves your machine until you pass `--push`. One detail that matters later: root span IDs are deterministic (`uuid5` of the session ID), so re-importing the same session upserts instead of duplicating.
+Nothing leaves your machine until you pass `--push`. And it's important to note here that root span IDs are deterministic (`uuid5` of the session ID), so re-importing the same session upserts instead of duplicating.
 
 Once the push finishes, every run is a row in the Braintrust **Logs** view that you can sort, filter, and slice on any metadata field.
 
@@ -83,12 +80,12 @@ Once the push finishes, every run is a row in the Braintrust **Logs** view that 
 
 ## Scoring with an LLM judge
 
-The traces record what each agent did, but not whether it succeeded. To build a success measure, run an LLM-as-a-judge over each session: feed it the task, the agent's final conversation, and a benchmark-specific rubric, and ask for a binary verdict. Using the [Braintrust AI proxy](/docs/guides/proxy) keeps this to a single endpoint and your existing key:
+The traces record what each agent did, but not whether it succeeded. To build a success measure, we want to run an LLM-as-a-judge over each session to determine whether the task completed successfully. To do this, we feed the LLM-as-a-judge the task, the agent's final conversation, and a benchmark-specific rubric, then ask for a binary verdict. The judge call goes through the [Braintrust gateway](/docs/deploy/gateway), an OpenAI-compatible endpoint that fronts every major model provider (OpenAI, Anthropic, Google, and more) behind one URL. So you can point the judge at any model just by changing the `model` field, and you authenticate with the same `BRAINTRUST_API_KEY` you already set, with no separate provider key to manage:
 
 ```python
 import os, requests
 
-PROXY = "https://api.braintrust.dev/v1/proxy/chat/completions"
+GATEWAY = "https://gateway.braintrust.dev/chat/completions"
 HDRS = {"Authorization": f"Bearer {os.environ['BRAINTRUST_API_KEY']}"}
 
 def judge(benchmark_desc, rubric, task, conversation, model="gpt-4.1"):
@@ -107,7 +104,7 @@ def judge(benchmark_desc, rubric, task, conversation, model="gpt-4.1"):
             {"role": "user", "content": f"=== TASK ===\n{task}\n\n=== AGENT TRACE ===\n{conversation}"},
         ],
     }
-    r = requests.post(PROXY, headers=HDRS, json=body, timeout=120)
+    r = requests.post(GATEWAY, headers=HDRS, json=body, timeout=120)
     r.raise_for_status()
     return r.json()["choices"][0]["message"]["content"]
 ```
