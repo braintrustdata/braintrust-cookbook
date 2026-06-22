@@ -72,7 +72,7 @@ python hf_bt_cookbook/import_logs.py            # writes the bt-sync JSONL to ou
 python hf_bt_cookbook/import_logs.py --push     # also runs `bt sync push` for you
 ```
 
-Nothing leaves your machine until you pass `--push`. And it's important to note here that root span IDs are deterministic (`uuid5` of the session ID), so re-importing the same session upserts instead of duplicating.
+Nothing leaves your machine until you pass `--push`.
 
 Once the push finishes, every run is a row in the Braintrust **Logs** view that you can sort, filter, and slice on any metadata field.
 
@@ -109,9 +109,9 @@ def judge(benchmark_desc, rubric, task, conversation, model="gpt-4.1"):
     return r.json()["choices"][0]["message"]["content"]
 ```
 
-Use a stricter rubric per benchmark (for SWE-bench the judge can see the diff and test output, so it verifies directly; for the conversational suites it sees the tool calls and the agent's confirmation). To avoid self-grading, judge a model's runs with a different judge model than the one under test.
+Use a stricter rubric per benchmark. For example, in SWE-bench the judge can see the diff and test output, so it verifies directly.  For the conversational suites it sees the tool calls and the agent's confirmation. To avoid self-grading, judge a model's runs with a different judge model than the one under test. In our run, for example, we graded every model with GPT-4.1, except GPT-4.1's own runs, which we graded with GPT-4o instead.
 
-Because the root span IDs are deterministic, you don't patch the existing spans. Instead you write the verdict back the same way you imported: join the judge's output onto the source rows as a new column, point `SCORE_COLS` at it, and re-run the importer. The matching IDs upsert the score onto the spans that are already there.
+Because the root span IDs are deterministic, you don't patch the existing spans. Instead you write the verdict back the same way you imported. Join the judge's output onto the source rows as a new column, point `SCORE_COLS` at it, and re-run the importer. The matching IDs upsert the score onto the spans that are already there.
 
 ```python
 # hf_bt_cookbook/import_logs.py
@@ -134,9 +134,11 @@ The **Tasks** facet does the same for what the agents were asked to do, which is
 
 ![The Topics Tasks facet, clustering sessions by the kind of task the agent attempted](./assets/topics-tasks.png)
 
+This is more than tidy organization. In our analysis, Topics independently confirmed a failure mode we had already found by hand. One AppWorld session finished cleanly with zero tool errors, yet our judge marked it a failure: the agent was asked to sync its Venmo friends to its phone contacts, removed friends, then declared success without ever adding the missing ones. A status-code or error-count check would have called it a pass. Topics surfaced that exact pattern on its own as the `False success confirmation` cluster, without us labeling a single trace. The failure taxonomy we would otherwise have built manually fell out of the clustering automatically, which is why it's worth reaching for Topics before you write a single rule.
+
 ## Slicing the results
 
-The reason to put traces in Braintrust is to ask structured questions across all of them at once. Every span carries queryable metadata, so grouping by benchmark, harness, and model is a single query:
+The reason to put traces in Braintrust is to ask structured questions across all of them at once. Every span carries queryable metadata, so you can group by benchmark, harness, and model in a single query:
 
 ```sql
 SELECT benchmark, harness, model,
@@ -149,7 +151,11 @@ GROUP BY benchmark, harness, model
 ORDER BY success_rate DESC
 ```
 
-That one query is the backbone of the analysis: it isolates which configuration wins each benchmark, how much it costs in tokens, and where a high average hides a suite the configuration fails badly on.
+This one query was the backbone of our analysis. It isolates which configuration wins each benchmark, how much it costs in tokens, and where a high average hides a suite the configuration fails badly on.
+
+![Config by benchmark success heatmap, with each cell showing one configuration's success rate on one suite](./assets/config-benchmark-heatmap.png)
+
+Each cell is a configuration's success on one suite. Scan a row: all green is a genuine generalist, while a single red cell in an otherwise green row is the suite where that configuration will fail you in production.
 
 ## Building a targeted eval dataset
 
@@ -170,8 +176,6 @@ def to_record(row: dict, i: int) -> dict:
 python hf_bt_cookbook/import_dataset.py            # preview the first few records, no writes
 python hf_bt_cookbook/import_dataset.py --push     # insert into Braintrust
 ```
-
-A natural next move is to take one failure cluster from Topics, build a focused dataset from those tasks, and run an experiment against the configuration you're considering, so you measure whether a prompt or harness change fixes that specific failure mode instead of hoping an aggregate score moved for the right reason.
 
 ## Next steps
 
