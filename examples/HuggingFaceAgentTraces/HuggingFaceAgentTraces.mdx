@@ -183,7 +183,7 @@ This one query was the backbone of our analysis. It isolates which configuration
 
 ## Building a targeted eval dataset
 
-Analyzing traces tells you where the agent fails. To check whether a fix actually helps, you need a gradable [dataset](/docs/guides/datasets) and an experiment. The cookbook's second script, [`hf_bt_cookbook/import_dataset.py`](https://github.com/braintrustdata/braintrust-cookbook/blob/main/examples/HuggingFaceAgentTraces/hf_bt_cookbook/import_dataset.py), turns Hugging Face rows into a Braintrust **Dataset** of `{input, expected, metadata}` records. You rewrite one function, `to_record`, which is the entire mapping:
+Analyzing traces tells you where the agent fails. To check whether a fix actually helps, you need a gradable [dataset](/docs/annotate/datasets/index) and an experiment. The cookbook's second script, [`hf_bt_cookbook/import_dataset.py`](https://github.com/braintrustdata/braintrust-cookbook/blob/main/examples/HuggingFaceAgentTraces/hf_bt_cookbook/import_dataset.py), turns Hugging Face rows into a Braintrust **Dataset** of `{input, expected, metadata}` records. You rewrite one function, `to_record`, which is the entire mapping:
 
 ```python
 # hf_bt_cookbook/import_dataset.py
@@ -209,5 +209,5 @@ You've imported real agent traces, scored them, clustered their failures, and sl
 
 - Read the full [analysis of this dataset](https://www.braintrust.dev/blog/hf-agent-traces) for what the numbers actually showed.
 - Point `import_logs.py` at your own trace dataset by editing the `EDIT ME` block.
-- Run [experiments](/docs/guides/playground) against the configurations your analysis flagged.
+- Run [experiments](/docs/evaluate/run-evaluations) against the configurations your analysis flagged.
 - Explore [Topics](/docs/observe/topics/index) further to surface patterns your evals don't yet test for.
