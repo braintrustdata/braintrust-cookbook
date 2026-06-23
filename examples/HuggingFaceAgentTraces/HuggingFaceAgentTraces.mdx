@@ -1,14 +1,14 @@
-# Analyzing agent traces from Hugging Face in Braintrust
+# Analyzing agent traces from Hugging Face
 
 In this cookbook, you'll take 1,781 real agent-eval traces published on Hugging Face (the [Exgentic `agent-llm-traces`](https://huggingface.co/datasets/Exgentic/agent-llm-traces) dataset), import them into Braintrust, score them with an LLM judge, and use [Topics](/docs/observe/topics/index) and SQL to find the patterns. This cookbook covers setting up a pipeline, but you can read our deeper analysis of those traces [in our blog post](https://www.braintrust.dev/blog/hf-agent-traces).
 
 By the end, you'll learn how to:
 
-- Stream a Hugging Face trace dataset into Braintrust as a span tree per session
-- Score each session with an LLM-as-a-judge and write the scores back onto the same spans
-- Use Topics to cluster failure modes without manual tagging
-- Slice success rate by benchmark, harness, and model with a single query
-- Turn a failure cluster into a targeted eval dataset
+- Stream a Hugging Face trace dataset into Braintrust as a span tree per session.
+- Score each session with an LLM-as-a-judge and write the scores back onto the same spans.
+- Use Topics to cluster failure modes without manual tagging.
+- Slice success rate by benchmark, harness, and model with a single query.
+- Turn a failure cluster into a targeted eval dataset.
 
 ## What you're working with
 
@@ -18,8 +18,8 @@ The dataset is 1,781 agent runs across six benchmarks (SWE-bench, AppWorld, Brow
 
 You'll need:
 
-- A [Braintrust account](https://www.braintrust.dev/signup) with an API key
-- Python 3.10+ with the `braintrust`, `datasets`, `requests`, and `python-dotenv` packages, plus the `bt` CLI (installed with the `braintrust` package) for the logs push
+- A [Braintrust account](https://www.braintrust.dev/signup) with an API key.
+- Python 3.10+ with the `braintrust`, `datasets`, `requests`, and `python-dotenv` packages, plus the [`bt` CLI](/docs/reference/cli/quickstart) (installed with the `braintrust` package) for the logs push.
 
 Clone the cookbook and install dependencies:
 
@@ -155,8 +155,6 @@ This one query was the backbone of our analysis. It isolates which configuration
 
 ![Config by benchmark success heatmap, with each cell showing one configuration's success rate on one suite](./assets/config-benchmark-heatmap.png)
 
-Each cell is a configuration's success on one suite. Scan a row: all green is a genuine generalist, while a single red cell in an otherwise green row is the suite where that configuration will fail you in production.
-
 ## Building a targeted eval dataset
 
 Analyzing traces tells you where the agent fails. To check whether a fix actually helps, you need a gradable [dataset](/docs/guides/datasets) and an experiment. The cookbook's second script, `hf_bt_cookbook/import_dataset.py`, turns Hugging Face rows into a Braintrust **Dataset** of `{input, expected, metadata}` records. You rewrite one function, `to_record`, which is the entire mapping:
@@ -177,11 +175,13 @@ python hf_bt_cookbook/import_dataset.py            # preview the first few recor
 python hf_bt_cookbook/import_dataset.py --push     # insert into Braintrust
 ```
 
+A natural next move is to take one failure cluster from Topics, build a focused dataset from those tasks, and run an experiment against the configuration you're considering, so you measure whether a prompt or harness change fixes that specific failure mode instead of hoping an aggregate score moved for the right reason.
+
 ## Next steps
 
 You've imported real agent traces, scored them, clustered their failures, and sliced success by configuration. From here you can:
 
-- Read the full [analysis of this dataset](https://www.braintrust.dev/blog/hf-agent-traces) for what the numbers actually showed
-- Point `import_logs.py` at your own trace dataset by editing the `EDIT ME` block
-- Run [experiments](/docs/guides/playground) against the configurations your analysis flagged
-- Explore [Topics](/docs/observe/topics/index) further to surface patterns your evals don't yet test for
+- Read the full [analysis of this dataset](https://www.braintrust.dev/blog/hf-agent-traces) for what the numbers actually showed.
+- Point `import_logs.py` at your own trace dataset by editing the `EDIT ME` block.
+- Run [experiments](/docs/guides/playground) against the configurations your analysis flagged.
+- Explore [Topics](/docs/observe/topics/index) further to surface patterns your evals don't yet test for.

@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./.github/registry_schema.json
 
-- title: Analyzing agent traces from Hugging Face in Braintrust
+- title: Analyzing agent traces from Hugging Face
   path: examples/HuggingFaceAgentTraces/HuggingFaceAgentTraces.mdx
   date: 2026-06-22
   authors:
