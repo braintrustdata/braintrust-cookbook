@@ -39,7 +39,7 @@ Finally, create a Braintrust project named `Hugging Face topics`. The import scr
 
 ## Importing the traces
 
-The importer lives in `hf_bt_cookbook/import_logs.py`. It's a worked example you edit and re-run. The entire mapping lives in an `EDIT ME` block at the top of the file, where you name the Hugging Face repo and say which columns hold the session ID, the trace, the metadata, and any scores.
+The importer lives in [`hf_bt_cookbook/import_logs.py`](https://github.com/braintrustdata/braintrust-cookbook/blob/main/examples/HuggingFaceAgentTraces/hf_bt_cookbook/import_logs.py) (read the full file there). It's a worked example you edit and re-run. The entire mapping lives in an `EDIT ME` block at the top of the file, where you name the Hugging Face repo and say which columns hold the session ID, the trace, the metadata, and any scores.
 
 ```python
 # hf_bt_cookbook/import_logs.py
@@ -65,7 +65,35 @@ root  task span   (one per session)
 └── …             one child per LLM call
 ```
 
-The source uses the OpenTelemetry GenAI "parts" format, which the script normalizes to OpenAI-style messages so Braintrust renders them as readable chat turns. Run the script once to preview, then again with `--push` to upload:
+The source uses the OpenTelemetry GenAI "parts" format, which the script normalizes to OpenAI-style messages so Braintrust renders them as readable chat turns. For example, an assistant turn that calls a tool arrives as a list of typed parts:
+
+```json
+{
+  "role": "assistant",
+  "parts": [
+    { "type": "text", "content": "Let me look up that order." },
+    { "type": "tool_call", "id": "call_1", "name": "get_order", "arguments": { "order_id": "A123" } }
+  ]
+}
+```
+
+and the script rewrites it into the OpenAI shape Braintrust expects (text in `content`, calls in `tool_calls`):
+
+```json
+{
+  "role": "assistant",
+  "content": "Let me look up that order.",
+  "tool_calls": [
+    {
+      "id": "call_1",
+      "type": "function",
+      "function": { "name": "get_order", "arguments": "{\"order_id\": \"A123\"}" }
+    }
+  ]
+}
+```
+
+Run the script once to preview, then again with `--push` to upload:
 
 ```bash
 python hf_bt_cookbook/import_logs.py            # writes the bt-sync JSONL to out/logs, no network writes
@@ -132,8 +160,6 @@ With the sessions scored, [Topics](/docs/observe/topics/index) clusters them aut
 
 The **Tasks** facet does the same for what the agents were asked to do, which is a fast way to confirm the benchmark mix and spot tasks that cut across suites.
 
-![The Topics Tasks facet, clustering sessions by the kind of task the agent attempted](./assets/topics-tasks.png)
-
 This is more than tidy organization. In our analysis, Topics independently confirmed a failure mode we had already found by hand. One AppWorld session finished cleanly with zero tool errors, yet our judge marked it a failure: the agent was asked to sync its Venmo friends to its phone contacts, removed friends, then declared success without ever adding the missing ones. A status-code or error-count check would have called it a pass. Topics surfaced that exact pattern on its own as the `False success confirmation` cluster, without us labeling a single trace. The failure taxonomy we would otherwise have built manually fell out of the clustering automatically, which is why it's worth reaching for Topics before you write a single rule.
 
 ## Slicing the results
@@ -157,7 +183,7 @@ This one query was the backbone of our analysis. It isolates which configuration
 
 ## Building a targeted eval dataset
 
-Analyzing traces tells you where the agent fails. To check whether a fix actually helps, you need a gradable [dataset](/docs/guides/datasets) and an experiment. The cookbook's second script, `hf_bt_cookbook/import_dataset.py`, turns Hugging Face rows into a Braintrust **Dataset** of `{input, expected, metadata}` records. You rewrite one function, `to_record`, which is the entire mapping:
+Analyzing traces tells you where the agent fails. To check whether a fix actually helps, you need a gradable [dataset](/docs/guides/datasets) and an experiment. The cookbook's second script, [`hf_bt_cookbook/import_dataset.py`](https://github.com/braintrustdata/braintrust-cookbook/blob/main/examples/HuggingFaceAgentTraces/hf_bt_cookbook/import_dataset.py), turns Hugging Face rows into a Braintrust **Dataset** of `{input, expected, metadata}` records. You rewrite one function, `to_record`, which is the entire mapping:
 
 ```python
 # hf_bt_cookbook/import_dataset.py
