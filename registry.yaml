@@ -1,5 +1,16 @@
 # yaml-language-server: $schema=./.github/registry_schema.json
 
+- title: Analyzing agent traces from Hugging Face
+  path: examples/HuggingFaceAgentTraces/HuggingFaceAgentTraces.mdx
+  date: 2026-06-22
+  authors:
+    - jesswang
+  tags:
+    - topics
+    - logging
+    - agent
+    - evals
+    - python
 - title: Finding production issues using Topics
   path: examples/FindingProductionIssues/FindingProductionIssues.mdx
   date: 2026-06-01
