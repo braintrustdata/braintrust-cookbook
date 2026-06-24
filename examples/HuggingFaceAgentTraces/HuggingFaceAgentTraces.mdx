@@ -167,13 +167,13 @@ This is more than tidy organization. In our analysis, Topics independently confi
 The reason to put traces in Braintrust is to ask structured questions across all of them at once. Every span carries queryable metadata, so you can group by benchmark, harness, and model in a single query:
 
 ```sql
-SELECT benchmark, harness, model,
+SELECT metadata.benchmark, metadata.harness, metadata.models,
        COUNT(*) AS n,
-       AVG(metrics.tokens) AS avg_tokens,
+       AVG(metadata.total_tokens) AS avg_tokens,
        AVG(scores.task_success) AS success_rate
 FROM project_logs
 WHERE scores.task_success IS NOT NULL
-GROUP BY benchmark, harness, model
+GROUP BY metadata.benchmark, metadata.harness, metadata.models
 ORDER BY success_rate DESC
 ```
 
