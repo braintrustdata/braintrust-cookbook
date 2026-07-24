@@ -1,0 +1,21 @@
+{
+  "name": "agentskit-braintrust-eval",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "tsc --noEmit",
+    "eval": "braintrust eval agent.eval.ts",
+    "eval:local": "tsx local-eval.ts",
+    "test": "tsx --test tests/*.test.ts"
+  },
+  "dependencies": {
+    "@agentskit/eval": "^0.6.0",
+    "braintrust": "^3.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "20.19.41",
+    "tsx": "4.22.3",
+    "typescript": "5.9.3"
+  }
+}

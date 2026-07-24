@@ -1,5 +1,9 @@
 # yaml-language-server: $schema=./.github/authors_schema.json
 
+emersonbraun:
+  name: "Emerson Braun"
+  website: "https://github.com/EmersonBraun"
+  avatar: "https://github.com/EmersonBraun.png"
 ankrgyl:
   name: "Ankur Goyal"
   website: "https://twitter.com/ankrgyl"
