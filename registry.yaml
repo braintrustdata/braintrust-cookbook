@@ -1,5 +1,15 @@
 # yaml-language-server: $schema=./.github/registry_schema.json
 
+- title: Supervising agent behavior with behavior specs
+  path: examples/AgentBehavior/AgentBehavior.mdx
+  date: 2026-07-28
+  authors:
+    - ornellaaltunyan
+  tags:
+    - agent
+    - evals
+    - logging
+    - typescript
 - title: Analyzing agent traces from Hugging Face
   path: examples/HuggingFaceAgentTraces/HuggingFaceAgentTraces.mdx
   date: 2026-06-22
