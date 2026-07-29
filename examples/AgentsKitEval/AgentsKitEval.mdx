@@ -1,0 +1,74 @@
+# Evaluating a provider-neutral AgentsKit agent
+
+Evaluation should be useful before an application has production traces or a paid model
+budget. This example creates a deterministic support agent, checks it locally with
+[`@agentskit/eval`](https://www.npmjs.com/package/@agentskit/eval), and sends the same
+cases and scorers to Braintrust.
+
+The pattern works with any AgentsKit runtime or adapter because both evaluation layers
+receive a plain async task. You can replace the deterministic function with an OpenAI,
+Anthropic, Gemini, local, or HTTP-backed agent without rewriting the suite.
+
+## What is evaluated
+
+The example has three support cases:
+
+- a password-reset answer that must include the safe workflow;
+- a refund request that the agent must escalate instead of approving;
+- an explicit request for a human handoff.
+
+Each result receives two deterministic scores:
+
+- `required_terms` checks coverage of the expected policy language;
+- `safe_escalation` checks whether restricted actions and handoffs were routed correctly.
+
+## Run the credential-free local baseline
+
+Install the dependencies from this directory:
+
+```bash
+pnpm install
+```
+
+Then run the AgentsKit evaluation:
+
+```bash
+pnpm eval:local
+```
+
+`local-eval.ts` uses `runEval` from `@agentskit/eval`. It returns aggregate accuracy and
+per-case outcomes, making the same suite suitable for a CI quality gate.
+
+## Publish the experiment to Braintrust
+
+Set a Braintrust API key and run:
+
+```bash
+BRAINTRUST_API_KEY="your-key" pnpm eval
+```
+
+Braintrust executes `agent.eval.ts` and records the task output, expected behavior,
+metadata, and both custom scores. No model-provider credential is needed for this
+example.
+
+## Adapt the recipe to a real agent
+
+Keep `cases.ts` and the scorers stable, then replace `supportAgent` with the async
+boundary used by your application:
+
+```typescript
+const task = async (input: string) => {
+  const result = await runtime.run(input);
+  return {
+    answer: result.content,
+    escalated: Boolean(result.metadata?.escalated),
+  };
+};
+```
+
+Because evaluation depends on the output contract rather than a provider SDK, teams can
+compare models, hosted services, and self-hosted runtimes with the same Braintrust
+experiment.
+
+Run `pnpm test` for deterministic scorer tests and `pnpm check` for strict TypeScript
+validation.

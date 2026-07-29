@@ -1,5 +1,14 @@
 # yaml-language-server: $schema=./.github/registry_schema.json
 
+- title: Evaluating a provider-neutral AgentsKit agent
+  path: examples/AgentsKitEval/AgentsKitEval.mdx
+  date: 2026-07-24
+  authors:
+    - emersonbraun
+  tags:
+    - agent
+    - evals
+    - typescript
 - title: Supervising agent behavior with behavior specs
   path: examples/AgentBehavior/AgentBehavior.mdx
   date: 2026-07-28
