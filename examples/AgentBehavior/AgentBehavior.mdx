@@ -8,11 +8,11 @@ You'll build a small coding agent and hold it to the verify-before-done spec. Be
 
 By the end of this guide, you'll learn how to:
 
-- Write a `BEHAVIOR.md` behavior spec that captures how an agent should gather evidence, decide, act, and recover
-- Keep the spec out of the agent's runtime context so the eval measures behavior the agent produces on its own
-- Run the agent and trace every trajectory in Braintrust
-- Judge each behavior over the trajectory with an LLM judge that returns `true`, `false`, or `NA`
-- Read the verdicts, find the behavior that failed, and iterate on the agent, not the spec
+- Write a `BEHAVIOR.md` behavior spec that captures how an agent should gather evidence, decide, act, and recover.
+- Keep the spec out of the agent's runtime context so the eval measures behavior the agent produces on its own.
+- Run the agent and trace every trajectory in Braintrust.
+- Judge each behavior over the trajectory with an LLM judge that returns `true`, `false`, or `NA`.
+- Read the verdicts, find the behavior that failed, and iterate on the agent, not the spec.
 
 ## Getting started
 
@@ -20,9 +20,9 @@ You're building a coding agent that operates on a tiny project. It can read file
 
 You'll need:
 
-- A [Braintrust account](https://www.braintrust.dev/signup) with an API key
-- An AI provider like [OpenAI](https://platform.openai.com/), configured in your Braintrust account's [AI providers](https://www.braintrust.dev/app/settings?subroute=secrets) settings, so calls can route through the [Braintrust gateway](/docs/deploy/gateway)
-- Node.js 20+
+- A [Braintrust account](https://www.braintrust.dev/signup) with an API key.
+- An AI provider like [OpenAI](https://platform.openai.com/), configured in your Braintrust account's [AI providers](https://www.braintrust.dev/app/~/configuration/org/secrets) settings, so calls can route through the [Braintrust gateway](/docs/deploy/gateway).
+- Node.js 20+.
 
 Clone the cookbook and install dependencies:
 
@@ -38,8 +38,8 @@ Set your API key in a `.env.local` file:
 BRAINTRUST_API_KEY=<your-braintrust-api-key>
 
 # Optional overrides
-# MODEL=gpt-4o-mini          # model the agent uses
-# JUDGE_MODEL=gpt-4o-mini    # model the judge uses
+# MODEL=gpt-5-mini           # model the agent uses
+# JUDGE_MODEL=gpt-5-mini     # model the judge uses
 # OPENAI_BASE_URL=...         # point at a provider directly instead of the gateway
 ```
 
@@ -107,9 +107,9 @@ summarize what you changed.`;
 
 The agent has three tools built for this task, defined in [`tools.ts`](https://github.com/braintrustdata/braintrust-cookbook/blob/main/examples/AgentBehavior/tools.ts). Each scenario runs against its own in-memory copy of the project files, defined in [`data.ts`](https://github.com/braintrustdata/braintrust-cookbook/blob/main/examples/AgentBehavior/data.ts), so a fix made in one run never carries over to another and every scenario starts from the same clean state.
 
-- **`read_file`** reads a file from the project
-- **`write_file`** replaces a file's contents
-- **`run_tests`** runs the project's test suite against the *current* files and returns pass or fail
+- **`read_file`** reads a file from the project.
+- **`write_file`** replaces a file's contents.
+- **`run_tests`** runs the project's test suite against the *current* files and returns pass or fail.
 
 `run_tests` is the verification step the spec supervises. Because it runs against the current workspace, the trace records whether the agent checked the code it's about to deliver.
 
@@ -226,18 +226,18 @@ When a behavior fails, you fix the agent, not the spec. The spec is the source o
 
 Re-run the eval and confirm the behavior flips to `true`. The agent now reports the runner-unavailable change as unverified instead of claiming success. Because the spec stays fixed, the same eval guards against regressions. If a later prompt or model change breaks the behavior again, the score drops. Developing an agent against a behavior spec follows six steps:
 
-1. Write a behavior spec for a recurring choice that matters
-2. Run the agent and trace the trajectory in Braintrust
-3. Judge each behavior `true`, `false`, or `NA` over the trajectory
-4. Identify the behavior that failed from the per-behavior scores
-5. Iterate on the agent's prompt, tools, or context, keeping the spec fixed
-6. Guard against regressions as the spec becomes a standing eval
+1. Write a behavior spec for a recurring choice that matters.
+2. Run the agent and trace the trajectory in Braintrust.
+3. Judge each behavior `true`, `false`, or `NA` over the trajectory.
+4. Identify the behavior that failed from the per-behavior scores.
+5. Iterate on the agent's prompt, tools, or context, keeping the spec fixed.
+6. Guard against regressions as the spec becomes a standing eval.
 
 As models improve, you retire behavior specs instead of accumulating them. Once a model reliably exhibits a behavior without extra guidance, remove its spec. Expect to remove prescription over time, not add to it. The specs that survive become your organization's standards for good agent behavior.
 
 ## Next steps
 
-- Read the [behavior spec standard](https://agentbehavior.dev) and check out more [examples](https://github.com/braintrustdata/agentbehavior/tree/main/examples)
-- Cluster your production agent traces with [Topics](/docs/observe/topics/index) to surface recurring behaviors and failures
-- Use [Loop](/docs/loop) to iterate on the prompts and tools behind a failing behavior
-- Explore more agent patterns, like the [canonical while-loop agent](/docs/cookbook/recipes/AgentWhileLoop), in the [cookbook](/docs/cookbook)
+- Read the [behavior spec standard](https://agentbehavior.dev) and check out more [examples](https://github.com/braintrustdata/agentbehavior/tree/main/examples).
+- Cluster your production agent traces with [Topics](/docs/observe/topics/index) to surface recurring behaviors and failures.
+- Use [Loop](/docs/loop) to iterate on the prompts and tools behind a failing behavior.
+- Explore more agent patterns, like the [canonical while-loop agent](/docs/cookbook/recipes/AgentWhileLoop), in the [cookbook](/docs/cookbook).
