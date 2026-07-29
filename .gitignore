@@ -4,6 +4,8 @@
 data
 venv
 .env
+.env.local
+.env*.local
 .direnv
 .DS_STORE
 .idea
