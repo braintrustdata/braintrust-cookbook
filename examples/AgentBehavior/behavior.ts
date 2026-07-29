@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import path from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 import matter from "gray-matter";
 
@@ -21,10 +22,15 @@ export interface BehaviorSpec {
   location: string;
 }
 
-const DEFAULT_SPEC_URL = new URL(
-  "./.agents/behaviors/verify-before-done/BEHAVIOR.md",
-  import.meta.url,
-);
+const SPEC_RELATIVE_PATH = ".agents/behaviors/verify-before-done/BEHAVIOR.md";
+
+// Resolve BEHAVIOR.md from the current working directory. Both entry points run
+// from this package directory: `npm start` (tsx) and `npm run eval` (the
+// Braintrust runner). We avoid `import.meta.url` because the eval runner bundles
+// to CommonJS, where it isn't available — which would throw on load.
+function defaultSpecUrl(): URL {
+  return pathToFileURL(path.resolve(process.cwd(), SPEC_RELATIVE_PATH));
+}
 
 function slugify(title: string): string {
   return title
@@ -65,7 +71,7 @@ function splitSections(body: string): BehaviorSection[] {
 // Load and parse a BEHAVIOR.md spec. In production, validate specs with the
 // `agentbehavior` CLI (https://github.com/braintrustdata/agentbehavior); here we
 // parse just enough to drive the eval.
-export function loadBehaviorSpec(specUrl: URL = DEFAULT_SPEC_URL): BehaviorSpec {
+export function loadBehaviorSpec(specUrl: URL = defaultSpecUrl()): BehaviorSpec {
   const location = fileURLToPath(specUrl);
   const raw = readFileSync(location, "utf8");
   const { data, content } = matter(raw);

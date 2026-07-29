@@ -73,19 +73,36 @@ export class CodingAgent {
     if (call.type !== "function") {
       return { role: "tool", tool_call_id: call.id, content: "Unsupported tool call type." };
     }
-    const tool = toolsByName.get(call.function.name);
-    let content: string;
-    if (tool === undefined) {
-      content = `Unknown tool: ${call.function.name}`;
-    } else {
-      try {
-        const args = tool.parameters.parse(JSON.parse(call.function.arguments || "{}"));
-        content = await tool.execute(args);
-      } catch (error) {
-        content = `Tool error: ${error instanceof Error ? error.message : String(error)}`;
-      }
-    }
-    return { role: "tool", tool_call_id: call.id, content };
+
+    const toolName = call.function.name;
+
+    // Trace each tool execution as its own span so the trajectory renders as a
+    // readable tree in Braintrust — read_file -> write_file -> run_tests
+    // alongside the model's turns — instead of the tool steps being buried
+    // inside the LLM message payloads. Running tools is the process the behavior
+    // spec supervises, so it's exactly what you want the trace to show.
+    return traced(
+      async (span) => {
+        const tool = toolsByName.get(toolName);
+        let args: unknown;
+        let content: string;
+
+        if (tool === undefined) {
+          content = `Unknown tool: ${toolName}`;
+        } else {
+          try {
+            args = tool.parameters.parse(JSON.parse(call.function.arguments || "{}"));
+            content = await tool.execute(args);
+          } catch (error) {
+            content = `Tool error: ${error instanceof Error ? error.message : String(error)}`;
+          }
+        }
+
+        span.log({ input: args ?? call.function.arguments, output: content });
+        return { role: "tool" as const, tool_call_id: call.id, content };
+      },
+      { name: toolName, type: "tool" },
+    );
   }
 
   async run(scenario: Scenario): Promise<AgentResult> {
