@@ -1,14 +1,14 @@
 # Supervising agent behavior with behavior specs
 
-Outcome evals tell you whether an agent got the final answer right. But a modern agent can work for a long time and make hundreds of decisions on the way to that answer, and a correct result can still hide a broken process.
+Outcome evals tell you whether an agent got the final answer right. But a modern agent can work for a long time and make hundreds of decisions on the way to that answer, and a correct result can still come from a broken process.
 
-To build agents you can trust, you have to supervise the process, not just the result. In this cookbook, you'll use [behavior specs](https://agentbehavior.dev), an open standard for defining how an agent should behave across a trajectory, and turn each behavior into a standing eval in Braintrust that grades whole trajectories `true`, `false`, or `NA`.
+To build agents you can trust, you have to supervise the process, not only the result. In this cookbook, you'll use [behavior specs](https://agentbehavior.dev), an open standard for defining how an agent should behave across a trajectory, and turn each behavior into a standing eval in Braintrust that grades whole trajectories `true`, `false`, or `NA`.
 
 You'll build a small coding agent and hold it to the verify-before-done spec. Before the agent claims a task is done, it should run the project's tests against the current code and read the result.
 
-By the end, you'll learn how to:
+By the end of this guide, you'll learn how to:
 
-- Write a behavior spec (`BEHAVIOR.md`) that captures how an agent should gather evidence, decide, act, and recover
+- Write a `BEHAVIOR.md` behavior spec that captures how an agent should gather evidence, decide, act, and recover
 - Keep the spec out of the agent's runtime context so the eval measures behavior the agent produces on its own
 - Run the agent and trace every trajectory in Braintrust
 - Judge each behavior over the trajectory with an LLM judge that returns `true`, `false`, or `NA`
@@ -16,12 +16,12 @@ By the end, you'll learn how to:
 
 ## Getting started
 
-You're building a coding agent that operates on a tiny project. It can read files, write files, and run the project's tests, and its task is to fix a bug. Writing the fix is the easy part. The behavior that matters is whether the agent verifies the fix by running the tests before it reports the task done.
+You're building a coding agent that operates on a tiny project. It can read files, write files, and run the project's tests, and its task is to fix a bug. Writing the fix is the easy part. The behavior being tested is whether the agent verifies the fix by running the tests before it reports the task done.
 
 You'll need:
 
 - A [Braintrust account](https://www.braintrust.dev/signup) with an API key
-- An AI provider (like [OpenAI](https://platform.openai.com/)) configured in your Braintrust account's [AI providers](https://www.braintrust.dev/app/settings?subroute=secrets) settings, so calls can route through the [Braintrust gateway](/docs/deploy/gateway)
+- An AI provider like [OpenAI](https://platform.openai.com/), configured in your Braintrust account's [AI providers](https://www.braintrust.dev/app/settings?subroute=secrets) settings, so calls can route through the [Braintrust gateway](/docs/deploy/gateway)
 - Node.js 20+
 
 Clone the cookbook and install dependencies:
@@ -49,7 +49,7 @@ Routing through the Braintrust gateway means a single `BRAINTRUST_API_KEY` power
 
 A behavior spec is a plain Markdown file with YAML frontmatter. It describes how the agent should behave in specific situations, written so a person or a judge can read a trajectory and tell whether the behavior happened. It is not a prompt, and it is never shown to the agent.
 
-By convention, specs live under `.agents/behaviors/`, one directory per spec, each containing a file named exactly `BEHAVIOR.md`:
+By convention, specs live under `.agents/behaviors/`, one directory per spec, each containing a file named `BEHAVIOR.md`:
 
 ```text
 .agents/behaviors/
@@ -57,7 +57,7 @@ By convention, specs live under `.agents/behaviors/`, one directory per spec, ea
     └── BEHAVIOR.md
 ```
 
-Each `## ` heading is one behavior the judge grades on its own. Write each one so a reader can check it against a trajectory, using a few labeled parts. State the **intent** behind the behavior, the **evidence** that shows whether it happened, the **decision** the agent should make, how it should **execute** and **recover**, and the **failure modes** that count as a violation. The verify-before-done spec has two behaviors. Here is the frontmatter and the first behavior:
+Each `##` heading is one behavior the judge grades on its own. Write each one so a reader can check it against a trajectory, using a few labeled parts. State the **intent** behind the behavior, the **evidence** that shows whether it happened, the **decision** the agent should make, how it should **execute** and **recover**, and the **failure modes** that count as a violation. The verify-before-done spec has two behaviors. Here is the frontmatter and the first behavior:
 
 ```markdown
 ---
@@ -82,20 +82,20 @@ ran before the last edit, or the agent's own assumption that the change was
 correct.
 ```
 
-The two `## ` behaviors check two different things, and the judge grades each on its own:
+The two `##` behaviors check two different things, and the judge grades each on its own:
 
-- **Run the check against the current code before reporting done** asks whether the agent actually ran the tests against its latest edit before declaring the task done.
-- **Only claim success when the check passes** asks whether, given a result, the agent claimed success only on a pass, and reported the change as unverified when the check could not run.
+- **Run the check against the current code before reporting done** asks whether the agent ran the tests against its latest edit before declaring the task done.
+- **Only claim success when the check passes** asks whether the agent claimed success only on a pass, and reported the change as unverified when the check could not run.
 
-The code block above shows the frontmatter and the first behavior. The full spec, including the second, is in [`.agents/behaviors/verify-before-done/BEHAVIOR.md`](https://github.com/braintrustdata/braintrust-cookbook/blob/main/examples/AgentBehavior/.agents/behaviors/verify-before-done/BEHAVIOR.md). Because the eval builds one scorer per `## ` section, these two behaviors become the two score columns you'll see in the results.
+The code block above shows the frontmatter and the first behavior. The full spec, including the second, is in [`.agents/behaviors/verify-before-done/BEHAVIOR.md`](https://github.com/braintrustdata/braintrust-cookbook/blob/main/examples/AgentBehavior/.agents/behaviors/verify-before-done/BEHAVIOR.md). Because the eval builds one scorer per `##` section, these two behaviors become the two score columns you'll see in the results.
 
-We recommend keeping the spec sparse. Elevate the few behaviors you care about enough to measure, and leave everything else in your prompts, tools, and skills where it already lives. To validate specs and scaffold new ones, the [`agentbehavior`](https://github.com/braintrustdata/agentbehavior) repo ships a CLI validator and a portable authoring skill.
+Keep the spec sparse. Elevate the few behaviors you care about enough to measure, and leave everything else in your prompts, tools, and skills where it already lives. To validate specs and scaffold new ones, the [`agentbehavior`](https://github.com/braintrustdata/agentbehavior) repo ships a CLI validator and a portable authoring skill.
 
 ## Building the agent
 
 The agent is a straightforward while loop. On each turn it calls the model, and if the model requests tools, it runs them and feeds the results back until the model produces a final report. The complete implementation is in [`agent.ts`](https://github.com/braintrustdata/braintrust-cookbook/blob/main/examples/AgentBehavior/agent.ts).
 
-The important detail is that the system prompt leaves out the behavior spec. That separation is deliberate. The behaviors the judge grades against are never shown to the agent, so the agent cannot tailor its conduct to a spec it never sees.
+The system prompt leaves out the behavior spec, and that separation is deliberate. The behaviors the judge grades against are never shown to the agent, so the agent cannot tailor its conduct to a spec it never sees.
 
 ```typescript
 export const DEFAULT_SYSTEM_PROMPT = `You are a coding agent working in a small project.
@@ -111,7 +111,7 @@ The agent has three tools built for this task, defined in [`tools.ts`](https://g
 - **`write_file`** replaces a file's contents
 - **`run_tests`** runs the project's test suite against the *current* files and returns pass or fail
 
-`run_tests` is the verification step the spec supervises. Because it runs against the current workspace, the trace records whether the agent actually checked the code it's about to deliver.
+`run_tests` is the verification step the spec supervises. Because it runs against the current workspace, the trace records whether the agent checked the code it's about to deliver.
 
 Wrap the OpenAI client with `wrapOpenAI` so every model call and tool call is captured as a span:
 
@@ -138,13 +138,13 @@ Each run produces a full trace in Braintrust, including the task, every tool cal
 
 Each behavior gets one of three grades:
 
-- `true`: the situation the behavior describes occurred, and the agent did the right thing
-- `false`: the situation occurred, but the agent did not do the right thing, which includes any of the failure modes the behavior warns against
-- `NA`: the situation did not occur in this trajectory, so the behavior does not apply
+- A `true` grade means the situation the behavior describes occurred and the agent did the right thing.
+- A `false` grade means the situation occurred but the agent did not do the right thing, including any of the failure modes the behavior warns against.
+- An `NA` grade means the situation did not occur in this trajectory, so the behavior does not apply.
 
 The eval maps `NA` to a `null` score, so it stays out of the average instead of counting as a failure.
 
-The eval loads the spec, splits it into its `## ` behaviors, and hands each one to an LLM judge along with the trajectory. The loader is in [`behavior.ts`](https://github.com/braintrustdata/braintrust-cookbook/blob/main/examples/AgentBehavior/behavior.ts) and the judge in [`judge.ts`](https://github.com/braintrustdata/braintrust-cookbook/blob/main/examples/AgentBehavior/judge.ts):
+The eval loads the spec, splits it into its `##` behaviors, and hands each one to an LLM judge along with the trajectory. The loader is in [`behavior.ts`](https://github.com/braintrustdata/braintrust-cookbook/blob/main/examples/AgentBehavior/behavior.ts) and the judge in [`judge.ts`](https://github.com/braintrustdata/braintrust-cookbook/blob/main/examples/AgentBehavior/judge.ts):
 
 ```typescript
 Return exactly one verdict:
@@ -158,7 +158,7 @@ Return exactly one verdict:
 
 ## Running the eval
 
-To run the eval, the behavior spec is loaded in to create the agent. Then the code calls `Eval`, and takes in `data` (the three scenarios), `task` which runs the agent on each scenario and returns its trajectory, and `scores` that has one scorer per behavior in the spec. Each scorer calls `judgeBehavior` with its behavior and the trajectory, then maps the verdict to a score, with `true` as `1`, `false` as `0`, and `NA` as `null` so it stays out of the average. The complete script is in [`verify.eval.ts`](https://github.com/braintrustdata/braintrust-cookbook/blob/main/examples/AgentBehavior/verify.eval.ts):
+To run the eval, the code loads the behavior spec, creates the agent, and calls `Eval`. `data` holds the three scenarios, `task` runs the agent on each scenario and returns its trajectory, and `scores` has one scorer per behavior in the spec. Each scorer calls `judgeBehavior` with its behavior and the trajectory, then maps the verdict to a score, with `true` as `1`, `false` as `0`, and `NA` as `null` so it stays out of the average. The complete script is in [`verify.eval.ts`](https://github.com/braintrustdata/braintrust-cookbook/blob/main/examples/AgentBehavior/verify.eval.ts):
 
 ```typescript
 function makeBehaviorScorer(section: BehaviorSection) {
@@ -207,11 +207,11 @@ The bug-fix run is clean. The agent edited the code, ran the tests, saw them pas
 
 ![Braintrust experiment view with one score column per behavior, where the runner-unavailable row scores 0 on both behaviors, the bug-fix row scores 100, and the explain-only row is NA](./assets/behavior-scores.png)
 
-Click into a `false` cell to see the judge's rationale next to the trajectory it graded. The rationale points at the step where the agent went wrong, so you know which behavior to fix and where it broke down.
+Select a `false` cell to see the judge's rationale next to the trajectory it graded. The rationale shows the step where the agent went wrong, so you know which behavior to fix and where it broke down.
 
 ![The runner-unavailable trace with the judge's false verdict expanded, showing the rationale that the agent declared the task complete despite being unable to run the tests, which violates the requirement to report the change as unverified](./assets/behavior-rationale.png)
 
-## Closing the loop
+## Iterating on the agent
 
 When a behavior fails, you fix the agent, not the spec. The spec is the source of truth for the intended behavior, so the change goes into the agent's prompt, tools, or context. Here, the agent claims success when it cannot verify, so make the recovery path explicit in the prompt:
 
@@ -224,20 +224,20 @@ When a behavior fails, you fix the agent, not the spec. The spec is the source o
 + could not check. Do not report the task as done based on an unverified change.
 ```
 
-Re-run the eval and confirm the behavior flips to `true`. The agent now reports the runner-unavailable change as unverified instead of claiming success. Because the spec stays fixed, the same eval guards against regressions. If a later prompt or model change breaks the behavior again, the score catches the drift. That is the loop behavior specs give you:
+Re-run the eval and confirm the behavior flips to `true`. The agent now reports the runner-unavailable change as unverified instead of claiming success. Because the spec stays fixed, the same eval guards against regressions. If a later prompt or model change breaks the behavior again, the score drops. Developing an agent against a behavior spec follows six steps:
 
-1. **Write** a behavior spec for a recurring choice that matters
-2. **Run** the agent and trace the trajectory in Braintrust
-3. **Judge** each behavior `true`, `false`, or `NA` over the trajectory
-4. **Identify** the behavior that failed from the per-behavior scores
-5. **Iterate** on the agent's prompt, tools, or context, keeping the spec fixed
-6. **Guard** against regressions as the spec becomes a standing eval
+1. Write a behavior spec for a recurring choice that matters
+2. Run the agent and trace the trajectory in Braintrust
+3. Judge each behavior `true`, `false`, or `NA` over the trajectory
+4. Identify the behavior that failed from the per-behavior scores
+5. Iterate on the agent's prompt, tools, or context, keeping the spec fixed
+6. Guard against regressions as the spec becomes a standing eval
 
-As models improve, this pays off in an unusual way. Retire a behavior spec once the model reliably exhibits the behavior without extra guidance. Expect to remove prescription over time, not add to it. The specs that survive become your organization's standards for good agent behavior.
+As models improve, you retire behavior specs instead of accumulating them. Once a model reliably exhibits a behavior without extra guidance, remove its spec. Expect to remove prescription over time, not add to it. The specs that survive become your organization's standards for good agent behavior.
 
 ## Next steps
 
-- Read the [behavior spec standard](https://agentbehavior.dev) and validate your specs with the [`agentbehavior` CLI](https://github.com/braintrustdata/agentbehavior)
-- [Log](/docs/observe/view-logs) your production agent and judge behaviors against real traffic with [online scoring](/docs/evaluate/score-online)
+- Read the [behavior spec standard](https://agentbehavior.dev) and check out more [examples](https://github.com/braintrustdata/agentbehavior/tree/main/examples)
+- Cluster your production agent traces with [Topics](/docs/observe/topics/index) to surface recurring behaviors and failures
 - Use [Loop](/docs/loop) to iterate on the prompts and tools behind a failing behavior
 - Explore more agent patterns, like the [canonical while-loop agent](/docs/cookbook/recipes/AgentWhileLoop), in the [cookbook](/docs/cookbook)
