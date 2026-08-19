@@ -1,17 +1,17 @@
-# Build a coding agent insights project
+# Active observability for coding agents
 
-In this cookbook, you'll build a shared Braintrust project that turns Claude Code and Codex sessions into recurring coding-agent insights. Braintrust tracing sends both agents to one project, custom facets classify reusable improvement opportunities, and a scheduled Loop automation reviews the evidence over time.
+In this cookbook, you'll build a shared Braintrust project that turns coding-agent sessions into recurring insights. Braintrust tracing sends your instrumented coding agents to one project, custom facets classify reusable improvement opportunities, and a scheduled Loop automation reviews the evidence over time.
 
 Along the way, you'll:
 
-- Route Claude Code and Codex traces to the same Braintrust project.
-- Install a portable analytics configuration with the `bt` CLI.
-- Adapt facet prompts, analysis windows, and automation instructions to your team.
+- Instrument your coding agents and send their traces to the same Braintrust project.
+- Install a portable active observability configuration with the `bt` CLI.
+- Customize facet prompts and automation settings in the Braintrust app.
 - Send each automation run to a Slack channel.
 
 <Note>
-  This cookbook uses the `bt analytics-config` command. The setup verifies that
-  your installed CLI includes it before you configure the project.
+  This cookbook uses the `bt active-observability-config` command. The setup
+  verifies that your installed CLI includes it before you configure the project.
 </Note>
 
 ## Setup
@@ -22,7 +22,7 @@ You'll need:
 
 - A [Braintrust account](https://www.braintrust.dev/signup) with permission to create projects and automations.
 - An [AI provider](https://www.braintrust.dev/app/settings?subroute=secrets) configured in Braintrust for the model used by the automation.
-- Claude Code and Codex installed on macOS or Linux.
+- One or more supported coding agents installed on macOS or Linux.
 
 <Steps>
 
@@ -54,27 +54,27 @@ Complete the browser flow. The saved OAuth profile lets the tracing plugins refr
 
 ```bash
 command -v bt
-bt analytics-config --help
+bt active-observability-config --help
 ```
 
 You should see output that starts with:
 
 ```text
 <home-directory>/.local/bin/bt
-Pull and push facets and Loop automations as one analytics config
+Pull and push facets and Loop automations as one active observability config
 ```
 
-If the first line points into the repository or a package cache, repeat the `export PATH` command in the same shell. If `analytics-config` is not recognized, run the installer again and confirm that `command -v bt` resolves to the installer-managed binary.
+If the first line points into the repository or a package cache, repeat the `export PATH` command in the same shell. If `active-observability-config` is not recognized, run the installer again and confirm that `command -v bt` resolves to the installer-managed binary.
 
 </Step>
 
 </Steps>
 
-You're now ready to route your coding agents to one project.
+You're now ready to instrument your coding agents.
 
-## 1. Route your coding agents to one project
+## 1. Instrument your coding agents
 
-Create a project for coding-agent traces, store that context in the cookbook directory, and install the tracing plugins. Replace `<YOUR_ORG>` with your Braintrust organization name.
+Create a project for coding-agent traces, store that context in the cookbook directory, and install tracing for the agents you use. Replace `<YOUR_ORG>` with your Braintrust organization name. The commands below instrument Claude Code and Codex as examples. `bt trace setup` also supports OpenCode and Pi.
 
 ```bash
 bt projects create coding-agent-insights --org "<YOUR_ORG>" --prefer-profile
@@ -83,26 +83,26 @@ bt trace setup claude --prefer-profile
 bt trace setup codex --prefer-profile
 ```
 
-Each setup command ends with an instruction to restart the coding agent. The command stores the selected profile, organization, and project in the plugin's tracing route, so both agents send sessions to `coding-agent-insights`.
+Each setup command ends with an instruction to restart the coding agent. The command stores the selected profile, organization, and project in the plugin's tracing route, so every agent you instrument sends sessions to `coding-agent-insights`.
 
-Restart Claude Code and Codex, then complete one representative coding task in each. Open the [Logs](https://www.braintrust.dev/app/~/logs) page for `coding-agent-insights`.
+Restart each agent you instrumented, then complete one representative coding task in each. Open the [Logs](https://www.braintrust.dev/app/~/logs) page for `coding-agent-insights`.
 
 You should see a root trace from each agent. If only one agent appears, restart the missing agent and rerun its `bt trace setup` command from the cookbook directory.
 
-Both coding agents now report to the same project, which gives the facets and automation one consistent stream of sessions to analyze.
+Your instrumented coding agents now report to the same project, which gives the facets and automation one consistent stream of sessions to analyze.
 
-## 2. Configure coding-agent analytics
+## 2. Configure active observability
 
-Push the included analytics configuration to the active project. The included automation becomes active after the push, calls `gpt-5.5` on a daily schedule, and can create or update Patterns when evidence meets its threshold.
+Push the included active observability configuration to the active project. The included automation becomes active after the push, calls `gpt-5.5` on a daily schedule, and can create or update Patterns when evidence meets its threshold.
 
 ```bash
-bt analytics-config push analytics-config.json --prefer-profile
+bt active-observability-config push active-observability-config.json --prefer-profile
 ```
 
 You should see:
 
 ```text
-Pushed analytics config to 'coding-agent-insights' (2 facets, 1 Loop automations)
+Pushed active observability config to 'coding-agent-insights' (2 facets, 1 Loop automations)
 ```
 
 The configuration creates these resources:
@@ -111,37 +111,19 @@ The configuration creates these resources:
 - **Identify Skills** finds traces that demonstrate a reusable, multi-step workflow worth packaging as an agent skill.
 - **Coding agent improvements discovery** reviews a 30-day window every day, validates recurring opportunities against raw traces, and creates or updates Braintrust Patterns only when the evidence meets its threshold.
 
-`bt analytics-config push` replaces matching facets by slug and matching automations by name. You can rerun the command after editing the file without creating duplicates.
+`bt active-observability-config push` replaces matching facets by slug and matching automations by name. You can rerun the command without creating duplicates.
 
 The project now has a repeatable analysis layer on top of its coding-agent traces.
 
 ## 3. Customize the analysis
 
-Pull the live configuration before editing it so your local copy includes changes made in the Braintrust UI:
+Use the Braintrust app to adapt the installed resources to the questions your team wants to answer.
 
-```bash
-bt analytics-config pull --output analytics-config.local.json --prefer-profile
-```
+Open [Topics](https://www.braintrust.dev/app/~/topics), find **Coding Agent Context Debt** or **Identify Skills**, then open the ellipsis menu and select **Edit facet**. You can update the prompt, preprocessor, or exclusion pattern, test the facet against a selected trace, and optionally apply it to existing traces before saving. See [custom facets](/docs/observe/topics/custom-facets) for the complete editing workflow.
 
-Edit `analytics-config.local.json` to match the questions your team wants to answer:
+Next, open [**Settings > Automations**](https://www.braintrust.dev/app/~/configuration/automations) and select **Coding agent improvements discovery**. From the automation editor, you can change its instructions, model, reasoning effort, schedule, lookback window, and tool permissions. Save your changes, select **Run now**, and inspect **Past runs** to confirm that the report answers the questions you care about.
 
-- Change `facets[].function_data.prompt` to define the evidence and output format for each classification.
-- Change `facets[].function_data.no_match_pattern` when the facet uses a different empty-result marker.
-- Change `automations[].config.loop.prompt` to adjust the analysis workflow, evidence threshold, or final report.
-- Change `automations[].config.window.window_seconds` and `automations[].config.window.schedule` to control the lookback window and frequency.
-- Change `automations[].config.loop.model` and `reasoning_effort` to use a model available through your Braintrust AI providers.
-
-Keep each facet's `slug` stable when you intend to update it. Changing the slug creates a separate facet. Keep the automation `name` stable for the same reason.
-
-Push your edited copy:
-
-```bash
-bt analytics-config push analytics-config.local.json --prefer-profile
-```
-
-You should see the same resource counts as the initial push. Open [custom facets](/docs/observe/topics/custom-facets) and [Automations](https://www.braintrust.dev/app/~/configuration/automations) to review the updated prompts and schedule.
-
-Your checked-in JSON is now the portable source for the project's analytical behavior. Review `actions` before committing an exported config because destinations can contain organization-specific integration and channel identifiers.
+The included JSON remains a reusable starting point for new projects. Changes you make in the app update the live facets and automation directly.
 
 ## 4. Send automation output to Slack
 
@@ -159,7 +141,7 @@ The Slack destination is configured after the JSON push because workspace and ch
 
 ## Troubleshooting
 
-- If `bt analytics-config` is missing, run `command -v bt`. Reinstall with the command from Setup and put `~/.local/bin` first in `PATH` for the shell.
+- If `bt active-observability-config` is missing, run `command -v bt`. Reinstall with the command from Setup and put `~/.local/bin` first in `PATH` for the shell.
 - If `coding-agent-insights` already exists, skip `bt projects create` and run the `bt switch` command.
 - If Codex reports a marketplace clone timeout, rerun `bt trace setup codex --prefer-profile`. A repeated `fatal: early EOF` indicates a Git transport or network problem rather than a Braintrust project configuration error.
 - If traces do not appear, restart the agent after plugin setup and confirm that the setup command selected `coding-agent-insights`.
@@ -168,7 +150,7 @@ The Slack destination is configured after the JSON push because workspace and ch
 
 ## Recap
 
-You've built one Braintrust project that collects Claude Code and Codex traces, classifies actionable context and skill opportunities, and reviews recurring evidence on a schedule. The portable analytics configuration makes the same analysis reproducible across projects, while the Slack destination keeps environment-specific routing out of the shared file.
+You've built one Braintrust project that collects coding-agent traces, classifies actionable context and skill opportunities, and reviews recurring evidence on a schedule. The portable active observability configuration makes the same analysis reproducible across projects, while the Slack destination keeps environment-specific routing out of the shared file.
 
 ## Next steps
 

@@ -1,5 +1,5 @@
 {
-  "kind": "analytics_config",
+  "kind": "active_observability_config",
   "schema_version": 1,
   "facets": [
     {
