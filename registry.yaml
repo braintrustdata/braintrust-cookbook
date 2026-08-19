@@ -1,5 +1,15 @@
 # yaml-language-server: $schema=./.github/registry_schema.json
 
+- title: Build a coding agent insights project
+  path: examples/CodingAgentInsights/CodingAgentInsights.mdx
+  date: 2026-08-19
+  authors:
+    - maxkern
+  tags:
+    - agent
+    - logging
+    - topics
+    - loop
 - title: Supervising agent behavior with behavior specs
   path: examples/AgentBehavior/AgentBehavior.mdx
   date: 2026-07-28
