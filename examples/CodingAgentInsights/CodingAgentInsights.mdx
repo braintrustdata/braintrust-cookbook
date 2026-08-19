@@ -6,8 +6,9 @@ Along the way, you'll:
 
 - Instrument your coding agents and send their traces to the same Braintrust project.
 - Install a portable active observability configuration with the `bt` CLI.
-- Use Loop to create and refine facets from your coding-agent traces.
-- Send each automation run to a Slack channel.
+- Import an existing coding-agent session so the analysis starts with data.
+- Optionally use Loop to create and refine facets from your coding-agent traces.
+- Optionally send automation runs to a Slack channel.
 
 <Note>
   This cookbook uses the `bt active-observability-config` command. The setup
@@ -23,6 +24,7 @@ You'll need:
 - A [Braintrust account](https://www.braintrust.dev/signup) with permission to create projects and automations.
 - An [AI provider](https://www.braintrust.dev/app/settings?subroute=secrets) configured in Braintrust for the model used by the automations.
 - One or more supported coding agents installed on macOS or Linux.
+- A locally stored Codex or Claude Code session to import.
 
 <Steps>
 
@@ -118,7 +120,25 @@ The configuration creates these resources:
 
 The project now has a repeatable analysis layer on top of its coding-agent traces.
 
-## 3. Customize the analysis
+## 3. Import existing traces
+
+Seed the project with an existing Codex session so the facets and automations have data to analyze immediately. Run `codex resume` and copy a session ID from the session picker, then import it:
+
+```bash
+bt trace import codex "<SESSION_ID>" --prefer-profile
+```
+
+The command exits without output after the import finishes. Go to [**<Icon icon="activity" /> Logs**](https://www.braintrust.dev/app/~/logs) and select the `coding-agent-insights` project. You should see the imported session as a root trace.
+
+If the CLI cannot find the session, confirm that you copied the complete resume ID and that its transcript is stored on the same machine. To import a Claude Code session instead, replace `codex` with `claude` and use an ID from its resume command.
+
+The project now has historical data for Topics and the scheduled Loop automations, so you do not need to wait for new coding-agent sessions before reviewing the setup.
+
+## Extend the setup (optional)
+
+You now have the core active observability workflow. Use the following extensions when you want to adapt the analysis or send its results to your team.
+
+### Customize the analysis
 
 Use Loop to adapt the installed facets to the questions your team wants to answer. Go to [**<Icon icon="blend" /> Loop**](https://www.braintrust.dev/app/~/loop) and ask it to evaluate the facets against recent coding-agent traces:
 
@@ -132,7 +152,7 @@ To customize the recurring analysis, go to **<Icon icon="settings-2" /> Settings
 
 The included JSON remains a reusable starting point for new projects. Changes you make in the app update the live facets and automations directly.
 
-## 4. Send automation output to Slack
+### Send automation output to Slack
 
 Connect Slack under **<Icon icon="settings-2" /> Settings** > [**<Icon icon="toy-brick" /> Integrations**](https://www.braintrust.dev/app/~/configuration/org/integrations). Then go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations) and select **coding agent improvements discovery**.
 
@@ -152,12 +172,13 @@ The Slack destination is configured after the JSON push because workspace and ch
 - If `coding-agent-insights` already exists, skip `bt projects create` and run the `bt switch` command.
 - If Codex reports a marketplace clone timeout, rerun `bt trace setup codex --prefer-profile`. A repeated `fatal: early EOF` indicates a Git transport or network problem rather than a Braintrust project configuration error.
 - If traces do not appear, restart the agent after plugin setup and confirm that the setup command selected `coding-agent-insights`.
+- If `bt trace import` cannot find a session, copy the complete ID from the agent's resume command and run the import on the machine that contains the transcript.
 - If **Send to Slack** is unavailable, [enable the Slack integration](/docs/admin/organizations#enable-slack-integration) for the organization first.
 - If the automation cannot call its model, configure that model under AI providers or select an available model in the automation editor.
 
 ## Recap
 
-You've built one Braintrust project that collects coding-agent traces, classifies context debt, failure modes, skill invocation failures, and workstreams, then reviews recurring evidence with two scheduled Loop automations. The portable active observability configuration makes the same analysis reproducible across projects, while the Slack destination keeps environment-specific routing out of the shared file.
+You've built one Braintrust project that collects new and imported coding-agent traces, classifies context debt, failure modes, skill invocation failures, and workstreams, then reviews recurring evidence with two scheduled Loop automations. The portable active observability configuration makes the same analysis reproducible across projects, while the optional Loop and Slack workflows let each team adapt the analysis and delivery.
 
 ## Next steps
 
