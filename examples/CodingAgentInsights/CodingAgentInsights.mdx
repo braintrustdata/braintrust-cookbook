@@ -89,9 +89,17 @@ Each setup command ends with an instruction to restart the coding agent. The com
 
 Restart each agent you instrumented, then complete one representative coding task in each. Open the [Logs](https://www.braintrust.dev/app/~/logs) page for `coding-agent-insights`.
 
-You should see a root trace from each agent. If only one agent appears, restart the missing agent and rerun its `bt trace setup` command from the cookbook directory.
+### Instrument your teammates
 
-Your instrumented coding agents now report to the same project, which gives the facets and automations one consistent stream of sessions to analyze.
+To include sessions from other people, add them to the `coding-agent-insights` project. Then have each teammate authenticate, select the shared project, and set up tracing for their coding agent:
+
+```bash
+bt login --oauth
+bt switch "<YOUR_ORG>/coding-agent-insights" --prefer-profile
+bt trace setup claude --prefer-profile
+```
+
+Each teammate must restart Claude Code after setup. Repeat the final command with `codex`, `opencode`, or `pi` to instrument another supported agent.
 
 ## 2. Configure active observability
 
