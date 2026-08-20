@@ -7,7 +7,7 @@ Along the way, you'll:
 - Instrument your coding agents and send their traces to the same Braintrust project.
 - Enable Topics and Patterns for continuous analysis.
 - Install a portable active observability configuration with the `bt` CLI.
-- Import an existing coding-agent session so the analysis starts with data.
+- Collect new coding-agent traces and optionally import valuable existing sessions.
 - Optionally use Loop to create and refine facets from your coding-agent traces.
 - Optionally send automation runs to a Slack channel.
 
@@ -25,7 +25,7 @@ You'll need:
 - A [Braintrust account](https://www.braintrust.dev/signup) with permission to create projects and automations.
 - An [AI provider](https://www.braintrust.dev/app/settings?subroute=secrets) configured in Braintrust for the model used by the automations.
 - One or more supported coding agents installed on macOS or Linux.
-- A locally stored Codex or Claude Code session to import.
+- Optional: A locally stored Codex or Claude Code session to import.
 
 <Steps>
 
@@ -77,7 +77,7 @@ You're now ready to instrument your coding agents.
 
 ## 1. Instrument your coding agents
 
-Create a project for coding-agent traces, store that context in the cookbook directory, and install tracing for the agents you use. Replace `<YOUR_ORG>` with your Braintrust organization name. The commands below instrument Claude Code and Codex as examples. `bt trace setup` also supports OpenCode and Pi.
+Create a project for coding-agent traces, set it as the active project for this cookbook directory, and install tracing for the agents you use. Replace `<YOUR_ORG>` with your Braintrust organization name. The commands below instrument Claude Code and Codex as examples. `bt trace setup` also supports OpenCode and Pi.
 
 ```bash
 bt projects create coding-agent-insights --org "<YOUR_ORG>" --prefer-profile
@@ -87,15 +87,6 @@ bt trace setup codex --prefer-profile
 ```
 
 Each setup command ends with an instruction to restart the coding agent. The command stores the selected profile, organization, and project in the plugin's tracing route, so every agent you instrument sends sessions to `coding-agent-insights`.
-
-### Enable Topics and Patterns
-
-Before generating traces, enable both analysis pipelines for `coding-agent-insights`:
-
-1. Go to [**<Icon icon="pentagon" /> Topics**](https://www.braintrust.dev/app/~/topics), select **Apply to existing traces**, and click **Enable topics**. If you are not an organization owner, ask one to complete this step.
-2. Go to [**<Icon icon="scan-search" /> Patterns**](https://www.braintrust.dev/app/~/patterns) and click **Enable patterns**. In the **Introducing Patterns** dialog, click **Enable patterns** again to confirm. Leave the optional Slack destination empty for now.
-
-Topics provides the online facet processing required by the active observability configuration. Patterns queues an initial analysis and provides the inbox where the Loop automations publish their findings.
 
 ### Instrument your teammates
 
@@ -107,13 +98,16 @@ bt switch "<YOUR_ORG>/coding-agent-insights" --prefer-profile
 bt trace setup claude --prefer-profile
 ```
 
-Each teammate must restart Claude Code after setup. Repeat the final command with `codex`, `opencode`, or `pi` to instrument another supported agent.
-
-Instrument every supported coding agent your team uses and add as many teammates as practical. More traces across different agents, tasks, and repositories give the facets and Loop automations more recurring evidence to analyze.
-
-Restart each agent you instrumented, then complete representative coding tasks with them. Go to [**<Icon icon="activity" /> Logs**](https://www.braintrust.dev/app/~/logs) and select `coding-agent-insights` to confirm that traces are arriving.
+Repeat the final command with `codex`, `opencode`, or `pi` to instrument another supported agent.
 
 ## 2. Configure active observability
+
+Before pushing the included configuration, enable both analysis pipelines for `coding-agent-insights`:
+
+1. Go to [**<Icon icon="pentagon" /> Topics**](https://www.braintrust.dev/app/~/topics), select **Apply to existing traces**, and click **Enable topics**. If you are not an organization owner, ask one to complete this step.
+2. Go to [**<Icon icon="scan-search" /> Patterns**](https://www.braintrust.dev/app/~/patterns) and click **Enable patterns**. In the **Introducing Patterns** dialog, click **Enable patterns** again to confirm. Leave the optional Slack destination empty for now.
+
+Topics provides the online facet processing required by the active observability configuration. Patterns queues an initial analysis and provides the inbox where the Loop automations publish their findings.
 
 Push the included active observability configuration to the active project. The included automations become active after the push, call `gpt-5.5` on a daily schedule, and create or update Patterns when evidence meets their thresholds.
 
@@ -138,13 +132,19 @@ The configuration creates these resources:
 
 `bt active-observability-config push` replaces matching facets by slug and matching automations by name. You can rerun the command without creating duplicates.
 
-Facet classification uses [online scoring](/evaluate/score-online) and runs asynchronously after traces arrive. The scheduled Loop automations run daily and require recurring evidence before they create or update a Pattern, so useful findings accumulate as your team generates more sessions.
+Topics creates facet summaries asynchronously as traces arrive. The scheduled Loop automations run daily and require recurring evidence before they create or update a Pattern, so useful findings accumulate as your team generates more sessions.
 
 The project now has a repeatable analysis layer on top of its coding-agent traces. Review its findings on the [**<Icon icon="scan-search" /> Patterns**](https://www.braintrust.dev/app/~/patterns) page.
 
-## 3. Import existing traces
+## 3. Collect coding-agent traces
 
-Seed the project with an existing Codex session so the facets and automations have data to analyze immediately. Run `codex resume` and copy a session ID from the session picker, then import it:
+Restart each coding agent you instrumented, then keep using it for real work. Ask your teammates to do the same. Instrument every supported agent your team uses and add as many teammates as practical. Traces across different agents, tasks, and repositories give the facets and Loop automations more recurring evidence to analyze.
+
+Go to [**<Icon icon="activity" /> Logs**](https://www.braintrust.dev/app/~/logs) and select `coding-agent-insights`. Each new session appears as a root trace. Topics creates facet summaries in the background, and the scheduled Loop automations look for recurring evidence across the accumulated sessions.
+
+### Import valuable existing sessions
+
+If you have a local Codex session that would add useful evidence, run `codex resume` and copy its session ID, then import it:
 
 ```bash
 bt trace import codex "<SESSION_ID>" --prefer-profile
@@ -152,9 +152,9 @@ bt trace import codex "<SESSION_ID>" --prefer-profile
 
 The command exits without output after the import finishes. Go to [**<Icon icon="activity" /> Logs**](https://www.braintrust.dev/app/~/logs) and select the `coding-agent-insights` project. You should see the imported session as a root trace.
 
-If the CLI cannot find the session, confirm that you copied the complete resume ID and that its transcript is stored on the same machine. To import a Claude Code session instead, replace `codex` with `claude` and use an ID from its resume command.
+If the CLI cannot find the session, confirm that you copied the complete resume ID and that its transcript is stored on the same machine. To import a Claude Code session instead, replace `codex` with `claude` and use an ID from its resume command. Import sessions that represent workflows, successes, or failures you want the analysis to consider.
 
-The project now has historical data for Topics and the scheduled Loop automations. Online scoring and Pattern discovery run in the background, so imported traces do not produce findings immediately. Once facet values appear in [**<Icon icon="activity" /> Logs**](https://www.braintrust.dev/app/~/logs), go to [**<Icon icon="scan-search" /> Patterns**](https://www.braintrust.dev/app/~/patterns) and click **Analyze patterns** to queue a fresh run.
+New and imported traces do not produce findings immediately. Once facet values appear in [**<Icon icon="activity" /> Logs**](https://www.braintrust.dev/app/~/logs), go to [**<Icon icon="scan-search" /> Patterns**](https://www.braintrust.dev/app/~/patterns) and click **Analyze patterns** to queue a fresh run.
 
 ## Extend the setup (optional)
 
