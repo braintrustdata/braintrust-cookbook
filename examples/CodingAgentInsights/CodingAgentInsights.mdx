@@ -144,15 +144,13 @@ Go to [**<Icon icon="activity" /> Logs**](https://www.braintrust.dev/app/~/logs)
 
 ### Import valuable existing sessions
 
-If you have a local Codex session that would add useful evidence, run `codex resume` and copy its session ID, then import it:
+If you have a local Codex session that would add useful evidence, run:
 
 ```bash
 bt trace import codex "<SESSION_ID>" --prefer-profile
 ```
 
-The command exits without output after the import finishes. Go to [**<Icon icon="activity" /> Logs**](https://www.braintrust.dev/app/~/logs) and select the `coding-agent-insights` project. You should see the imported session as a root trace.
-
-If the CLI cannot find the session, confirm that you copied the complete resume ID and that its transcript is stored on the same machine. To import a Claude Code session instead, replace `codex` with `claude` and use an ID from its resume command. Import sessions that represent workflows, successes, or failures you want the analysis to consider.
+Find a session ID by running `codex resume` and copying it from the session picker. For Claude Code, replace `codex` with `claude` and use an ID from its resume command.
 
 New and imported traces do not produce findings immediately. Once facet values appear in [**<Icon icon="activity" /> Logs**](https://www.braintrust.dev/app/~/logs), go to [**<Icon icon="scan-search" /> Patterns**](https://www.braintrust.dev/app/~/patterns) and click **Analyze patterns** to queue a fresh run.
 
@@ -162,17 +160,17 @@ You now have the core active observability workflow. Use the following extension
 
 ### Customize the analysis
 
-Use Loop to adapt the installed facets to the questions your team wants to answer. Go to [**<Icon icon="blend" /> Loop**](https://www.braintrust.dev/app/~/loop) and ask it to evaluate the facets against recent coding-agent traces:
+Use Loop to adapt the installed facets and automations to the questions your team wants to answer. Go to [**<Icon icon="blend" /> Loop**](https://www.braintrust.dev/app/~/loop) and ask it to evaluate both against recent coding-agent traces:
 
 ```text
-Review the coding-agent facets in this project against recent traces. Identify noisy classifications and gaps, then propose new facets or improvements to the existing facets. Test each change against representative traces before saving it.
+Review the coding-agent facets and automations in this project against recent traces. Identify noisy classifications, missing analysis, and recurring-analysis settings that should change. Propose and test improvements to both resources, then show me the changes before applying them.
 ```
 
-Loop can create and test facets and preprocessors, then show each proposed resource in its workspace. Review the proposed changes and approve the create or update actions you want to keep.
+Loop can drive facet creation and testing as well as automation customization. Review its proposed changes and approve the create or update actions you want to keep.
 
-To customize the recurring analysis, go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations) and select **Failure Pattern Discovery** or **coding agent improvements discovery**. Change its instructions, model, reasoning effort, schedule, lookback window, or tool permissions. Save your changes, select **Run now**, and inspect **Past runs** to confirm that the report answers the questions you care about.
+To edit an automation directly, go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations) and select **Failure Pattern Discovery** or **coding agent improvements discovery**. You can change its instructions, model, reasoning effort, schedule, lookback window, or tool permissions. Save your changes, select **Run now**, and inspect **Past runs** to confirm that the report answers the questions you care about.
 
-The included JSON remains a reusable starting point for new projects. Changes you make in the app update the live facets and automations directly.
+The included JSON remains a reusable starting point for new projects. Changes you approve in Loop or make in the app update the live facets and automations directly.
 
 ### Send automation output to Slack
 
