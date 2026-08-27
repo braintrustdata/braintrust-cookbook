@@ -5,6 +5,7 @@
     {
       "name": "Coding Agent Context Debt",
       "slug": "coding-agent-context-debt",
+      "topics_automation": "Topics",
       "description": "Identifies demonstrated, reusable context gaps that required a live user to correct or unblock a coding agent after work began.",
       "function_data": {
         "no_match_pattern": "^\\s*NONE\\b",
@@ -25,6 +26,7 @@
     {
       "name": "Primary failure mode.",
       "slug": "primary-failure-mode-2a1d",
+      "topics_automation": "Topics",
       "function_data": {
         "no_match_pattern": "^\\s*(?:-\\s*)?NONE\\b",
         "preprocessor": {
@@ -39,6 +41,7 @@
     {
       "name": "Skill invocation failure mode",
       "slug": "skill-invocation-failure-mode",
+      "topics_automation": "Topics",
       "description": "Conservative categorical diagnosis of material failures directly caused by skill invocations.",
       "function_data": {
         "no_match_pattern": "^NONE$",

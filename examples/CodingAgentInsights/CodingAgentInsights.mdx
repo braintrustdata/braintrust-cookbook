@@ -1,18 +1,18 @@
 # Active observability for coding agents
 
-In this cookbook, you'll build a shared Braintrust project that turns coding-agent sessions into recurring insights. Braintrust tracing sends your instrumented coding agents to one project, custom facets classify each session, and scheduled Loop automations review the evidence over time.
+In this cookbook, you'll build a shared Braintrust project that turns coding-agent sessions into recurring insights. Braintrust tracing sends your instrumented coding agents to one project, custom facets classify each session through Topics, and scheduled Loop automations review the evidence and report costs over time.
 
 Along the way, you'll:
 
 - Instrument your coding agents and send their traces to the same Braintrust project.
-- Enable Topics and Patterns for continuous analysis.
-- Install a portable active observability configuration with the `bt` CLI.
+- Enable Patterns for continuous analysis.
+- Install a portable active observability template with the `bt` CLI. The template creates the Topics automation, facets, and Loop automations.
 - Collect new coding-agent traces and optionally import valuable existing sessions.
 - Optionally use Loop to create and refine facets from your coding-agent traces.
 - Optionally send automation runs to a Slack channel.
 
 <Note>
-  This cookbook uses the `bt active-observability-config` command. The setup
+  This cookbook uses the `bt observability template` command. The setup
   verifies that your installed CLI includes it before you configure the project.
 </Note>
 
@@ -57,17 +57,17 @@ Complete the browser flow. The saved OAuth profile lets the tracing plugins refr
 
 ```bash
 command -v bt
-bt active-observability-config --help
+bt observability template --help
 ```
 
 You should see output that starts with:
 
 ```text
 <home-directory>/.local/bin/bt
-Pull and push facets and Loop automations as one active observability config
+Pull and push facets and Loop automations as one active observability template
 ```
 
-If the first line points into the repository or a package cache, repeat the `export PATH` command in the same shell. If `active-observability-config` is not recognized, run the installer again and confirm that `command -v bt` resolves to the installer-managed binary.
+If the first line points into the repository or a package cache, repeat the `export PATH` command in the same shell. If `observability template` is not recognized, run the installer again and confirm that `command -v bt` resolves to the installer-managed binary.
 
 </Step>
 
@@ -102,37 +102,32 @@ Repeat the final command with `codex`, `opencode`, or `pi` to instrument another
 
 ## 2. Configure active observability
 
-Before pushing the included configuration, enable both analysis pipelines for `coding-agent-insights`:
+Before pushing the included template, go to [**<Icon icon="scan-search" /> Patterns**](https://www.braintrust.dev/app/~/patterns) and click **Enable patterns**. In the **Introducing Patterns** dialog, click **Enable patterns** again to confirm. Leave the optional Slack destination empty for now. Patterns queues an initial analysis and provides the inbox where the discovery automations publish their findings.
 
-1. Go to [**<Icon icon="pentagon" /> Topics**](https://www.braintrust.dev/app/~/topics), select **Apply to existing traces**, and click **Enable topics**. If you are not an organization owner, ask one to complete this step.
-2. Go to [**<Icon icon="scan-search" /> Patterns**](https://www.braintrust.dev/app/~/patterns) and click **Enable patterns**. In the **Introducing Patterns** dialog, click **Enable patterns** again to confirm. Leave the optional Slack destination empty for now.
-
-Topics provides the online facet processing required by the active observability configuration. Patterns queues an initial analysis and provides the inbox where the Loop automations publish their findings.
-
-Push the included active observability configuration to the active project. The included automations become active after the push, call `gpt-5.5` on a daily schedule, and create or update Patterns when evidence meets their thresholds.
+Push the active observability template to the active project. Each facet in the template maps to a Topics automation named `Topics`; the push creates that automation if it does not exist and attaches the facets to it. The three Loop automations also become active after the push.
 
 ```bash
-bt active-observability-config push active-observability-config.json --prefer-profile
+bt observability template push active-observability-config.json --prefer-profile
 ```
 
 You should see:
 
 ```text
-Pushed active observability config to 'coding-agent-insights' (4 facets, 2 Loop automations)
+Pushed active observability template to 'coding-agent-insights' (3 facets, 3 Loop automations)
 ```
 
-The configuration creates these resources:
+The template creates these resources:
 
 - **Coding Agent Context Debt** identifies reusable context that a user had to supply after work began, such as missing repository guidance, architecture knowledge, or environment detection.
 - **Primary failure mode.** Classifies the most important visible issue in each run, including unresolved tests, incorrect scope, incomplete work, and wasted effort.
 - **Skill invocation failure mode** diagnoses material failures caused by a verified skill invocation, such as using the wrong skill or ignoring its required workflow.
-- **Workstream** groups sessions by their durable product or project initiative instead of the immediate task.
 - **Failure Pattern Discovery** reviews the previous seven days of failure-mode classifications, validates recurring findings against raw traces, and creates or updates Braintrust Patterns when the evidence meets its threshold.
-- **coding agent improvements discovery** reviews a 30-day window across Topics, raw traces, and existing Patterns to find recurring opportunities to improve coding agents.
+- **Coding Agent Improvements Discovery** reviews a 30-day window across Topics, raw traces, and existing Patterns to find recurring opportunities to improve coding agents, then creates or updates qualifying Patterns.
+- **Cost Report** produces a week-over-week estimated-cost report by user and summarizes the work represented by the 25 highest-cost sessions. It uses `gpt-5.6-sol` and runs daily at 9 AM in `America/Los_Angeles`; the two discovery automations use `gpt-5.5` and also run daily.
 
-`bt active-observability-config push` replaces matching facets by slug and matching automations by name. You can rerun the command without creating duplicates.
+The push stops if a matching resource already exists. To apply a revised template, rerun the command with `--force`; this replaces matching facets by slug and Loop automations by name while preserving any destination actions configured on the target automations.
 
-Topics creates facet summaries asynchronously as traces arrive. The scheduled Loop automations run daily and require recurring evidence before they create or update a Pattern, so useful findings accumulate as your team generates more sessions.
+Topics creates facet summaries asynchronously as traces arrive. The two discovery automations require recurring evidence before they create or update a Pattern, so useful findings accumulate as your team generates more sessions. Cost reports and other automation output are available under **Past runs** in the automation settings.
 
 The project now has a repeatable analysis layer on top of its coding-agent traces. Review its findings on the [**<Icon icon="scan-search" /> Patterns**](https://www.braintrust.dev/app/~/patterns) page.
 
@@ -168,13 +163,13 @@ Review the coding-agent facets and automations in this project against recent tr
 
 Loop can drive facet creation and testing as well as automation customization. Review its proposed changes and approve the create or update actions you want to keep.
 
-To edit an automation directly, go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations) and select **Failure Pattern Discovery** or **coding agent improvements discovery**. You can change its instructions, model, reasoning effort, schedule, lookback window, or tool permissions. Save your changes, select **Run now**, and inspect **Past runs** to confirm that the report answers the questions you care about.
+To edit an automation directly, go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations) and select **Coding Agent Improvements Discovery**, **Cost Report**, or **Failure Pattern Discovery**. You can change its instructions, model, reasoning effort, schedule, lookback window, or tool permissions. Save your changes, select **Run now**, and inspect **Past runs** to confirm that the output answers the questions you care about.
 
 The included JSON remains a reusable starting point for new projects. Changes you approve in Loop or make in the app update the live facets and automations directly.
 
 ### Send automation output to Slack
 
-Connect Slack under **<Icon icon="settings-2" /> Settings** > [**<Icon icon="toy-brick" /> Integrations**](https://www.braintrust.dev/app/~/configuration/org/integrations). Then go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations) and select **coding agent improvements discovery**.
+Connect Slack under **<Icon icon="settings-2" /> Settings** > [**<Icon icon="toy-brick" /> Integrations**](https://www.braintrust.dev/app/~/configuration/org/integrations). Then go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations) and select **Coding Agent Improvements Discovery**.
 
 In **Destinations**, open the **Destination** menu and select **Send to Slack**. Choose the workspace and channel, then use this **Formatting prompt**:
 
@@ -188,7 +183,8 @@ The Slack destination is configured after the JSON push because workspace and ch
 
 ## Troubleshooting
 
-- If `bt active-observability-config` is missing, run `command -v bt`. Reinstall with the command from Setup and put `~/.local/bin` first in `PATH` for the shell.
+- If `bt observability template` is missing, run `command -v bt`. Reinstall with the command from Setup and put `~/.local/bin` first in `PATH` for the shell.
+- If a template push reports that a facet or Loop automation already exists, rerun it with `--force` after confirming that you want to replace the matching resources.
 - If `coding-agent-insights` already exists, skip `bt projects create` and run the `bt switch` command.
 - If Codex reports a marketplace clone timeout, rerun `bt trace setup codex --prefer-profile`. A repeated `fatal: early EOF` indicates a Git transport or network problem rather than a Braintrust project configuration error.
 - If traces do not appear, restart the agent after plugin setup and confirm that the setup command selected `coding-agent-insights`.
@@ -198,7 +194,7 @@ The Slack destination is configured after the JSON push because workspace and ch
 
 ## Recap
 
-You've built one Braintrust project that collects new and imported coding-agent traces, classifies context debt, failure modes, skill invocation failures, and workstreams, then reviews recurring evidence with two scheduled Loop automations. The portable active observability configuration makes the same analysis reproducible across projects, while the optional Loop and Slack workflows let each team adapt the analysis and delivery.
+You've built one Braintrust project that collects new and imported coding-agent traces, classifies context debt, failure modes, and skill invocation failures through Topics, discovers recurring Patterns with two scheduled Loop automations, and generates a scheduled cost report. The portable active observability template makes the same analysis reproducible across projects, while the optional Loop and Slack workflows let each team adapt the analysis and delivery.
 
 ## Next steps
 
