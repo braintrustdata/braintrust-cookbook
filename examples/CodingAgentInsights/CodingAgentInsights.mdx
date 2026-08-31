@@ -45,6 +45,8 @@ The installer fetches the latest stable release instead of a version pinned by t
 
 <Step title="Authenticate with Braintrust">
 
+For BYOC, add `--api-url "<YOUR_UNIVERSAL_API_URL>"` to the login command below. The CLI saves the URL in your profile, so the later `--prefer-profile` commands reuse it.
+
 ```bash
 bt login --oauth
 ```
