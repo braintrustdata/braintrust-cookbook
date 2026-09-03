@@ -10,21 +10,21 @@ This guide describes how to:
 - Configure [Claude Code](/integrations/developer-tools/claude-code), [Codex](/integrations/developer-tools/codex), [OpenCode](/integrations/developer-tools/opencode), or [Pi](/integrations/developer-tools/pi) to send sessions to the project.
 - Use the [`bt` CLI](/reference/cli/quickstart) to add three [facets](/observe/topics/custom-facets) and a daily [Loop automation](/loop/automations) to the project.
 - Collect new traces and import useful Codex or Claude Code sessions from earlier work.
-- Run the automation manually to verify that it can review the sessions, then review any recurring problems it saves as [Patterns](/observe/patterns).
+- Run the automation manually to verify that it can review the sessions, then review any recurring problems it saves as [patterns](/observe/patterns).
 - Optionally refine the facets and automation or send automation reports to Slack.
 
 ## Prerequisites
 
 Before you begin, you'll need:
 
-- A [Braintrust account](https://www.braintrust.dev/signup) with permission to create a project and project-level [`Read`, `Create`, and `Update` permissions](/admin/access-control#permissions-reference). Members of the **Owners** and **Engineers** permission groups have these permissions by default.
+- A [Braintrust account](https://www.braintrust.dev/signup) with permission to create a project and project-level [`Read`, `Create`, and `Update` permissions](/admin/access-control#permissions-reference). Members of the **Owners** and **Engineers** [permission groups](/admin/access-control#built-in-permission-groups) have these permissions by default.
 - Access to an organization owner who can [enable Topics](/observe/topics/enable#enable-topics) if it is not already enabled for the project.
 - An [AI provider](/admin/ai-providers) with access to `gpt-5.6-sol`, configured under **<Icon icon="settings-2" /> Settings** > [**<Icon icon="sparkle" /> AI providers**](https://www.braintrust.dev/app/~/configuration/org/secrets).
 - At least one supported coding agent installed on macOS or Linux: Claude Code, Codex, OpenCode, or Pi.
 
 ## 1. Create a project for your traces
 
-One person should create a dedicated Braintrust project for your team's coding-agent sessions. This project will contain the traces, Topics facet values, Loop automation, and Patterns you create in this cookbook.
+One person should create a dedicated Braintrust project for your team's coding-agent sessions. This project will contain the traces, Topics facet values, Loop automation, and patterns you create in this cookbook.
 
 1. Go to your [organization overview](https://www.braintrust.dev/app/~).
 2. Open the project dropdown and click **+ Create project**.
@@ -244,7 +244,7 @@ Confirm that the template added the facets to the project and attached them to t
 
 <Accordion title="Review the Loop automation">
 
-Confirm that the template created an active daily automation with the expected analysis window and Pattern permissions:
+Confirm that the template created an active daily automation with the expected analysis window and pattern permissions:
 
 1. Go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations). Confirm that **Coding Agent Improvements Discovery** shows **Every 24 hours** and **Active**.
 2. Click **Coding Agent Improvements Discovery** to open it. On the **Edit** tab, confirm that:
@@ -317,13 +317,13 @@ After collecting some traces, run **Coding Agent Improvements Discovery** manual
 2. Click **Run now**. You'll see a **Starting Loop automation...** notification, followed by a **Loop automation started** notification.
 3. In the second notification, click **Open Loop**. Alternatively, open **Past runs** and click the newest **Coding Agent Improvements Discovery** run. Either route opens the Loop thread, where you can watch the run.
 
-The automation is working if the run completes and reports which sessions it reviewed. It does not need to create or update a Pattern: Loop only saves problems that it finds repeatedly.
+The automation is working if the run completes and reports which sessions it reviewed. It does not need to create or update a pattern: Loop only saves problems that it finds repeatedly.
 
 <Tip>
   After you verify the automation, it continues running daily. When it finds
-  a recurring problem, it creates or updates a Pattern. See
+  a recurring problem, it creates or updates a pattern. See
   [Review and act on patterns](/observe/patterns/review) to inspect the
-  evidence and close the Pattern after fixing the problem.
+  evidence and close the pattern after fixing the problem.
 </Tip>
 
 ## 6. Customize the workflow (optional)
@@ -338,7 +338,7 @@ If you'd like to refine the facets or change what the scheduled automation analy
 
 <Warning>
   An interactive Loop thread uses live project data and may create or update
-  Patterns while it tests an analysis. It does not change the facets or
+  patterns while it tests an analysis. It does not change the facets or
   scheduled automation unless you approve a proposed change or edit the
   resource yourself.
 </Warning>
@@ -446,8 +446,12 @@ If `bt observability template` is not recognized when you push the template:
 
 If `bt observability template push` reports that a matching facet or Loop automation already exists, it stops before the confirmation prompt:
 
-- If you intend to restore the template configuration, rerun the same command with `--force` and confirm the replacements. **Warning:** This resets the three facets and **Coding Agent Improvements Discovery** to the versions in the JSON file. Any edits you made to them are lost. Slack and webhook destinations already added to the automation are preserved.
+- If you intend to restore the template configuration, rerun the same command with `--force` and confirm the replacements.
 - A new project does not need `--force`.
+
+<Warning>
+  Rerunning the command with `--force` resets the three facets and **Coding Agent Improvements Discovery** to the versions in the JSON file. Any edits you made to them are lost. Slack and webhook destinations already added to the automation are preserved.
+</Warning>
 
 </Accordion>
 
@@ -525,11 +529,11 @@ Choose what to keep or remove:
 
 ## Recap
 
-Your team now has a shared view of its coding-agent work in Braintrust. Three facets classify each session for common problems, and a daily Loop automation reviews the past 30 days to identify problems that recur across sessions. When it finds enough evidence, it creates or updates a Pattern that your team can investigate, address, and monitor over time. As your needs change, you can refine what the facets and automation look for and send run reports to Slack or a webhook.
+Your team now has a shared view of its coding-agent work in Braintrust. Three facets classify each session for common problems, and a daily Loop automation reviews the past 30 days to identify problems that recur across sessions. When it finds enough evidence, it creates or updates a pattern that your team can investigate, address, and monitor over time. As your needs change, you can refine what the facets and automation look for and send run reports to Slack or a webhook.
 
 ## Next steps
 
-- Learn how to [review and act on Patterns](/observe/patterns/review).
+- Learn how to [review and act on patterns](/observe/patterns/review).
 - [Configure Loop automations](/loop/automations) to change their schedule, permissions, and destinations.
 - [Create and test Topics facets](/observe/topics/custom-facets) for other problems your team wants to track.
 - Explore the [`bt` CLI](/reference/cli/quickstart) commands for querying and managing project data.
