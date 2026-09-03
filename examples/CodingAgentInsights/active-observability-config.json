@@ -3,7 +3,7 @@
   "schema_version": 1,
   "facets": [
     {
-      "name": "Coding Agent Context Debt",
+      "name": "Coding agent context debt",
       "slug": "coding-agent-context-debt",
       "topics_automation": "Topics",
       "description": "Identifies demonstrated, reusable context gaps that required a live user to correct or unblock a coding agent after work began.",
@@ -24,7 +24,7 @@
       ]
     },
     {
-      "name": "Primary failure mode.",
+      "name": "Primary failure mode",
       "slug": "primary-failure-mode-2a1d",
       "topics_automation": "Topics",
       "function_data": {
@@ -39,7 +39,7 @@
       }
     },
     {
-      "name": "Skills Analysis",
+      "name": "Skills analysis",
       "slug": "skill-invocation-failure-mode",
       "topics_automation": "Topics",
       "description": "Analyzes material failures directly caused by verified skill invocations.",
