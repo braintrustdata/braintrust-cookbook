@@ -47,7 +47,7 @@ Everyone whose sessions should appear in `coding-agent-insights`, including you,
 curl -fsSL https://bt.dev/cli/install.sh | bash
 ```
 
-After installing, run `bt --version`. You should see `bt 0.19.0` or later.
+After installing, run `bt --version`. You should see `bt 0.19.3` or later.
 
 </Step>
 
@@ -63,27 +63,22 @@ Complete the browser flow. The CLI creates or updates an OAuth profile so the tr
 
 <Accordion title="Authenticate with a self-hosted deployment">
 
-To authenticate `bt` and send coding-agent traces to a self-hosted Braintrust deployment, you need to know which URLs it uses:
+Self-hosted deployments can use different URLs for authentication and trace storage. Ask your Braintrust administrator which authentication URLs to use:
 
-- **API URL:** `bt` uses this URL to start and refresh OAuth. Coding-agent tracing uses it to send traces. Find it under **<Icon icon="settings-2" /> Settings** > [**<Icon icon="lock" /> Data plane**](https://www.braintrust.dev/app/~/configuration/org/api-url), or ask your Braintrust administrator for it.
-- **Braintrust app URL:** `bt` uses this URL to find the organizations you can access. The default is `https://www.braintrust.dev`.
+- **OAuth API URL:** `bt` uses this URL to start and refresh OAuth. The default is `https://api.braintrust.dev`.
+- **Braintrust app URL:** `bt` uses this URL to find the organizations you can access and their data-plane URLs. The default is `https://www.braintrust.dev`.
 
-Before you sign in, set the API URL in the environment where you start your coding agents. Run `export BRAINTRUST_API_URL="<YOUR_API_URL>"` in the current shell. Add the export to your shell startup file or repeat it in each shell where you start a coding agent so its tracing process inherits the URL.
-
-Then sign in:
-
-```bash
-bt login --oauth
-```
-
-If your organization also uses a Braintrust app URL other than `https://www.braintrust.dev`, include that URL:
+If your deployment uses the defaults, use `bt login --oauth` above. Otherwise, pass the custom URLs when signing in. Omit either flag if that URL uses the default:
 
 ```bash
 bt login --oauth \
+  --api-url "<YOUR_OAUTH_API_URL>" \
   --app-url "<YOUR_APP_URL>"
 ```
 
-`bt` saves the URLs in your OAuth profile for authentication. Keep `BRAINTRUST_API_URL` set whenever you start a coding agent so its tracing process sends traces to your self-hosted API. Later commands include `--prefer-profile` to prevent an ambient `BRAINTRUST_API_KEY` from taking precedence over the profile.
+`bt` saves these authentication URLs in your OAuth profile. When sending traces, `bt` automatically resolves the selected organization's data-plane API URL. You do not need to keep `BRAINTRUST_API_URL` set in each coding-agent shell for this lookup to work. Set it only if you need to [override the tracing endpoint](/reference/cli/trace).
+
+Later commands include `--prefer-profile` to prevent an ambient `BRAINTRUST_API_KEY` from taking precedence over the profile.
 
 </Accordion>
 
