@@ -19,7 +19,7 @@ Before you begin, you'll need:
 
 - A [Braintrust account](https://www.braintrust.dev/signup) with permission to create a project and project-level [`Read`, `Create`, and `Update` permissions](/admin/access-control#permissions-reference). Members of the **Owners** and **Engineers** [permission groups](/admin/access-control#built-in-permission-groups) have these permissions by default.
 - Access to an organization owner who can [enable Topics](/observe/topics/enable#enable-topics) if it is not already enabled for the project.
-- An [AI provider](/admin/ai-providers) with access to `gpt-5.6-sol`, configured under **<Icon icon="settings-2" /> Settings** > [**<Icon icon="sparkle" /> AI providers**](https://www.braintrust.dev/app/~/configuration/org/secrets).
+- An [AI provider](/admin/ai-providers) with access to `gpt-6-sol`, configured under **<Icon icon="settings-2" /> Settings** > [**<Icon icon="sparkle" /> AI providers**](https://www.braintrust.dev/app/~/configuration/org/secrets).
 - At least one supported coding agent installed on macOS or Linux: Claude Code, Codex, OpenCode, or Pi.
 
 ## 1. Create a project for your traces
@@ -243,7 +243,7 @@ Confirm that the template created an active daily automation with the expected a
 
 1. Go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations). Confirm that **Coding Agent Improvements Discovery** shows **Every 24 hours** and **Active**.
 2. Click **Coding Agent Improvements Discovery** to open it. On the **Edit** tab, confirm that:
-   - **Agent configuration** shows **GPT-5.6 Sol** with **Extra high** reasoning effort.
+   - **Agent configuration** shows **GPT-6 Sol** with **Extra high** reasoning effort.
    - **Default query range** shows **Custom**, `30` days.
    - **Write tool permissions** shows **2 allowed**. Open it and confirm that `new_pattern` and `update_pattern` are selected.
 
@@ -492,9 +492,9 @@ If **Send to Slack** does not appear in the **Destination** menu:
 
 <Accordion title="The automation cannot call its model">
 
-If **Coding Agent Improvements Discovery** fails because it cannot call `gpt-5.6-sol`:
+If **Coding Agent Improvements Discovery** fails because it cannot call `gpt-6-sol`:
 
-- Configure `gpt-5.6-sol` under [AI providers](/admin/ai-providers), or select an available model in the automation editor.
+- Configure `gpt-6-sol` under [AI providers](/admin/ai-providers), or select an available model in the automation editor.
 - Run the automation again.
 
 </Accordion>
