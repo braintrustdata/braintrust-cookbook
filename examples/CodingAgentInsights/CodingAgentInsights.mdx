@@ -1,74 +1,89 @@
-# Active observability for coding agents
+# Improving coding agents with Coding Agent Insights
 
-This cookbook shows you how to collect [traces](/tracing-quickstart) from your team's coding agents in a single Braintrust project and use a [Loop automation](/loop/automations) to periodically analyze those traces, spot recurring problems, and surface [Patterns](/observe/patterns) for you to review.
+import PublicPreview from "/snippets/public-preview.mdx";
+import PrivatePreview from "/snippets/private-preview.mdx";
 
-For example, you might find that agents repeatedly resend large amounts of context, increasing model usage, or that file operations fail because of stale paths or imprecise replacement text. You might also find agents repeatedly checking whether long-running commands have finished, or tracing issues that combine unrelated work or reprocess the same sessions.
+<PublicPreview feature="Coding Agent Insights" verb="is" />
 
-This guide describes how to:
+Coding Agent Insights shows what your team's coding agents cost, who uses them, and where they could work more effectively. A dashboard covers usage and cost, and a daily Loop automation finds recurring problems and inefficiencies across your team's sessions. This cookbook sets up both for your team.
 
-- Create a Braintrust project for your team's coding-agent traces.
-- Configure [Claude Code](/integrations/developer-tools/claude-code), [Codex](/integrations/developer-tools/codex), [OpenCode](/integrations/developer-tools/opencode), or [Pi](/integrations/developer-tools/pi) to send sessions to the project.
-- Use the [`bt` CLI](/reference/cli/quickstart) to add three [facets](/observe/topics/custom-facets) and a daily [Loop automation](/loop/automations) to the project.
-- Collect new traces and import useful Codex or Claude Code sessions from earlier work.
-- Run the automation manually to verify that it can review the sessions, then review any recurring problems it saves as [patterns](/observe/patterns).
-- Optionally refine the facets and automation or send automation reports to Slack.
+The [Coding Agent Insights dashboard](/docs/observe/dashboards/coding-agent-insights) shows usage by user, API key, model, tool, and branch, with cost breakdowns. It also shows which teammates are sending traces, to help you track adoption across your team.
+
+![Coding Agent Insights dashboard showing a Usage over time chart of cost, and a table grouped by user. The User column header reads 4 / 12 (33%), and each row lists a teammate's cost, cost change, tokens, sessions, LLM calls, and tool calls.](./assets/coding-agent-insights-dashboard-2026-10-01.png)
+
+A daily [Loop automation](/docs/loop/automations) reviews your team's sessions and records recurring problems as [patterns](/docs/observe/patterns) with supporting evidence. For example, the automation might find:
+
+- Agents repeatedly resending large amounts of context, increasing model usage.
+- File operations failing because of stale paths or imprecise replacement text.
+- Agents repeatedly checking whether long-running commands have finished.
+- Tracing issues that combine unrelated work or reprocess the same sessions.
 
 ## Prerequisites
 
 Before you begin, you'll need:
 
-- A [Braintrust account](https://www.braintrust.dev/signup) with permission to create a project and project-level [`Read`, `Create`, and `Update` permissions](/admin/access-control#permissions-reference). Members of the **Owners** and **Engineers** [permission groups](/admin/access-control#built-in-permission-groups) have these permissions by default.
-- Access to an organization owner who can [enable Topics](/observe/topics/enable#enable-topics) if it is not already enabled for the project.
-- An [AI provider](/admin/ai-providers) with access to `gpt-6-sol`, configured under **<Icon icon="settings-2" /> Settings** > [**<Icon icon="sparkle" /> AI providers**](https://www.braintrust.dev/app/~/configuration/org/secrets).
-- At least one supported coding agent installed on macOS or Linux: Claude Code, Codex, OpenCode, or Pi.
+- **A [Braintrust account](https://www.braintrust.dev/signup)** with access to your team's organization.
+- **An organization owner** who can [enable Topics](/docs/observe/topics/enable#enable-topics) if needed.
+- **An OpenAI [AI provider](/docs/admin/ai-providers)** configured with access to `gpt-6.1-sol`.
+- **A coding agent**: [Claude Code](/docs/integrations/developer-tools/claude-code), [Codex](/docs/integrations/developer-tools/codex), [OpenCode](/docs/integrations/developer-tools/opencode), [Pi](/docs/integrations/developer-tools/pi), [Antigravity](/docs/integrations/developer-tools/antigravity), or [Grok](/docs/integrations/developer-tools/grok).
+- **Data plane v2.13.0 or later**, if you self-host Braintrust.
 
 ## 1. Create a project for your traces
 
-One person should create a dedicated Braintrust project for your team's coding-agent sessions. This project will contain the traces, Topics facet values, Loop automation, and patterns you create in this cookbook.
+First, create a dedicated project for your coding-agent traces.
 
-1. Go to your [organization overview](https://www.braintrust.dev/app/~).
-2. Open the project dropdown and click **+ Create project**.
-3. Enter `coding-agent-insights` as the project name.
-4. Optionally add a description, then click **Create**.
+1. In Braintrust, open the project dropdown and click <Icon icon="plus" /> **Create project**. Creating a project requires organization-level [`Create` permission](/docs/admin/access-control/manage-permissions#set-organization-permissions).
+2. Enter a name for your project, such as `coding-agent-insights`. This cookbook uses that name in its examples, so if you choose a different one, use it wherever `coding-agent-insights` appears.
+3. Optionally add a description, then click **Create**.
+4. Make sure every teammate whose sessions you want to collect has [`Read` permission on the project](/docs/admin/access-control#object-permissions) to view it and [`Update` permission on its logs](/docs/admin/access-control#what-update-covers) to send traces.
 
-You should now see `coding-agent-insights` in the project dropdown. If the project already exists, use it instead of creating another one. Before continuing, make sure every teammate whose sessions you want to collect can access the project.
+## 2. Protect sensitive data (optional)
 
-## 2. Configure your coding agents
+<PrivatePreview feature="Ingestion redaction" verb="is" />
 
-Everyone whose sessions should appear in `coding-agent-insights`, including you, must complete this step on each computer where they use a supported coding agent.
+Coding-agent traces can contain source code, file paths, prompts, command output, and any credentials that appear during a session. [Ingestion redaction](/docs/admin/data-management/protect-sensitive-data#redact-during-ingestion) detects sensitive text, such as names, email addresses, and credentials, and replaces it before Braintrust stores your traces. Detection is model-based and can miss sensitive values.
+
+Ingestion redaction applies only to traces that arrive after you enable it, so enable it on your project before teammates start sending traces. For instructions, see [Enable redaction](/docs/admin/data-management/protect-sensitive-data#enable-redaction).
+
+<Tip>
+To remove values before they're sent to Braintrust, add a span plugin when [configuring your coding agents](#3-configure-your-coding-agents) in the next step.
+</Tip>
+
+## 3. Configure your coding agents
+
+Next, configure your coding agents to send traces to the project. You and your teammates must complete this setup on each computer where you use a coding agent.
 
 <Steps>
 
-<Step title="Install bt">
+<Step title="Install or update bt">
 
-[Install the `bt` CLI](/reference/cli/quickstart):
+If you already have `bt` installed, [update to the latest version](/docs/reference/cli/migrate#update-bt). Otherwise, install it:
 
 ```bash
 curl -fsSL https://bt.dev/cli/install.sh | bash
 ```
 
-After installing, run `bt --version`. You should see `bt 0.19.3` or later.
+After installing, open a new terminal so that `bt` is on your `PATH`. Then run `bt --version`. You should see `bt` v0.19.3 or later.
 
 </Step>
 
 <Step title="Authenticate with Braintrust">
 
-Run `bt status --all` to check your saved logins. If you already have a valid OAuth profile that can access the organization and project where you'll save traces, continue to the next step below. Otherwise, sign in:
+If `bt` is already signed in with OAuth and can access `coding-agent-insights`, skip this step. Otherwise, run the following command and complete the browser flow:
 
 ```bash
 bt login --oauth
 ```
 
-Complete the browser flow. The CLI creates or updates an OAuth profile so the tracing plugins can authenticate without putting an API key in your shell history.
+`bt` saves an OAuth profile that the tracing integrations use to authenticate.
 
-<Accordion title="Authenticate with a self-hosted deployment">
+<Note>
+Each teammate should sign in with their own Braintrust login. The [Coding Agent Insights dashboard](/docs/observe/dashboards/coding-agent-insights) attributes each session to the Braintrust user whose credentials sent it. If teammates share one API key, the dashboard can't tell their sessions apart.
+</Note>
 
-Self-hosted deployments can use different URLs for authentication and trace storage. Ask your Braintrust administrator which authentication URLs to use:
+<Accordion title="Self-hosted deployments">
 
-- **OAuth API URL:** `bt` uses this URL to start and refresh OAuth. The default is `https://api.braintrust.dev`.
-- **Braintrust app URL:** `bt` uses this URL to find the organizations you can access and their data-plane URLs. The default is `https://www.braintrust.dev`.
-
-If your deployment uses the defaults, use `bt login --oauth` above. Otherwise, pass the custom URLs when signing in. Omit either flag if that URL uses the default:
+If your deployment uses custom authentication URLs, sign in using this command:
 
 ```bash
 bt login --oauth \
@@ -76,27 +91,33 @@ bt login --oauth \
   --app-url "<YOUR_APP_URL>"
 ```
 
-`bt` saves these authentication URLs in your OAuth profile. When sending traces, `bt` automatically resolves the selected organization's data-plane API URL. You do not need to keep `BRAINTRUST_API_URL` set in each coding-agent shell for this lookup to work. Set it only if you need to [override the tracing endpoint](/reference/cli/trace).
+- `--api-url` specifies the API URL for OAuth authentication, which defaults to `https://api.braintrust.dev`.
+- `--app-url` specifies the Braintrust app URL used to find your organizations and their data planes, which defaults to `https://www.braintrust.dev`.
 
-Later commands include `--prefer-profile` to prevent an ambient `BRAINTRUST_API_KEY` from taking precedence over the profile.
+Omit either flag if your deployment uses its default URL. `bt` saves these settings and automatically resolves where to send traces for the selected organization.
 
 </Accordion>
 
 </Step>
 
-<Step title="Configure your coding agents">
+<Step title="Enable tracing for each agent">
 
-Run the commands for the coding agents you use on this computer:
+Run the commands for the coding agents you use on this computer. Each command enables tracing for one agent and sends its sessions to `coding-agent-insights`.
+
+If you have several saved profiles, `bt` uses the one that can access the organization you pass with `--org`, and asks you to choose if more than one can.
+
+<Tip>
+To remove sensitive values on each computer before `bt` sends them, write a [span plugin](/docs/reference/cli/trace#transform-spans-with-javascript) and add `--plugin <PATH>` to the command shown below. Span plugins require `bt` v0.21.0 or later.
+</Tip>
 
 <Tabs>
 
 <Tab title="Claude Code">
 
 ```bash
-bt trace setup claude \
-  --org "<YOUR_ORG>" \
-  --project coding-agent-insights \
-  --prefer-profile
+bt trace enable claude \
+  --org "<YOUR_ORG_NAME>" \
+  --project coding-agent-insights
 ```
 
 After setup:
@@ -104,17 +125,16 @@ After setup:
 - Restart Claude Code to load the tracing configuration.
 - Run `bt trace doctor claude`.
 - Confirm that `Enabled` is `true`, `Auth` is `ready`, and the displayed organization and destination project are correct.
-- If the organization or project is incorrect, rerun `bt trace setup claude` with the correct `--org` and `--project` values.
+- If the organization or project is incorrect, rerun `bt trace enable claude` with the correct `--org` and `--project` values.
 
 </Tab>
 
 <Tab title="Codex">
 
 ```bash
-bt trace setup codex \
-  --org "<YOUR_ORG>" \
-  --project coding-agent-insights \
-  --prefer-profile
+bt trace enable codex \
+  --org "<YOUR_ORG_NAME>" \
+  --project coding-agent-insights
 ```
 
 After setup:
@@ -122,17 +142,16 @@ After setup:
 - Restart Codex and trust the Braintrust hooks when prompted. If the prompt does not appear, run `/hooks` and review the new hooks.
 - Run `bt trace doctor codex`.
 - Confirm that `Enabled` is `true`, `Auth` is `ready`, and the displayed organization and destination project are correct.
-- If the organization or project is incorrect, rerun `bt trace setup codex` with the correct `--org` and `--project` values.
+- If the organization or project is incorrect, rerun `bt trace enable codex` with the correct `--org` and `--project` values.
 
 </Tab>
 
 <Tab title="OpenCode">
 
 ```bash
-bt trace setup opencode \
-  --org "<YOUR_ORG>" \
-  --project coding-agent-insights \
-  --prefer-profile
+bt trace enable opencode \
+  --org "<YOUR_ORG_NAME>" \
+  --project coding-agent-insights
 ```
 
 After setup:
@@ -140,17 +159,16 @@ After setup:
 - Restart OpenCode to load the tracing configuration.
 - Run `bt trace doctor opencode`.
 - Confirm that `Enabled` is `true`, `Auth` is `ready`, and the displayed organization and destination project are correct.
-- If the organization or project is incorrect, rerun `bt trace setup opencode` with the correct `--org` and `--project` values.
+- If the organization or project is incorrect, rerun `bt trace enable opencode` with the correct `--org` and `--project` values.
 
 </Tab>
 
 <Tab title="Pi">
 
 ```bash
-bt trace setup pi \
-  --org "<YOUR_ORG>" \
-  --project coding-agent-insights \
-  --prefer-profile
+bt trace enable pi \
+  --org "<YOUR_ORG_NAME>" \
+  --project coding-agent-insights
 ```
 
 After setup:
@@ -158,7 +176,43 @@ After setup:
 - Restart Pi to load the tracing configuration.
 - Run `bt trace doctor pi`.
 - Confirm that `Enabled` is `true`, `Auth` is `ready`, and the displayed organization and destination project are correct.
-- If the organization or project is incorrect, rerun `bt trace setup pi` with the correct `--org` and `--project` values.
+- If the organization or project is incorrect, rerun `bt trace enable pi` with the correct `--org` and `--project` values.
+
+</Tab>
+
+<Tab title="Antigravity">
+
+Tracing covers `agy` sessions.
+
+```bash
+bt trace enable antigravity \
+  --org "<YOUR_ORG_NAME>" \
+  --project coding-agent-insights
+```
+
+After setup:
+
+- Restart Antigravity to load the tracing configuration.
+- Run `bt trace doctor antigravity`.
+- Confirm that `Enabled` is `true`, `Auth` is `ready`, and the displayed organization and destination project are correct.
+- If the organization or project is incorrect, rerun `bt trace enable antigravity` with the correct `--org` and `--project` values.
+
+</Tab>
+
+<Tab title="Grok">
+
+```bash
+bt trace enable grok \
+  --org "<YOUR_ORG_NAME>" \
+  --project coding-agent-insights
+```
+
+After setup:
+
+- Start Grok and run `/reload-plugins` before sending your first prompt. Repeat this at the start of each session, even after restarting Grok.
+- Run `bt trace doctor grok`.
+- Confirm that `Enabled` is `true`, `Auth` is `ready`, and the displayed organization and destination project are correct.
+- If the organization or project is incorrect, rerun `bt trace enable grok` with the correct `--org` and `--project` values.
 
 </Tab>
 
@@ -173,24 +227,30 @@ Confirm that each configured agent sends sessions to the shared project:
 - Start a new session in each configured coding agent and ask it to complete a small task. Ask participating teammates to do the same.
 - Go to [**<Icon icon="activity" /> Logs**](https://www.braintrust.dev/app/~/logs), select `coding-agent-insights`, and confirm that each new session appears as a root trace.
 
-If a trace does not appear, run the agent's `bt trace doctor` command and resolve any authentication or routing problems it reports. For Codex, also run `/hooks` and confirm that the Braintrust hooks are trusted. If needed, review the tracing setup for [Claude Code](/integrations/developer-tools/claude-code), [Codex](/integrations/developer-tools/codex), [OpenCode](/integrations/developer-tools/opencode), or [Pi](/integrations/developer-tools/pi).
+If a trace does not appear:
+
+- **For any agent,** run the agent's `bt trace doctor` command and resolve any authentication or routing problems it reports.
+- **For Codex,** run `/hooks` and confirm that the Braintrust hooks are trusted.
+- **For Grok,** run `/reload-plugins` before sending the test prompt.
+
+For more troubleshooting, see the guide for [Claude Code](/docs/integrations/developer-tools/claude-code), [Codex](/docs/integrations/developer-tools/codex), [OpenCode](/docs/integrations/developer-tools/opencode), [Pi](/docs/integrations/developer-tools/pi), [Antigravity](/docs/integrations/developer-tools/antigravity), or [Grok](/docs/integrations/developer-tools/grok).
 
 </Step>
 
 </Steps>
 
-## 3. Configure Topics and Loop
+## 4. Configure Topics and Loop
 
-If Topics is not already enabled, an organization owner must enable it. After that, any teammate with project-level [`Read`, `Create`, and `Update` permissions](/admin/access-control#permissions-reference) can use `bt` and the prebuilt JSON file to set up the automated analysis.
+With tracing configured, enable Topics, then use a prebuilt configuration file to add the Coding Agent Insights facets and daily Loop automation to your project.
 
 <Steps>
 
 <Step title="Enable Topics">
 
-Skip this step if Topics is already enabled for `coding-agent-insights`. Otherwise, ask an organization owner to:
+If Topics is already enabled for `coding-agent-insights`, skip this step. Otherwise, ask an organization owner to:
 
 1. In `coding-agent-insights`, go to [**<Icon icon="pentagon" /> Topics**](https://www.braintrust.dev/app/~/topics).
-2. Make sure **Task** is selected. You can leave the other built-in facets off.
+2. Under **Get started with topics**, make sure **Task** is selected. You can leave the other built-in facets off.
 3. Choose whether to **Apply to existing traces**.
 4. Click **Enable topics**.
 
@@ -204,23 +264,33 @@ curl -fsSL \
   -o /tmp/active-observability-config.json
 ```
 
-The file defines the three Topics facets and daily Loop automation that you'll add to your project in the next step.
+The configuration adds three Topics facets that classify each coding-agent session:
+
+- **Coding agent context debt:** Identifies reusable knowledge or access the agent lacked that you had to supply during the task, such as a repository convention it missed.
+- **Primary failure mode:** Labels the main problem in a session, such as an unresolved test failure, editing the wrong files, or getting stuck in repeated attempts.
+- **Skills analysis:** Labels problems caused by a skill the agent loaded, such as choosing an irrelevant skill or ignoring its instructions.
+
+It also adds **Coding Agent Improvements Discovery**, a daily Loop automation that reviews the past 30 days of traces, checks facet classifications against raw evidence, and creates or updates patterns.
 
 </Step>
 
-<Step title="Configure your project">
+<Step title="Apply the configuration file to your project">
 
-Pass the JSON file to `bt`, which can use it to configure your `coding-agent-insights` project.
+Applying the configuration file requires project-level [`Read`, `Create`, and `Update` permissions](/docs/admin/access-control#object-permissions). To add its Topics facets and Loop automation to your project, run this command:
 
 ```bash
 bt observability template push \
   /tmp/active-observability-config.json \
-  --org "<YOUR_ORG>" \
+  --org "<YOUR_ORG_NAME>" \
   --project coding-agent-insights \
   --prefer-profile
 ```
 
-At the confirmation prompt, verify the organization, project, three facets, one Loop automation, and Topics wiring. Then confirm the push. The command should report that it successfully pushed all four resources.
+<Note>
+`--prefer-profile` uses your saved login even when `BRAINTRUST_API_KEY` is set. An explicit `--profile` also takes precedence.
+</Note>
+
+At the confirmation prompt, verify the organization, project, three facets, one Loop automation, and Topics wiring. Then confirm the push. The command should report that it pushed 3 facets and 1 Loop automation.
 
 </Step>
 
@@ -232,7 +302,7 @@ At the confirmation prompt, verify the organization, project, three facets, one 
 
 Confirm that the template added the facets to the project and attached them to the Topics automation:
 
-1. In the `coding-agent-insights` project, go to [**<Icon icon="pentagon" /> Topics**](https://www.braintrust.dev/app/~/topics). Confirm that cards appear for **Coding agent context debt**, **Primary failure mode**, and **Skills analysis**.
+1. In `coding-agent-insights`, go to [**<Icon icon="pentagon" /> Topics**](https://www.braintrust.dev/app/~/topics). Confirm that cards appear for **Coding agent context debt**, **Primary failure mode**, and **Skills analysis**.
 2. Click <Icon icon="radio" /> **Automation** and select **Topics**. Expand **Active facets** and confirm that it includes the same three custom facets.
 
 </Accordion>
@@ -243,7 +313,7 @@ Confirm that the template created an active daily automation with the expected a
 
 1. Go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations). Confirm that **Coding Agent Improvements Discovery** shows **Every 24 hours** and **Active**.
 2. Click **Coding Agent Improvements Discovery** to open it. On the **Edit** tab, confirm that:
-   - **Agent configuration** shows **GPT-6 Sol** with **Extra high** reasoning effort.
+   - **Agent configuration** shows **GPT-6.1 Sol** with **Extra high** reasoning effort.
    - **Default query range** shows **Custom**, `30` days.
    - **Write tool permissions** shows **2 allowed**. Open it and confirm that `new_pattern` and `update_pattern` are selected.
 
@@ -257,85 +327,65 @@ These checks confirm that Topics will label coding-agent sessions and Loop will 
 
 </Steps>
 
-## 4. Collect coding-agent traces
+## 5. Collect coding-agent traces
 
-Accumulate traces across tasks, teammates, and coding agents. Each session gives the automation more evidence to distinguish recurring problems from one-off difficulties.
-
-You can also import useful saved sessions from earlier Codex or Claude Code work. To do this, find the session ID using the instructions for your agent, then run the import command:
-
-<Tabs>
-
-<Tab title="Claude Code">
-
-1. Use [`claude --resume`](https://code.claude.com/docs/en/sessions#resume-a-session) to reopen the session you want to import.
-2. Run `/status` and copy its session ID.
-3. Import the session:
-
-```bash
-bt trace import claude "<SESSION_ID>" \
-  --org "<YOUR_ORG>" \
-  --project coding-agent-insights \
-  --prefer-profile
-```
-
-</Tab>
-
-<Tab title="Codex">
-
-1. Use [`codex resume`](https://developers.openai.com/codex/cli/reference#codex-resume) to reopen the session you want to import.
-2. Run `/status` and copy its session ID.
-3. Import the session:
-
-```bash
-bt trace import codex "<SESSION_ID>" \
-  --org "<YOUR_ORG>" \
-  --project coding-agent-insights \
-  --prefer-profile
-```
-
-</Tab>
-
-</Tabs>
-
-<Note>
-  `bt trace import` supports saved sessions from Codex and Claude Code. It does
-  not support OpenCode or Pi, so collect those sessions through live tracing.
-</Note>
-
-Once a session appears in [**<Icon icon="activity" /> Logs**](https://www.braintrust.dev/app/~/logs), the automation can query its trace on the next scheduled or manual run. It can also use any facet values that Topics has added by then.
-
-## 5. Verify the automation
-
-After collecting some traces, run **Coding Agent Improvements Discovery** manually to confirm that it can review them:
-
-1. Go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations) and click **Coding Agent Improvements Discovery** to open it.
-2. Click **Run now**. You'll see a **Starting Loop automation...** notification, followed by a **Loop automation started** notification.
-3. In the second notification, click **Open Loop**. Alternatively, open **Past runs** and click the newest **Coding Agent Improvements Discovery** run. Either route opens the Loop thread, where you can watch the run.
-
-The automation is working if the run completes and reports which sessions it reviewed. It does not need to create or update a pattern: Loop only saves problems that it finds repeatedly.
+Now, collect traces as you and your teammates use your coding agents. Each session gives the automation more evidence to distinguish recurring problems from one-off difficulties.
 
 <Tip>
-  After you verify the automation, it continues running daily. When it finds
-  a recurring problem, it creates or updates a pattern. See
-  [Review and act on patterns](/observe/patterns/review) to inspect the
-  evidence and close the pattern after fixing the problem.
+You can also [import saved sessions](/docs/reference/cli/trace#bt-trace-import) from [Claude Code](/docs/integrations/developer-tools/claude-code#common-workflows), [Codex](/docs/integrations/developer-tools/codex#common-workflows), or [Antigravity](/docs/integrations/developer-tools/antigravity#common-workflows).
 </Tip>
 
-## 6. Customize the workflow (optional)
+## 6. Verify the automation
 
-After verifying the automation, experiment with changes in an interactive Loop thread or send its reports to Slack or a webhook.
+Once you've collected some traces, run the Loop automation manually to check that it's working:
+
+1. Go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations) and open **Coding Agent Improvements Discovery**.
+2. Click **Run now**, then **Open Loop** in the confirmation notification to view the run's thread. You can also open the latest run from the automation's **Past runs** tab.
+3. Confirm that the run completes without reported errors and describes the traces it reviewed.
+
+A successful run does not need to create a pattern. If no traces were found, check that your project contains sessions from the past 30 days. For model errors, see [Troubleshooting](#troubleshooting).
+
+The automation continues running daily, so further manual runs are optional.
+
+## 7. Review your team's usage
+
+The [Coding Agent Insights dashboard](/docs/observe/dashboards/coding-agent-insights) shows usage and cost as soon as traces arrive, without waiting for the daily automation.
+
+1. In `coding-agent-insights`, go to [**<Icon icon="chart-no-axes-column" /> Dashboards**](https://www.braintrust.dev/app/~/dashboards) and select **Coding agent insights**.
+2. Check which teammates are sending traces. With the table grouped by **Users**, the **User** column header counts members with recorded model calls matching the selected period and filters. Click the count to see who is and isn't sending traces.
+3. Use the grouping selector to break down usage and cost by user, API key, model, tool, or branch:
+
+   ![Coding Agent Insights dashboard toolbar below the Usage over time chart, with the pointer on the Users grouping selector. Next to it are the Past 7 days time range selector and an Add filter field.](./assets/coding-agent-insights-grouping-selector-2026-10-02.png)
+
+<Tip>
+To learn more, see [Coding Agent Insights dashboard](/docs/observe/dashboards/coding-agent-insights).
+</Tip>
+
+## 8. Review patterns
+
+As findings appear, review them in Patterns to decide what to change in your agents' instructions, skills, or tools.
+
+To review a pattern:
+
+1. Go to [**<Icon icon="scan-search" /> Patterns**](https://www.braintrust.dev/app/~/patterns) in `coding-agent-insights`.
+2. Select a pattern and read its summary and suggested fix, if one is provided.
+3. Open the evidence traces to check that they support the finding. Review any attached monitor charts to see how the behavior changes over time.
+4. Choose an action: click <Icon icon="blend" /> **Continue in Loop** to investigate further, create a scorer or classifier to track the behavior, or click **Copy for agent** to copy the pattern as a prompt for a coding agent to work on a fix. See [Review and act on patterns](/docs/observe/patterns/review) for instructions.
+
+If the list is empty, continue collecting sessions and check later runs.
+
+## 9. Refine the analysis and share reports (optional)
+
+Finally, you can change what the automation looks for by editing its **Instruction** prompt, and send its reports to Slack or a webhook.
 
 <AccordionGroup>
 
 <Accordion title="Experiment with changes in Loop">
 
-If you'd like to refine the facets or change what the scheduled automation analyzes, start in an interactive Loop thread. You can try different analyses against recent sessions before updating the project's facets or scheduled automation.
+To change what the automation analyzes, start in an interactive Loop thread. You can try different analyses against recent sessions before updating the automation.
 
 <Warning>
-  An interactive Loop thread uses live project data and may create or update
-  patterns while it tests an analysis. It does not change the facets or
-  scheduled automation unless you approve a proposed change or edit the
-  resource yourself.
+Loop asks before it changes anything in your project, such as the automation. While you experiment, click **Skip** on those requests and leave **Always allow** off.
 </Warning>
 
 **Ask Loop to suggest changes.** Go to [**<Icon icon="blend" /> Loop**](https://www.braintrust.dev/app/~/loop) and enter this prompt:
@@ -348,17 +398,17 @@ Identify noisy classifications, missing analysis, and recurring-analysis setting
 Propose and test improvements to both resources, then show me the changes before applying them.
 ```
 
-Continue the thread to refine and test its suggestions. Leave proposed changes unapproved while you experiment.
+Continue the thread to refine and test its suggestions.
 
 **Try your own analysis.** If you already know what you want to try, describe the revised analysis in a new Loop thread and ask Loop to run it against recent sessions. Adjust your instructions and rerun the analysis until you're satisfied with the results.
 
-**Apply a change.** When you're satisfied, either approve a change that Loop proposed or update the automation manually. To update the automation yourself, go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations) and click **Coding Agent Improvements Discovery** to open it. Make the change and click **Save**. Approving or saving a change updates the existing facet or automation.
+**Apply a change.** When you're ready to apply a change, ask Loop to make it and click **Accept**, or edit the automation yourself. To edit it, go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations), open **Coding Agent Improvements Discovery**, make the change, and click **Save**.
 
 </Accordion>
 
 <Accordion title="Send reports to Slack or a webhook">
 
-To send the result of each successful automation run to Slack or a webhook, add a destination. Go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations) and click **Coding Agent Improvements Discovery** to open it.
+To send the result of each successful automation run to Slack or a webhook, add a destination to **Coding Agent Improvements Discovery**.
 
 <Tabs>
 
@@ -368,13 +418,15 @@ To send the result of each successful automation run to Slack or a webhook, add 
 
 <Step title="Connect Slack">
 
-Go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="toy-brick" /> Integrations**](https://www.braintrust.dev/app/~/configuration/org/integrations) and connect your Slack workspace.
+Skip this step if Slack is already connected to your organization. Only members of the **Owners** [permission group](/docs/admin/access-control), or a custom permission group with the **Manage settings** organization permission, can connect Slack.
+
+Go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="toy-brick" /> Integrations**](https://www.braintrust.dev/app/~/configuration/org/integrations), click **Enable Slack**, and authorize Braintrust to access your Slack workspace. For details, see [Enable Slack integration](/docs/admin/organizations#enable-slack-integration).
 
 </Step>
 
 <Step title="Add the destination">
 
-Under **Destinations**, click **+ Destination** and select **Send to Slack**. Then choose the workspace and channel.
+Go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations) and click **Coding Agent Improvements Discovery** to open it. Under **Destinations**, click <Icon icon="plus" /> **Destination** and select **Send to Slack**. Then choose the workspace and channel.
 
 Braintrust prepopulates a suggested **Formatting prompt**. Review it and adjust it as needed for your team.
 
@@ -390,7 +442,7 @@ Braintrust prepopulates a suggested **Formatting prompt**. Review it and adjust 
 
 <Step title="Add the destination">
 
-Under **Destinations**, click **+ Destination** and select **Send to webhook**. Enter the URL of the receiving endpoint.
+Go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations) and click **Coding Agent Improvements Discovery** to open it. Under **Destinations**, click <Icon icon="plus" /> **Destination** and select **Send to webhook**. Enter the URL of the receiving endpoint.
 
 </Step>
 
@@ -432,8 +484,8 @@ If the `curl` command for downloading the configuration file returns an HTTP err
 If `bt observability template` is not recognized when you push the template:
 
 - Run `bt --version` to check the installed version.
-- Install or update to `bt` v0.19.0 or later. If the installed version already meets this requirement, reinstall it.
-- After the installation succeeds, return to **Configure your project** and run the template command shown there.
+- Install or update to `bt` v0.19.3 or later. If the installed version already meets this requirement, reinstall it.
+- After the installation succeeds, return to **Apply the configuration file to your project** and run the template command shown there.
 
 </Accordion>
 
@@ -452,7 +504,7 @@ If `bt observability template push` reports that a matching facet or Loop automa
 
 <Accordion title="Codex cannot clone the plugin marketplace">
 
-If `bt trace setup codex` reports a marketplace clone timeout:
+If `bt trace enable codex` reports a marketplace clone timeout:
 
 - Run the command again.
 - If it repeatedly reports `fatal: early EOF`, troubleshoot the network connection rather than the Braintrust project configuration.
@@ -464,19 +516,19 @@ If `bt trace setup codex` reports a marketplace clone timeout:
 If a test session does not appear in **Logs** after you configure tracing:
 
 - Restart the coding agent and run another test task.
-- For a self-hosted deployment, run `printenv BRAINTRUST_API_URL` in the shell where you start the coding agent. If it is empty or incorrect, export the API URL shown under **<Icon icon="settings-2" /> Settings** > [**<Icon icon="lock" /> Data plane**](https://www.braintrust.dev/app/~/configuration/org/api-url), restart the agent from that shell, and run another test task.
-- If the trace still does not appear, run `bt trace doctor <AGENT>`, replacing `<AGENT>` with `claude`, `codex`, `opencode`, or `pi`.
+- For a self-hosted deployment, confirm that the saved OAuth profile uses the correct authentication URLs. If `BRAINTRUST_API_URL` is set in the shell where you start the agent, check that it points to the intended data plane or unset it to let `bt` resolve the selected organization's endpoint. Restart the agent after changing its environment.
+- If the trace still does not appear, run `bt trace doctor <AGENT>`, replacing `<AGENT>` with `claude`, `codex`, `opencode`, `pi`, `antigravity`, or `grok`.
 - Confirm that `Enabled` is `true`, `Auth` is `ready`, and the displayed organization and destination project are correct.
 - If `Auth` is not `ready`, run `bt login --oauth`, then run the doctor command again.
-- If the organization or destination project is wrong, rerun `bt trace setup` for that agent with the correct `--org` and `--project` values.
+- If the organization or destination project is wrong, rerun `bt trace enable` for that agent with the correct `--org` and `--project` values.
 
 </Accordion>
 
 <Accordion title="A saved session cannot be imported">
 
-If `bt trace import` cannot find a Codex or Claude Code session:
+If `bt trace import` cannot find a Codex, Claude Code, or Antigravity session:
 
-- Confirm that the command names the agent that created the session. Use `bt trace import codex` for Codex or `bt trace import claude` for Claude Code.
+- Confirm that the command names the agent that created the session. Use `bt trace import codex` for Codex, `bt trace import claude` for Claude Code, or `bt trace import antigravity` for Antigravity.
 - Run the command from the same user account and computer where that agent saved the session.
 
 </Accordion>
@@ -485,16 +537,16 @@ If `bt trace import` cannot find a Codex or Claude Code session:
 
 If **Send to Slack** does not appear in the **Destination** menu:
 
-- [Enable the Slack integration](/admin/organizations#enable-slack-integration) for the organization.
+- [Enable the Slack integration](/docs/admin/organizations#enable-slack-integration) for the organization.
 - Return to the automation and add the destination.
 
 </Accordion>
 
 <Accordion title="The automation cannot call its model">
 
-If **Coding Agent Improvements Discovery** fails because it cannot call `gpt-6-sol`:
+If **Coding Agent Improvements Discovery** fails because it cannot call `gpt-6.1-sol`:
 
-- Configure `gpt-6-sol` under [AI providers](/admin/ai-providers), or select an available model in the automation editor.
+- Configure `gpt-6.1-sol` for the OpenAI provider under [AI providers](/docs/admin/ai-providers), or select an available model in the automation editor.
 - Run the automation again.
 
 </Accordion>
@@ -503,32 +555,55 @@ If **Coding Agent Improvements Discovery** fails because it cannot call `gpt-6-s
 
 ## Cleanup
 
-Choose what to keep or remove:
+No action is required to keep collecting traces. Choose any cleanup actions you need:
 
-- **Delete the downloaded configuration file:** After pushing the template, run `rm /tmp/active-observability-config.json`.
-- **Keep collecting traces in `coding-agent-insights`:** No action is required.
-- **Send future traces to another project:** Rerun the appropriate `bt trace setup` command for each configured coding agent with the new `--org` and `--project` values.
-- **Stop collecting coding-agent traces:** Run `bt trace disable <AGENT>` for each configured agent, replacing `<AGENT>` with `claude`, `codex`, `opencode`, or `pi`. This removes the Braintrust tracing integration and its saved configuration.
-- **Delete `coding-agent-insights`:** First stop tracing or send future traces to another project. Then follow the instructions below if you no longer need the project's data.
+<AccordionGroup>
 
-  <Warning>
-    Deleting the project permanently removes its traces, facets, automations,
-    and other project data. This action cannot be undone.
-  </Warning>
+<Accordion title="Delete the downloaded configuration file">
 
-  To delete the project:
+After pushing the template, run `rm /tmp/active-observability-config.json`.
 
-  1. Go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="wrench" /> General**](https://www.braintrust.dev/app/~/configuration/general).
-  2. Click **Delete project**.
-  3. Enter `coding-agent-insights` and click **Delete**.
+</Accordion>
+
+<Accordion title="Send future traces to another project">
+
+Rerun the appropriate `bt trace enable` command for each configured coding agent with the new `--org` and `--project` values.
+
+</Accordion>
+
+<Accordion title="Stop collecting coding-agent traces">
+
+Run `bt trace disable <AGENT>` for each configured agent, replacing `<AGENT>` with `claude`, `codex`, `opencode`, `pi`, `antigravity`, or `grok`. This removes the Braintrust tracing integration and its saved configuration.
+
+</Accordion>
+
+<Accordion title="Delete the tracing project">
+
+First stop tracing or send future traces to another project. Then follow the instructions below if you no longer need the project's data.
+
+<Warning>
+Deleting the project permanently removes its traces, facets, automations,
+and other project data. This action cannot be undone.
+</Warning>
+
+1. Go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="wrench" /> General**](https://www.braintrust.dev/app/~/configuration/general).
+2. Click **Delete project**.
+3. Enter `coding-agent-insights` and click **Delete**.
+
+</Accordion>
+
+</AccordionGroup>
 
 ## Recap
 
-Your team now has a shared view of its coding-agent work in Braintrust. Three facets classify each session for common problems, and a daily Loop automation reviews the past 30 days to identify problems that recur across sessions. When it finds enough evidence, it creates or updates a pattern that your team can investigate, address, and monitor over time. As your needs change, you can refine what the facets and automation look for and send run reports to Slack or a webhook.
+You've set up Coding Agent Insights for your team. The Coding Agent Insights dashboard shows who is sending traces and where usage and cost go. Topics classifies each session, and Loop reviews the evidence each day and creates or updates patterns automatically.
+
+Use those findings as a starting point for improving your agent instructions, skills, tools, and configuration. As your team's needs change, you can refine the analysis and share reports in Slack or through a webhook.
 
 ## Next steps
 
-- Learn how to [review and act on patterns](/observe/patterns/review).
-- [Configure Loop automations](/loop/automations) to change their schedule, permissions, and destinations.
-- [Create and test Topics facets](/observe/topics/custom-facets) for other problems your team wants to track.
-- Explore the [`bt` CLI](/reference/cli/quickstart) commands for querying and managing project data.
+- Learn what each grouping in the [Coding Agent Insights dashboard](/docs/observe/dashboards/coding-agent-insights) shows.
+- Learn how to [review and act on patterns](/docs/observe/patterns/review).
+- [Configure Loop automations](/docs/loop/automations) to change their schedule, permissions, and destinations.
+- [Create and test Topics facets](/docs/observe/topics/custom-facets) for other problems your team wants to track.
+- Explore the [`bt` CLI](/docs/reference/cli/quickstart) commands for querying and managing project data.
