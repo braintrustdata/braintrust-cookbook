@@ -7,16 +7,11 @@ import PrivatePreview from "/snippets/private-preview.mdx";
 
 Coding Agent Insights shows what your team's coding agents cost, who uses them, and where they could work more effectively. A dashboard covers usage and cost, and a daily Loop automation finds recurring problems and inefficiencies across your team's sessions. This cookbook sets up both for your team.
 
-The [Coding Agent Insights dashboard](/observe/dashboards/coding-agent-insights) shows usage by user, API key, model, tool, and branch, with cost breakdowns. It also shows which teammates are sending traces, to help you track adoption across your team.
+The [Coding Agent Insights dashboard](/docs/observe/dashboards/coding-agent-insights) shows usage by user, API key, model, tool, and branch, with cost breakdowns. It also shows which teammates are sending traces, to help you track adoption across your team.
 
-<Frame>
-  <img
-    src="/cookbook/assets/CodingAgentInsights/coding-agent-insights-dashboard-2026-10-01.png"
-    alt="Coding Agent Insights dashboard showing a Usage over time chart of cost, and a table grouped by user. The User column header reads 4 / 12 (33%), and each row lists a teammate's cost, cost change, tokens, sessions, LLM calls, and tool calls."
-  />
-</Frame>
+![Coding Agent Insights dashboard showing a Usage over time chart of cost, and a table grouped by user. The User column header reads 4 / 12 (33%), and each row lists a teammate's cost, cost change, tokens, sessions, LLM calls, and tool calls.](./assets/coding-agent-insights-dashboard-2026-10-01.png)
 
-A daily [Loop automation](/loop/automations) reviews your team's sessions and records recurring problems as [patterns](/observe/patterns) with supporting evidence. For example, the automation might find:
+A daily [Loop automation](/docs/loop/automations) reviews your team's sessions and records recurring problems as [patterns](/docs/observe/patterns) with supporting evidence. For example, the automation might find:
 
 - Agents repeatedly resending large amounts of context, increasing model usage.
 - File operations failing because of stale paths or imprecise replacement text.
@@ -28,27 +23,27 @@ A daily [Loop automation](/loop/automations) reviews your team's sessions and re
 Before you begin, you'll need:
 
 - **A [Braintrust account](https://www.braintrust.dev/signup)** with access to your team's organization.
-- **An organization owner** who can [enable Topics](/observe/topics/enable#enable-topics) if needed.
-- **An OpenAI [AI provider](/admin/ai-providers)** configured with access to `gpt-6.1-sol`.
-- **A coding agent**: [Claude Code](/integrations/developer-tools/claude-code), [Codex](/integrations/developer-tools/codex), [OpenCode](/integrations/developer-tools/opencode), [Pi](/integrations/developer-tools/pi), [Antigravity](/integrations/developer-tools/antigravity), or [Grok](/integrations/developer-tools/grok).
+- **An organization owner** who can [enable Topics](/docs/observe/topics/enable#enable-topics) if needed.
+- **An OpenAI [AI provider](/docs/admin/ai-providers)** configured with access to `gpt-6.1-sol`.
+- **A coding agent**: [Claude Code](/docs/integrations/developer-tools/claude-code), [Codex](/docs/integrations/developer-tools/codex), [OpenCode](/docs/integrations/developer-tools/opencode), [Pi](/docs/integrations/developer-tools/pi), [Antigravity](/docs/integrations/developer-tools/antigravity), or [Grok](/docs/integrations/developer-tools/grok).
 - **Data plane v2.13.0 or later**, if you self-host Braintrust.
 
 ## 1. Create a project for your traces
 
 First, create a dedicated project for your coding-agent traces.
 
-1. In Braintrust, open the project dropdown and click <Icon icon="plus" /> **Create project**. Creating a project requires organization-level [`Create` permission](/admin/access-control/manage-permissions#set-organization-permissions).
+1. In Braintrust, open the project dropdown and click <Icon icon="plus" /> **Create project**. Creating a project requires organization-level [`Create` permission](/docs/admin/access-control/manage-permissions#set-organization-permissions).
 2. Enter a name for your project, such as `coding-agent-insights`. This cookbook uses that name in its examples, so if you choose a different one, use it wherever `coding-agent-insights` appears.
 3. Optionally add a description, then click **Create**.
-4. Make sure every teammate whose sessions you want to collect has [`Read` permission on the project](/admin/access-control#object-permissions) to view it and [`Update` permission on its logs](/admin/access-control#what-update-covers) to send traces.
+4. Make sure every teammate whose sessions you want to collect has [`Read` permission on the project](/docs/admin/access-control#object-permissions) to view it and [`Update` permission on its logs](/docs/admin/access-control#what-update-covers) to send traces.
 
 ## 2. Protect sensitive data (optional)
 
 <PrivatePreview feature="Ingestion redaction" verb="is" />
 
-Coding-agent traces can contain source code, file paths, prompts, command output, and any credentials that appear during a session. [Ingestion redaction](/admin/data-management/protect-sensitive-data#redact-during-ingestion) detects sensitive text, such as names, email addresses, and credentials, and replaces it before Braintrust stores your traces. Detection is model-based and can miss sensitive values.
+Coding-agent traces can contain source code, file paths, prompts, command output, and any credentials that appear during a session. [Ingestion redaction](/docs/admin/data-management/protect-sensitive-data#redact-during-ingestion) detects sensitive text, such as names, email addresses, and credentials, and replaces it before Braintrust stores your traces. Detection is model-based and can miss sensitive values.
 
-Ingestion redaction applies only to traces that arrive after you enable it, so enable it on your project before teammates start sending traces. For instructions, see [Enable redaction](/admin/data-management/protect-sensitive-data#enable-redaction).
+Ingestion redaction applies only to traces that arrive after you enable it, so enable it on your project before teammates start sending traces. For instructions, see [Enable redaction](/docs/admin/data-management/protect-sensitive-data#enable-redaction).
 
 <Tip>
 To remove values before they're sent to Braintrust, add a span plugin when [configuring your coding agents](#3-configure-your-coding-agents) in the next step.
@@ -62,7 +57,7 @@ Next, configure your coding agents to send traces to the project. You and your t
 
 <Step title="Install or update bt">
 
-If you already have `bt` installed, [update to the latest version](/reference/cli/migrate#update-bt). Otherwise, install it:
+If you already have `bt` installed, [update to the latest version](/docs/reference/cli/migrate#update-bt). Otherwise, install it:
 
 ```bash
 curl -fsSL https://bt.dev/cli/install.sh | bash
@@ -83,7 +78,7 @@ bt login --oauth
 `bt` saves an OAuth profile that the tracing integrations use to authenticate.
 
 <Note>
-Each teammate should sign in with their own Braintrust login. The [Coding Agent Insights dashboard](/observe/dashboards/coding-agent-insights) attributes each session to the Braintrust user whose credentials sent it. If teammates share one API key, the dashboard can't tell their sessions apart.
+Each teammate should sign in with their own Braintrust login. The [Coding Agent Insights dashboard](/docs/observe/dashboards/coding-agent-insights) attributes each session to the Braintrust user whose credentials sent it. If teammates share one API key, the dashboard can't tell their sessions apart.
 </Note>
 
 <Accordion title="Self-hosted deployments">
@@ -112,7 +107,7 @@ Run the commands for the coding agents you use on this computer. Each command en
 If you have several saved profiles, `bt` uses the one that can access the organization you pass with `--org`, and asks you to choose if more than one can.
 
 <Tip>
-To remove sensitive values on each computer before `bt` sends them, write a [span plugin](/reference/cli/trace#transform-spans-with-javascript) and add `--plugin <PATH>` to the command shown below. Span plugins require `bt` v0.21.0 or later.
+To remove sensitive values on each computer before `bt` sends them, write a [span plugin](/docs/reference/cli/trace#transform-spans-with-javascript) and add `--plugin <PATH>` to the command shown below. Span plugins require `bt` v0.21.0 or later.
 </Tip>
 
 <Tabs>
@@ -238,7 +233,7 @@ If a trace does not appear:
 - **For Codex,** run `/hooks` and confirm that the Braintrust hooks are trusted.
 - **For Grok,** run `/reload-plugins` before sending the test prompt.
 
-For more troubleshooting, see the guide for [Claude Code](/integrations/developer-tools/claude-code), [Codex](/integrations/developer-tools/codex), [OpenCode](/integrations/developer-tools/opencode), [Pi](/integrations/developer-tools/pi), [Antigravity](/integrations/developer-tools/antigravity), or [Grok](/integrations/developer-tools/grok).
+For more troubleshooting, see the guide for [Claude Code](/docs/integrations/developer-tools/claude-code), [Codex](/docs/integrations/developer-tools/codex), [OpenCode](/docs/integrations/developer-tools/opencode), [Pi](/docs/integrations/developer-tools/pi), [Antigravity](/docs/integrations/developer-tools/antigravity), or [Grok](/docs/integrations/developer-tools/grok).
 
 </Step>
 
@@ -281,7 +276,7 @@ It also adds **Coding Agent Improvements Discovery**, a daily Loop automation th
 
 <Step title="Apply the configuration file to your project">
 
-Applying the configuration file requires project-level [`Read`, `Create`, and `Update` permissions](/admin/access-control#object-permissions). To add its Topics facets and Loop automation to your project, run this command:
+Applying the configuration file requires project-level [`Read`, `Create`, and `Update` permissions](/docs/admin/access-control#object-permissions). To add its Topics facets and Loop automation to your project, run this command:
 
 ```bash
 bt observability template push \
@@ -337,7 +332,7 @@ These checks confirm that Topics will label coding-agent sessions and Loop will 
 Now, collect traces as you and your teammates use your coding agents. Each session gives the automation more evidence to distinguish recurring problems from one-off difficulties.
 
 <Tip>
-You can also [import saved sessions](/reference/cli/trace#bt-trace-import) from [Claude Code](/integrations/developer-tools/claude-code#common-workflows), [Codex](/integrations/developer-tools/codex#common-workflows), or [Antigravity](/integrations/developer-tools/antigravity#common-workflows).
+You can also [import saved sessions](/docs/reference/cli/trace#bt-trace-import) from [Claude Code](/docs/integrations/developer-tools/claude-code#common-workflows), [Codex](/docs/integrations/developer-tools/codex#common-workflows), or [Antigravity](/docs/integrations/developer-tools/antigravity#common-workflows).
 </Tip>
 
 ## 6. Verify the automation
@@ -354,21 +349,16 @@ The automation continues running daily, so further manual runs are optional.
 
 ## 7. Review your team's usage
 
-The [Coding Agent Insights dashboard](/observe/dashboards/coding-agent-insights) shows usage and cost as soon as traces arrive, without waiting for the daily automation.
+The [Coding Agent Insights dashboard](/docs/observe/dashboards/coding-agent-insights) shows usage and cost as soon as traces arrive, without waiting for the daily automation.
 
 1. In `coding-agent-insights`, go to [**<Icon icon="chart-no-axes-column" /> Dashboards**](https://www.braintrust.dev/app/~/dashboards) and select **Coding agent insights**.
 2. Check which teammates are sending traces. With the table grouped by **Users**, the **User** column header counts members with recorded model calls matching the selected period and filters. Click the count to see who is and isn't sending traces.
 3. Use the grouping selector to break down usage and cost by user, API key, model, tool, or branch:
 
-   <Frame>
-     <img
-       src="/cookbook/assets/CodingAgentInsights/coding-agent-insights-grouping-selector-2026-10-02.png"
-       alt="Coding Agent Insights dashboard toolbar below the Usage over time chart, with the pointer on the Users grouping selector. Next to it are the Past 7 days time range selector and an Add filter field."
-     />
-   </Frame>
+   ![Coding Agent Insights dashboard toolbar below the Usage over time chart, with the pointer on the Users grouping selector. Next to it are the Past 7 days time range selector and an Add filter field.](./assets/coding-agent-insights-grouping-selector-2026-10-02.png)
 
 <Tip>
-To learn more, see [Coding Agent Insights dashboard](/observe/dashboards/coding-agent-insights).
+To learn more, see [Coding Agent Insights dashboard](/docs/observe/dashboards/coding-agent-insights).
 </Tip>
 
 ## 8. Review patterns
@@ -380,7 +370,7 @@ To review a pattern:
 1. Go to [**<Icon icon="scan-search" /> Patterns**](https://www.braintrust.dev/app/~/patterns) in `coding-agent-insights`.
 2. Select a pattern and read its summary and suggested fix, if one is provided.
 3. Open the evidence traces to check that they support the finding. Review any attached monitor charts to see how the behavior changes over time.
-4. Choose an action: click <Icon icon="blend" /> **Continue in Loop** to investigate further, create a scorer or classifier to track the behavior, or click **Copy for agent** to copy the pattern as a prompt for a coding agent to work on a fix. See [Review and act on patterns](/observe/patterns/review) for instructions.
+4. Choose an action: click <Icon icon="blend" /> **Continue in Loop** to investigate further, create a scorer or classifier to track the behavior, or click **Copy for agent** to copy the pattern as a prompt for a coding agent to work on a fix. See [Review and act on patterns](/docs/observe/patterns/review) for instructions.
 
 If the list is empty, continue collecting sessions and check later runs.
 
@@ -428,9 +418,9 @@ To send the result of each successful automation run to Slack or a webhook, add 
 
 <Step title="Connect Slack">
 
-Skip this step if Slack is already connected to your organization. Only members of the **Owners** [permission group](/admin/access-control), or a custom permission group with the **Manage settings** organization permission, can connect Slack.
+Skip this step if Slack is already connected to your organization. Only members of the **Owners** [permission group](/docs/admin/access-control), or a custom permission group with the **Manage settings** organization permission, can connect Slack.
 
-Go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="toy-brick" /> Integrations**](https://www.braintrust.dev/app/~/configuration/org/integrations), click **Enable Slack**, and authorize Braintrust to access your Slack workspace. For details, see [Enable Slack integration](/admin/organizations#enable-slack-integration).
+Go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="toy-brick" /> Integrations**](https://www.braintrust.dev/app/~/configuration/org/integrations), click **Enable Slack**, and authorize Braintrust to access your Slack workspace. For details, see [Enable Slack integration](/docs/admin/organizations#enable-slack-integration).
 
 </Step>
 
@@ -547,7 +537,7 @@ If `bt trace import` cannot find a Codex, Claude Code, or Antigravity session:
 
 If **Send to Slack** does not appear in the **Destination** menu:
 
-- [Enable the Slack integration](/admin/organizations#enable-slack-integration) for the organization.
+- [Enable the Slack integration](/docs/admin/organizations#enable-slack-integration) for the organization.
 - Return to the automation and add the destination.
 
 </Accordion>
@@ -556,7 +546,7 @@ If **Send to Slack** does not appear in the **Destination** menu:
 
 If **Coding Agent Improvements Discovery** fails because it cannot call `gpt-6.1-sol`:
 
-- Configure `gpt-6.1-sol` for the OpenAI provider under [AI providers](/admin/ai-providers), or select an available model in the automation editor.
+- Configure `gpt-6.1-sol` for the OpenAI provider under [AI providers](/docs/admin/ai-providers), or select an available model in the automation editor.
 - Run the automation again.
 
 </Accordion>
@@ -612,8 +602,8 @@ Use those findings as a starting point for improving your agent instructions, sk
 
 ## Next steps
 
-- Learn what each grouping in the [Coding Agent Insights dashboard](/observe/dashboards/coding-agent-insights) shows.
-- Learn how to [review and act on patterns](/observe/patterns/review).
-- [Configure Loop automations](/loop/automations) to change their schedule, permissions, and destinations.
-- [Create and test Topics facets](/observe/topics/custom-facets) for other problems your team wants to track.
-- Explore the [`bt` CLI](/reference/cli/quickstart) commands for querying and managing project data.
+- Learn what each grouping in the [Coding Agent Insights dashboard](/docs/observe/dashboards/coding-agent-insights) shows.
+- Learn how to [review and act on patterns](/docs/observe/patterns/review).
+- [Configure Loop automations](/docs/loop/automations) to change their schedule, permissions, and destinations.
+- [Create and test Topics facets](/docs/observe/topics/custom-facets) for other problems your team wants to track.
+- Explore the [`bt` CLI](/docs/reference/cli/quickstart) commands for querying and managing project data.
