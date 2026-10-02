@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./.github/registry_schema.json
 
-- title: Active observability for coding agents
+- title: Improving coding agents with Coding Agent Insights
   path: examples/CodingAgentInsights/CodingAgentInsights.mdx
   date: 2026-08-19
   authors:
