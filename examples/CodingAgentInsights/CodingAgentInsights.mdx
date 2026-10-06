@@ -1,15 +1,15 @@
-# Improving coding agents with Coding Agent Insights
+# Improving coding agents with coding agent insights
 
 import PublicPreview from "/snippets/public-preview.mdx";
 import PrivatePreview from "/snippets/private-preview.mdx";
 
-<PublicPreview feature="Coding Agent Insights" verb="is" />
+<PublicPreview feature="Coding agent insights" verb="is" />
 
-Coding Agent Insights shows what your team's coding agents cost, who uses them, and where they could work more effectively. A dashboard covers usage and cost, and a daily Loop automation finds recurring problems and inefficiencies across your team's sessions. This cookbook sets up both for your team.
+Coding agent insights shows what your team's coding agents cost, who uses them, and where they could work more effectively. A dashboard covers usage and cost, and a daily Loop automation finds recurring problems and inefficiencies across your team's sessions. This cookbook sets up both for your team.
 
-The [Coding Agent Insights dashboard](/docs/observe/dashboards/coding-agent-insights) shows usage by user, API key, model, tool, and branch, with cost breakdowns. It also shows which teammates are sending traces, to help you track adoption across your team.
+The dashboard at **<Icon icon="chart-no-axes-column" /> Dashboards** > [**Coding agent insights**](https://www.braintrust.dev/app/~/agent-insights) shows usage by user, API key, model, tool, and branch, with cost breakdowns. It also shows which teammates are sending traces, to help you track adoption across your team.
 
-![Coding Agent Insights dashboard showing a Usage over time chart of cost, and a table grouped by user. The User column header reads 4 / 12 (33%), and each row lists a teammate's cost, cost change, tokens, sessions, LLM calls, and tool calls.](./assets/coding-agent-insights-dashboard-2026-10-01.png)
+![Coding agent insights dashboard showing a Usage over time chart of cost, and a table grouped by user. The User column header reads 4 / 12 (33%), and each row lists a teammate's cost, cost change, tokens, sessions, LLM calls, and tool calls.](./assets/coding-agent-insights-dashboard-2026-10-01.png)
 
 A daily [Loop automation](/docs/loop/automations) reviews your team's sessions and records recurring problems as [patterns](/docs/observe/patterns) with supporting evidence. For example, the automation might find:
 
@@ -78,7 +78,7 @@ bt login --oauth
 `bt` saves an OAuth profile that the tracing integrations use to authenticate.
 
 <Note>
-Each teammate should sign in with their own Braintrust login. The [Coding Agent Insights dashboard](/docs/observe/dashboards/coding-agent-insights) attributes each session to the Braintrust user whose credentials sent it. If teammates share one API key, the dashboard can't tell their sessions apart.
+Each teammate should sign in with their own Braintrust login. The dashboard at **<Icon icon="chart-no-axes-column" /> Dashboards** > [**Coding agent insights**](https://www.braintrust.dev/app/~/agent-insights) attributes each session to the Braintrust user whose credentials sent it. If teammates share one API key, the dashboard can't tell their sessions apart.
 </Note>
 
 <Accordion title="Self-hosted deployments">
@@ -241,7 +241,7 @@ For more troubleshooting, see the guide for [Claude Code](/docs/integrations/dev
 
 ## 4. Configure Topics and Loop
 
-With tracing configured, enable Topics, then use a prebuilt configuration file to add the Coding Agent Insights facets and daily Loop automation to your project.
+With tracing configured, enable Topics, then use a prebuilt configuration file to add the coding agent insights facets and daily Loop automation to your project.
 
 <Steps>
 
@@ -349,16 +349,16 @@ The automation continues running daily, so further manual runs are optional.
 
 ## 7. Review your team's usage
 
-The [Coding Agent Insights dashboard](/docs/observe/dashboards/coding-agent-insights) shows usage and cost as soon as traces arrive, without waiting for the daily automation.
+The **Coding agent insights** dashboard shows usage and cost as soon as traces arrive, without waiting for the daily automation.
 
-1. In `coding-agent-insights`, go to [**<Icon icon="chart-no-axes-column" /> Dashboards**](https://www.braintrust.dev/app/~/dashboards) and select **Coding agent insights**.
+1. In `coding-agent-insights`, go to **<Icon icon="chart-no-axes-column" /> Dashboards** > [**Coding agent insights**](https://www.braintrust.dev/app/~/agent-insights).
 2. Check which teammates are sending traces. With the table grouped by **Users**, the **User** column header counts members with recorded model calls matching the selected period and filters. Click the count to see who is and isn't sending traces.
 3. Use the grouping selector to break down usage and cost by user, API key, model, tool, or branch:
 
-   ![Coding Agent Insights dashboard toolbar below the Usage over time chart, with the pointer on the Users grouping selector. Next to it are the Past 7 days time range selector and an Add filter field.](./assets/coding-agent-insights-grouping-selector-2026-10-02.png)
+   ![Coding agent insights dashboard toolbar below the Usage over time chart, with the pointer on the Users grouping selector. Next to it are the Past 7 days time range selector and an Add filter field.](./assets/coding-agent-insights-grouping-selector-2026-10-02.png)
 
 <Tip>
-To learn more, see [Coding Agent Insights dashboard](/docs/observe/dashboards/coding-agent-insights).
+To learn more, read [Coding agent insights dashboard](/docs/observe/dashboards/coding-agent-insights).
 </Tip>
 
 ## 8. Review patterns
@@ -596,13 +596,13 @@ and other project data. This action cannot be undone.
 
 ## Recap
 
-You've set up Coding Agent Insights for your team. The Coding Agent Insights dashboard shows who is sending traces and where usage and cost go. Topics classifies each session, and Loop reviews the evidence each day and creates or updates patterns automatically.
+You've set up coding agent insights for your team. The dashboard at **<Icon icon="chart-no-axes-column" /> Dashboards** > [**Coding agent insights**](https://www.braintrust.dev/app/~/agent-insights) shows who is sending traces and where usage and cost go. Topics classifies each session, and Loop reviews the evidence each day and creates or updates patterns automatically.
 
 Use those findings as a starting point for improving your agent instructions, skills, tools, and configuration. As your team's needs change, you can refine the analysis and share reports in Slack or through a webhook.
 
 ## Next steps
 
-- Learn what each grouping in the [Coding Agent Insights dashboard](/docs/observe/dashboards/coding-agent-insights) shows.
+- To learn what each grouping shows, read [Coding agent insights dashboard](/docs/observe/dashboards/coding-agent-insights).
 - Learn how to [review and act on patterns](/docs/observe/patterns/review).
 - [Configure Loop automations](/docs/loop/automations) to change their schedule, permissions, and destinations.
 - [Create and test Topics facets](/docs/observe/topics/custom-facets) for other problems your team wants to track.

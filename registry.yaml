@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./.github/registry_schema.json
 
-- title: Improving coding agents with Coding Agent Insights
+- title: Improving coding agents with coding agent insights
   path: examples/CodingAgentInsights/CodingAgentInsights.mdx
   date: 2026-08-19
   authors:
