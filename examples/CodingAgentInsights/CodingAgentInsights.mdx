@@ -264,11 +264,14 @@ curl -fsSL \
   -o /tmp/active-observability-config.json
 ```
 
-The configuration adds three Topics facets that classify each coding-agent session:
+The configuration adds four custom facets across two Topics automations:
 
+- **Agent Task:** Summarizes the task of each completed turn. Its span-scoped automation selects task spans with `metadata.turn_span_id`.
 - **Coding agent context debt:** Identifies reusable knowledge or access the agent lacked that you had to supply during the task, such as a repository convention it missed.
 - **Primary failure mode:** Labels the main problem in a session, such as an unresolved test failure, editing the wrong files, or getting stuck in repeated attempts.
 - **Skills analysis:** Labels problems caused by a skill the agent loaded, such as choosing an irrelevant skill or ignoring its instructions.
+
+The latter three run on the trace-scoped **Topics** automation. The built-in **Task** facet stays attached to that automation.
 
 It also adds **Coding Agent Improvements Discovery**, a daily Loop automation that reviews the past 30 days of traces, checks facet classifications against raw evidence, and creates or updates patterns.
 
@@ -283,6 +286,7 @@ bt observability template push \
   /tmp/active-observability-config.json \
   --org "<YOUR_ORG_NAME>" \
   --project coding-agent-insights \
+  --force \
   --prefer-profile
 ```
 
@@ -290,7 +294,7 @@ bt observability template push \
 `--prefer-profile` uses your saved login even when `BRAINTRUST_API_KEY` is set. An explicit `--profile` also takes precedence.
 </Note>
 
-At the confirmation prompt, verify the organization, project, three facets, one Loop automation, and Topics wiring. Then confirm the push. The command should report that it pushed 3 facets and 1 Loop automation.
+The `--force` flag lets the template update the **Topics** automation you enabled above to its bundled trace settings. It preserves that automation's existing facet and topic-map bindings, including the built-in **Task** facet, but replaces its other settings. Review the target project and settings at the confirmation prompt before continuing. The command should report that it pushed 4 facets and 1 Loop automation, with the facets split between **Topics** and **Per-turn facets (span only)**.
 
 </Step>
 
@@ -300,10 +304,11 @@ At the confirmation prompt, verify the organization, project, three facets, one 
 
 <Accordion title="Review the Topics facets">
 
-Confirm that the template added the facets to the project and attached them to the Topics automation:
+Confirm that the template added the facets and attached them to the intended automations:
 
-1. In `coding-agent-insights`, go to [**<Icon icon="pentagon" /> Topics**](https://www.braintrust.dev/app/~/topics). Confirm that cards appear for **Coding agent context debt**, **Primary failure mode**, and **Skills analysis**.
-2. Click <Icon icon="radio" /> **Automation** and select **Topics**. Expand **Active facets** and confirm that it includes the same three custom facets.
+1. In `coding-agent-insights`, go to [**<Icon icon="pentagon" /> Topics**](https://www.braintrust.dev/app/~/topics).
+2. Click <Icon icon="radio" /> **Automation** and select **Topics**. Expand **Active facets** and confirm that it includes **Task**, **Coding agent context debt**, **Primary failure mode**, and **Skills analysis**.
+3. Select **Per-turn facets (span only)** and confirm that its active facet is **Agent Task** and its filter selects completed turn spans with `metadata.turn_span_id`.
 
 </Accordion>
 
@@ -321,7 +326,7 @@ Confirm that the template created an active daily automation with the expected a
 
 </AccordionGroup>
 
-These checks confirm that Topics will label coding-agent sessions and Loop will review the most recent 30 days for recurring problems.
+These checks confirm that Topics will label complete coding-agent sessions, the per-turn automation will label turns, and Loop will review the most recent 30 days for recurring problems.
 
 </Step>
 
@@ -491,13 +496,13 @@ If `bt observability template` is not recognized when you push the template:
 
 <Accordion title="A facet or automation already exists">
 
-If `bt observability template push` reports that a matching facet or Loop automation already exists, it stops before the confirmation prompt:
+If `bt observability template push` reports that a matching resource already exists, check that you used the command above with `--force` and review the destination before confirming:
 
-- If you intend to restore the template configuration, rerun the same command with `--force` and confirm the replacements.
-- A new project does not need `--force`.
+- The template intentionally updates the default **Topics** settings after you enable Topics in the UI.
+- `--force` also replaces matching custom facets, Topics automation settings, and the Loop automation if you previously installed them. Use a fresh project if you need to preserve custom settings elsewhere.
 
 <Warning>
-  Rerunning the command with `--force` resets the three facets and **Coding Agent Improvements Discovery** to the versions in the JSON file. Any edits you made to them are lost. Slack and webhook destinations already added to the automation are preserved.
+  Rerunning the command with `--force` resets the four custom facets, both Topics automations' settings, and **Coding Agent Improvements Discovery** to the versions in the JSON file. Any edits you made to them are lost. Existing Topics facet and topic-map bindings, and Slack and webhook destinations already added to the Loop automation, are preserved.
 </Warning>
 
 </Accordion>
