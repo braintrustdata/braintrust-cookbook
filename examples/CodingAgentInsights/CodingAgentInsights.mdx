@@ -7,7 +7,7 @@ import PrivatePreview from "/snippets/private-preview.mdx";
 
 Coding agent insights shows what your team's coding agents cost, who uses them, and where they could work more effectively. A dashboard covers usage and cost, and a daily Loop automation finds recurring problems and inefficiencies across your team's sessions. This cookbook sets up both for your team.
 
-The dashboard at **<Icon icon="chart-no-axes-column" /> Dashboards** > [**Coding agent insights**](https://www.braintrust.dev/app/~/agent-insights) shows usage by user, API key, model, tool, and branch, with cost breakdowns. It also shows which teammates are sending traces, to help you track adoption across your team.
+The dashboard at **<Icon icon="chart-no-axes-column" /> Dashboards** > [**Coding agent insights**](https://www.braintrust.dev/app/~/agent-insights) shows usage by user, permission group, API key, model, tool, and branch, with cost breakdowns. It also shows which teammates are sending traces, to help you track adoption across your team.
 
 ![Coding agent insights dashboard showing a Usage over time chart of cost, and a table grouped by user. The User column header reads 4 / 12 (33%), and each row lists a teammate's cost, cost change, tokens, sessions, LLM calls, and tool calls.](./assets/coding-agent-insights-dashboard-2026-10-01.png)
 
@@ -25,7 +25,7 @@ Before you begin, you'll need:
 - **A [Braintrust account](https://www.braintrust.dev/signup)** with access to your team's organization.
 - **An organization owner** who can [enable Topics](/docs/observe/topics/enable#enable-topics) if needed.
 - **An OpenAI [AI provider](/docs/admin/ai-providers)** configured with access to `gpt-6.1-sol`.
-- **A coding agent**: [Claude Code](/docs/integrations/developer-tools/claude-code), [Codex](/docs/integrations/developer-tools/codex), [OpenCode](/docs/integrations/developer-tools/opencode), [Pi](/docs/integrations/developer-tools/pi), [Antigravity](/docs/integrations/developer-tools/antigravity), or [Grok](/docs/integrations/developer-tools/grok).
+- **A coding agent**: [Claude Code](/docs/integrations/developer-tools/claude-code), [Codex](/docs/integrations/developer-tools/codex), [Cursor](/docs/integrations/developer-tools/cursor), [OpenCode](/docs/integrations/developer-tools/opencode), [Pi](/docs/integrations/developer-tools/pi), [Antigravity](/docs/integrations/developer-tools/antigravity), or [Grok](/docs/integrations/developer-tools/grok).
 - **Data plane v2.13.0 or later**, if you self-host Braintrust.
 
 ## 1. Create a project for your traces
@@ -146,6 +146,25 @@ After setup:
 
 </Tab>
 
+<Tab title="Cursor">
+
+Cursor tracing requires `bt` v0.26.0 or later.
+
+```bash
+bt trace enable cursor \
+  --org "<YOUR_ORG_NAME>" \
+  --project coding-agent-insights
+```
+
+After setup:
+
+- Reload the Cursor window, or restart the Cursor CLI, to load the tracing hooks.
+- Run `bt trace doctor cursor`.
+- Confirm that `Enabled` is `true`, `Auth` is `ready`, and the displayed organization and destination project are correct.
+- If the organization or project is incorrect, rerun `bt trace enable cursor` with the correct `--org` and `--project` values.
+
+</Tab>
+
 <Tab title="OpenCode">
 
 ```bash
@@ -233,7 +252,7 @@ If a trace does not appear:
 - **For Codex,** run `/hooks` and confirm that the Braintrust hooks are trusted.
 - **For Grok,** run `/reload-plugins` before sending the test prompt.
 
-For more troubleshooting, see the guide for [Claude Code](/docs/integrations/developer-tools/claude-code), [Codex](/docs/integrations/developer-tools/codex), [OpenCode](/docs/integrations/developer-tools/opencode), [Pi](/docs/integrations/developer-tools/pi), [Antigravity](/docs/integrations/developer-tools/antigravity), or [Grok](/docs/integrations/developer-tools/grok).
+For more troubleshooting, see the guide for [Claude Code](/docs/integrations/developer-tools/claude-code), [Codex](/docs/integrations/developer-tools/codex), [Cursor](/docs/integrations/developer-tools/cursor), [OpenCode](/docs/integrations/developer-tools/opencode), [Pi](/docs/integrations/developer-tools/pi), [Antigravity](/docs/integrations/developer-tools/antigravity), or [Grok](/docs/integrations/developer-tools/grok).
 
 </Step>
 
@@ -332,7 +351,7 @@ These checks confirm that Topics will label coding-agent sessions and Loop will 
 Now, collect traces as you and your teammates use your coding agents. Each session gives the automation more evidence to distinguish recurring problems from one-off difficulties.
 
 <Tip>
-You can also [import saved sessions](/docs/reference/cli/trace#bt-trace-import) from [Claude Code](/docs/integrations/developer-tools/claude-code#common-workflows), [Codex](/docs/integrations/developer-tools/codex#common-workflows), or [Antigravity](/docs/integrations/developer-tools/antigravity#common-workflows).
+You can also [import saved sessions](/docs/reference/cli/trace#bt-trace-import) from [Claude Code](/docs/integrations/developer-tools/claude-code#common-workflows), [Codex](/docs/integrations/developer-tools/codex#common-workflows), [Cursor](/docs/integrations/developer-tools/cursor#common-workflows), or [Antigravity](/docs/integrations/developer-tools/antigravity#common-workflows).
 </Tip>
 
 ## 6. Verify the automation
@@ -353,9 +372,11 @@ The **Coding agent insights** dashboard shows usage and cost as soon as traces a
 
 1. In `coding-agent-insights`, go to **<Icon icon="chart-no-axes-column" /> Dashboards** > [**Coding agent insights**](https://www.braintrust.dev/app/~/agent-insights).
 2. Check which teammates are sending traces. With the table grouped by **Users**, the **User** column header counts members with recorded model calls matching the selected period and filters. Click the count to see who is and isn't sending traces.
-3. Use the grouping selector to break down usage and cost by user, API key, model, tool, or branch:
+3. Use the grouping selector to break down usage and cost by user, permission group, API key, model, tool, or branch:
 
    ![Coding agent insights dashboard toolbar below the Usage over time chart, with the pointer on the Users grouping selector. Next to it are the Past 7 days time range selector and an Add filter field.](./assets/coding-agent-insights-grouping-selector-2026-10-02.png)
+
+   Select **Groups** to compare permission groups, including nested groups. A member or service account that belongs to more than one group counts toward each one, while **No permission group** collects identities that do not belong to a group.
 
 <Tip>
 To learn more, read [Coding agent insights dashboard](/docs/observe/dashboards/coding-agent-insights).
@@ -517,7 +538,7 @@ If a test session does not appear in **Logs** after you configure tracing:
 
 - Restart the coding agent and run another test task.
 - For a self-hosted deployment, confirm that the saved OAuth profile uses the correct authentication URLs. If `BRAINTRUST_API_URL` is set in the shell where you start the agent, check that it points to the intended data plane or unset it to let `bt` resolve the selected organization's endpoint. Restart the agent after changing its environment.
-- If the trace still does not appear, run `bt trace doctor <AGENT>`, replacing `<AGENT>` with `claude`, `codex`, `opencode`, `pi`, `antigravity`, or `grok`.
+- If the trace still does not appear, run `bt trace doctor <AGENT>`, replacing `<AGENT>` with `claude`, `codex`, `cursor`, `opencode`, `pi`, `antigravity`, or `grok`.
 - Confirm that `Enabled` is `true`, `Auth` is `ready`, and the displayed organization and destination project are correct.
 - If `Auth` is not `ready`, run `bt login --oauth`, then run the doctor command again.
 - If the organization or destination project is wrong, rerun `bt trace enable` for that agent with the correct `--org` and `--project` values.
@@ -526,9 +547,9 @@ If a test session does not appear in **Logs** after you configure tracing:
 
 <Accordion title="A saved session cannot be imported">
 
-If `bt trace import` cannot find a Codex, Claude Code, or Antigravity session:
+If `bt trace import` cannot find a Codex, Claude Code, Cursor, or Antigravity session:
 
-- Confirm that the command names the agent that created the session. Use `bt trace import codex` for Codex, `bt trace import claude` for Claude Code, or `bt trace import antigravity` for Antigravity.
+- Confirm that the command names the agent that created the session. Use `bt trace import codex` for Codex, `bt trace import claude` for Claude Code, `bt trace import cursor` for Cursor, or `bt trace import antigravity` for Antigravity.
 - Run the command from the same user account and computer where that agent saved the session.
 
 </Accordion>
@@ -573,7 +594,7 @@ Rerun the appropriate `bt trace enable` command for each configured coding agent
 
 <Accordion title="Stop collecting coding-agent traces">
 
-Run `bt trace disable <AGENT>` for each configured agent, replacing `<AGENT>` with `claude`, `codex`, `opencode`, `pi`, `antigravity`, or `grok`. This removes the Braintrust tracing integration and its saved configuration.
+Run `bt trace disable <AGENT>` for each configured agent, replacing `<AGENT>` with `claude`, `codex`, `cursor`, `opencode`, `pi`, `antigravity`, or `grok`. This removes the Braintrust tracing integration and its saved configuration.
 
 </Accordion>
 
