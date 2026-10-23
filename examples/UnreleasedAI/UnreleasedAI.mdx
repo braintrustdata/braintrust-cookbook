@@ -35,7 +35,7 @@ With Braintrust, you can test your code with multiple providers, and evaluate th
 
 ### Setting up the project
 
-Let’s dig into the sample project and walk through the workflow. Before we start, make sure you have a Braintrust account and [API key](https://www.braintrust.dev/app/settings?subroute=api-keys). You’ll also need to configure the individual API keys for each provider you want to test in your Braintrust [settings](https://www.braintrust.dev/app/~/configuration/org/secrets). You can start with just one, like [OpenAI](https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key), and add more later on. After you complete this initial setup, you’ll be able to access the world's leading AI models in a unified way, through a single API.
+Let’s dig into the sample project and walk through the workflow. Before we start, make sure you have a Braintrust account and [API key](https://www.braintrust.dev/app/~/configuration/api-keys). You’ll also need to configure the individual API keys for each provider you want to test in your Braintrust [settings](https://www.braintrust.dev/app/~/configuration/models/organization). You can start with just one, like [OpenAI](https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key), and add more later on. After you complete this initial setup, you’ll be able to access the world's leading AI models in a unified way, through a single API.
 
 1. Clone the [Unreleased AI](https://github.com/braintrustdata/unreleased-ai/tree/main) repo onto your machine. Create a `.env.local` file in the root directory. Add your Braintrust API key (`BRAINTRUST_API_KEY=...`). Now you can use your Braintrust API key to access all of the models from the providers you configured in your settings.
 2. Run `pnpm install` to install the necessary dependencies and setup the project in Braintrust.
@@ -49,7 +49,7 @@ Navigate to Braintrust in your browser, and select the project named **Unrelease
 
 ![Prompt](assets/prompt.png)
 
-A [prompt](/docs/evaluate/write-prompts) is the set of instructions sent to the model, which can be user input or variables set within your code. For example:
+A [prompt](/docs/evaluate/prompts) is the set of instructions sent to the model, which can be user input or variables set within your code. For example:
 
 - `url`: the URL of the public GitHub repository provided by the user
 - `since`: the date of the last release of this repository, fetched by the GitHub API in [app/generate/route.ts](https://github.com/braintrustdata/unreleased-ai/blob/b611052e8a4705a098cbccbb71cdaa6cc18f2d35/app/generate/route.ts#L59)
@@ -61,7 +61,7 @@ Creating effective prompts can be challenging. In Braintrust, you can edit your 
 >
 > `{{commits}}`
 
-Save the prompt, and it will be automatically updated in your your app – try it out! If you’re curious, you can also change the model here. The ability to iterate on and test your prompt is great, but writing a prompt in Braintrust is more powerful than that. Every prompt you create in Braintrust is also an AI function that you can invoke inside of your application.
+Save the prompt, and it will be automatically updated in your app – try it out! If you’re curious, you can also change the model here. The ability to iterate on and test your prompt is great, but writing a prompt in Braintrust is more powerful than that. Every prompt you create in Braintrust is also an AI function that you can invoke inside of your application.
 
 ### Running a prompt as a function
 
@@ -166,6 +166,6 @@ Based on these insights, you can make informed decisions on how to improve your 
 
 As you build more complex AI products, you’ll want to customize Braintrust even more for your use case. You might consider:
 
-- [Writing more specific evals](/docs/evaluate/run-evaluations) or learning about [different scoring functions](/docs/evaluate/run-evaluations#scorers)
+- [Writing more specific evals](/docs/evaluate/run-evaluations) or learning about [different scoring functions](/docs/evaluate/write-scorers#scorers)
 - Walking through other examples of best practices for building high-quality AI products in the [Braintrust cookbook](/docs/cookbook)
-- Changing how you [log data](/docs/observe/view-logs), including [incorporating user feedback](/docs/observe/view-logs#user-feedback)
+- Changing how you [log data](/docs/observe/view-logs), including [incorporating user feedback](/docs/instrument/user-feedback)

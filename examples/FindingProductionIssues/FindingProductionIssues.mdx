@@ -2,7 +2,7 @@
 
 Your existing evals tell you how well your AI performs on things you already know to test for, but what about the patterns and failure modes that you're not aware of yet?
 
-In this cookbook, we'll build a customer support chatbot that generates hundreds of conversation logs between human and AI, and use [Topics](/docs/observe/topics/index) to surface patterns in the system that we wouldn't have caught with traditional evaluations. 
+In this cookbook, we'll build a customer support chatbot that generates hundreds of conversation logs between human and AI, and use [Topics](/docs/observe/topics/index) to surface patterns in the system that we wouldn't have caught with traditional evaluations.
 
 By the end, you'll learn how to:
 
@@ -210,8 +210,8 @@ We cleaned the dataset to contain just the customer messages and the turn count 
 
 The eval script runs each customer complaint through the chatbot with real Supabase tools, then scores the response with three LLM-based scorers. The eval scorers are custom functions we wrote to measure specific dimensions:
 
-- **Helpfulness** checks whether the agent addressed the customer's concern and provided clear next steps. 
-- **Resolution** checks whether the agent actually took action (processed a refund, initiated a return, or provided tracking) rather than just acknowledging the problem without doing anything. 
+- **Helpfulness** checks whether the agent addressed the customer's concern and provided clear next steps.
+- **Resolution** checks whether the agent actually took action (processed a refund, initiated a return, or provided tracking) rather than just acknowledging the problem without doing anything.
 - **Empathy** checks whether the agent's tone was professional and acknowledged the customer's frustration.
 
 ```python
@@ -297,4 +297,4 @@ This is the core loop that Topics enables:
 
 - Add [custom facets](/docs/observe/topics/custom-facets) to classify dimensions specific to your domain (for example, "Resolution Gap," which checks whether the bot sounded helpful but failed to actually resolve the issue)
 - Set up [online scoring](/docs/evaluate/score-online) to get real-time quality signals alongside Topics classifications
-- Explore the [Braintrust SDK](/docs/reference/sdks/python/latest) to programmatically query Topics data and build automated alerting
+- Explore the [Braintrust SDK](/docs/sdks/python/versions/latest) to programmatically query Topics data and build automated alerting

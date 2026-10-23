@@ -35,7 +35,7 @@ Next, create a `.env` file with your Braintrust API key:
 BRAINTRUST_API_KEY=<your-api-key>
 ```
 
-Finally, configure your OpenAI API key as a provider credential in your account's [AI providers](https://www.braintrust.dev/app/~/configuration/org/secrets) settings.
+Finally, configure your OpenAI API key as a provider credential in your account's [AI providers](https://www.braintrust.dev/app/~/configuration/models/organization) settings.
 
 ## Creating an OCR tool
 
@@ -92,7 +92,7 @@ braintrust push ocr.py --requirements requirements.txt
 
 ### Try out the tool
 
-To try out the tool, visit the **toolOCR** project in Braintrust, and navigate **Tools**. Here, you can test different images and see what kinds of outputs you're getting from the tool.
+To try out the tool, go to [**<Icon icon="bolt" /> Tools**](https://www.braintrust.dev/app/~/tools) in the **toolOCR** project. Here, you can test different images and see what kinds of outputs you're getting from the tool.
 
 ![Try gif](assets/try-tool.gif)
 
@@ -153,12 +153,12 @@ Hit the copy icon to duplicate your prompt and start tweaking. You can also twea
 
 Once you're satisfied with the prompt, hit **Update** to save the changes. Each time you save the prompt, you
 create a new version. To learn more about how to use a prompt in your code, check out the
-[prompts guide](/docs/evaluate/write-prompts#using-prompts-in-your-code).
+[prompts guide](/docs/evaluate/prompts/use-in-code).
 
 ## Next steps
 
 Now that you've written tool and prompt Python functions in Braintrust, you can:
 
-- [Deploy the prompt in your app](/docs/evaluate/write-prompts#using-prompts-in-your-code)
+- [Deploy the prompt in your app](/docs/evaluate/prompts/use-in-code)
 - [Conduct more detailed evaluations](/docs/evaluate/run-evaluations)
 - Learn about [logging LLM calls](/docs/observe/view-logs) to create a data flywheel

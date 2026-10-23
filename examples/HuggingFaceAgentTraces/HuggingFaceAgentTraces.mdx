@@ -1,6 +1,6 @@
 # Analyzing agent traces from Hugging Face
 
-In this cookbook, you'll take 1,781 real agent-eval traces published on Hugging Face (the [Exgentic `agent-llm-traces`](https://huggingface.co/datasets/Exgentic/agent-llm-traces) dataset), import them into Braintrust, score them with an LLM judge, and use [Topics](/docs/observe/topics/index) and SQL to find the patterns. This cookbook covers setting up a pipeline, but you can read our deeper analysis of those traces [in our blog post](https://www.braintrust.dev/blog/hf-agent-traces).
+In this cookbook, you'll take 1,781 real agent-eval traces published on Hugging Face (the [Exgentic `agent-llm-traces`](https://huggingface.co/datasets/Exgentic/agent-llm-traces) dataset), import them into Braintrust, score them with an LLM judge, and use [Topics](/docs/observe/topics/index) and SQL to find the patterns. This cookbook covers setting up a pipeline, but you can read our deeper analysis of those traces [in our eval study](https://www.braintrust.dev/evals/hf-agent-traces).
 
 By the end, you'll learn how to:
 
@@ -137,7 +137,7 @@ def judge(benchmark_desc, rubric, task, conversation, model="gpt-4.1"):
     return r.json()["choices"][0]["message"]["content"]
 ```
 
-Use a stricter rubric per benchmark. For example, in SWE-bench the judge can see the diff and test output, so it verifies directly.  For the conversational suites it sees the tool calls and the agent's confirmation. To avoid self-grading, judge a model's runs with a different judge model than the one under test. In our run, for example, we graded every model with GPT-4.1, except GPT-4.1's own runs, which we graded with GPT-4o instead.
+Use a stricter rubric per benchmark. For example, in SWE-bench the judge can see the diff and test output, so it verifies directly. For the conversational suites it sees the tool calls and the agent's confirmation. To avoid self-grading, judge a model's runs with a different judge model than the one under test. In our run, for example, we graded every model with GPT-4.1, except GPT-4.1's own runs, which we graded with GPT-4o instead.
 
 Because the root span IDs are deterministic, you don't patch the existing spans. Instead you write the verdict back the same way you imported. Join the judge's output onto the source rows as a new column, point `SCORE_COLS` at it, and re-run the importer. The matching IDs upsert the score onto the spans that are already there.
 
@@ -207,7 +207,7 @@ A natural next move is to take one failure cluster from Topics, build a focused 
 
 You've imported real agent traces, scored them, clustered their failures, and sliced success by configuration. From here you can:
 
-- Read the full [analysis of this dataset](https://www.braintrust.dev/blog/hf-agent-traces) for what the numbers actually showed.
+- Read the full [analysis of this dataset](https://www.braintrust.dev/evals/hf-agent-traces) for what the numbers actually showed.
 - Point `import_logs.py` at your own trace dataset by editing the `EDIT ME` block.
 - Run [experiments](/docs/evaluate/run-evaluations) against the configurations your analysis flagged.
 - Explore [Topics](/docs/observe/topics/index) further to surface patterns your evals don't yet test for.

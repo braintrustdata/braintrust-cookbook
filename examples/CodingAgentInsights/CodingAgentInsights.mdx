@@ -43,7 +43,7 @@ First, create a dedicated project for your coding-agent traces.
 
 Coding-agent traces can contain source code, file paths, prompts, command output, and any credentials that appear during a session. [Ingestion redaction](/docs/admin/data-management/protect-sensitive-data#redact-during-ingestion) detects sensitive text, such as names, email addresses, and credentials, and replaces it before Braintrust stores your traces. Detection is model-based and can miss sensitive values.
 
-Ingestion redaction applies only to traces that arrive after you enable it, so enable it on your project before teammates start sending traces. For instructions, see [Enable redaction](/docs/admin/data-management/protect-sensitive-data#enable-redaction).
+Ingestion redaction applies only to traces that arrive after you create a protected field, so create one for your project before teammates start sending traces. For instructions, see [Create a protected field](/docs/admin/data-management/protect-sensitive-data#create-a-protected-field).
 
 <Tip>
 To remove values before they're sent to Braintrust, add a span plugin when [configuring your coding agents](#3-configure-your-coding-agents) in the next step.
@@ -330,7 +330,7 @@ Confirm that the template added the facets to the project and attached them to t
 
 Confirm that the template created an active daily automation with the expected analysis window and pattern permissions:
 
-1. Go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations). Confirm that **Coding Agent Improvements Discovery** shows **Every 24 hours** and **Active**.
+1. Go to **<Icon icon="settings" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations). Confirm that **Coding Agent Improvements Discovery** shows **Every 24 hours** and **Active**.
 2. Click **Coding Agent Improvements Discovery** to open it. On the **Edit** tab, confirm that:
    - **Agent configuration** shows **GPT-6.1 Sol** with **Extra high** reasoning effort.
    - **Default query range** shows **Custom**, `30` days.
@@ -358,7 +358,7 @@ You can also [import saved sessions](/docs/reference/cli/trace#bt-trace-import) 
 
 Once you've collected some traces, run the Loop automation manually to check that it's working:
 
-1. Go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations) and open **Coding Agent Improvements Discovery**.
+1. Go to **<Icon icon="settings" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations) and open **Coding Agent Improvements Discovery**.
 2. Click **Run now**, then **Open Loop** in the confirmation notification to view the run's thread. You can also open the latest run from the automation's **Past runs** tab.
 3. Confirm that the run completes without reported errors and describes the traces it reviewed.
 
@@ -423,7 +423,7 @@ Continue the thread to refine and test its suggestions.
 
 **Try your own analysis.** If you already know what you want to try, describe the revised analysis in a new Loop thread and ask Loop to run it against recent sessions. Adjust your instructions and rerun the analysis until you're satisfied with the results.
 
-**Apply a change.** When you're ready to apply a change, ask Loop to make it and click **Accept**, or edit the automation yourself. To edit it, go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations), open **Coding Agent Improvements Discovery**, make the change, and click **Save**.
+**Apply a change.** When you're ready to apply a change, ask Loop to make it and click **Accept**, or edit the automation yourself. To edit it, go to **<Icon icon="settings" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations), open **Coding Agent Improvements Discovery**, make the change, and click **Save**.
 
 </Accordion>
 
@@ -441,13 +441,13 @@ To send the result of each successful automation run to Slack or a webhook, add 
 
 Skip this step if Slack is already connected to your organization. Only members of the **Owners** [permission group](/docs/admin/access-control), or a custom permission group with the **Manage settings** organization permission, can connect Slack.
 
-Go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="toy-brick" /> Integrations**](https://www.braintrust.dev/app/~/configuration/org/integrations), click **Enable Slack**, and authorize Braintrust to access your Slack workspace. For details, see [Enable Slack integration](/docs/admin/organizations#enable-slack-integration).
+Go to **<Icon icon="settings" /> Settings** > [**<Icon icon="plug" /> Integrations**](https://www.braintrust.dev/app/~/configuration/integrations), click **Enable Slack**, and authorize Braintrust to access your Slack workspace. For details, see [Enable Slack integration](/docs/admin/organizations#enable-slack-integration).
 
 </Step>
 
 <Step title="Add the destination">
 
-Go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations) and click **Coding Agent Improvements Discovery** to open it. Under **Destinations**, click <Icon icon="plus" /> **Destination** and select **Send to Slack**. Then choose the workspace and channel.
+Go to **<Icon icon="settings" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations) and click **Coding Agent Improvements Discovery** to open it. Under **Destinations**, click <Icon icon="plus" /> **Destination** and select **Send to Slack**. Then choose the workspace and channel.
 
 Braintrust prepopulates a suggested **Formatting prompt**. Review it and adjust it as needed for your team.
 
@@ -463,7 +463,7 @@ Braintrust prepopulates a suggested **Formatting prompt**. Review it and adjust 
 
 <Step title="Add the destination">
 
-Go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations) and click **Coding Agent Improvements Discovery** to open it. Under **Destinations**, click <Icon icon="plus" /> **Destination** and select **Send to webhook**. Enter the URL of the receiving endpoint.
+Go to **<Icon icon="settings" /> Settings** > [**<Icon icon="radio" /> Automations**](https://www.braintrust.dev/app/~/configuration/automations) and click **Coding Agent Improvements Discovery** to open it. Under **Destinations**, click <Icon icon="plus" /> **Destination** and select **Send to webhook**. Enter the URL of the receiving endpoint.
 
 </Step>
 
@@ -607,7 +607,7 @@ Deleting the project permanently removes its traces, facets, automations,
 and other project data. This action cannot be undone.
 </Warning>
 
-1. Go to **<Icon icon="settings-2" /> Settings** > [**<Icon icon="wrench" /> General**](https://www.braintrust.dev/app/~/configuration/general).
+1. Go to **<Icon icon="settings" /> Settings** > [**<Icon icon="wrench" /> Project**](https://www.braintrust.dev/app/~/configuration/general).
 2. Click **Delete project**.
 3. Enter `coding-agent-insights` and click **Delete**.
 
