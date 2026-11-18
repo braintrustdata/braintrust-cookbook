@@ -1,3 +1,12 @@
+- title: Evaluate scoped Loom memory retrieval with Braintrust
+  path: examples/LoomMemoryRetrieval/LoomMemoryRetrieval.ipynb
+  authors:
+    - zlareb1
+  tags:
+    - evals
+    - python
+    - retrieval
+
 # yaml-language-server: $schema=./.github/registry_schema.json
 
 - title: Improving coding agents with coding agent insights
